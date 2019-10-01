@@ -18,13 +18,14 @@ class User(db.Model, UserMixin):
     # sexualpref  = db.Column(db.String(20), nullable=False)
     # biography   = db.Column(db.Text, nullable=False)
     # famerating  = db.Column(db.Integer, nullable=False, default=0)
+    # SET IN ROUTES ON ACCOUNT PAGE
     image_file  = db.Column(db.String(20), nullable=False, default='default.jpg')
     # userchecks  = db.Column(db.String(100), default='')
     # tags        = db.Column(db.String(20), default='') 
     posts       = db.relationship('Post', backref='author', lazy=True)
     # likes       = db.relationship('Like', backref='userlikes', lazy=True)
     # messages    = db.relationship('Message', backref='usermessages', lazy=True)
-    # user_images = db.relationship('Image', backref='userimages', lazy=True)
+    # user_images = db.relationship('Images', backref='userimages', lazy=True)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
@@ -47,7 +48,7 @@ class Message(db.Model):
     def __repr__(self):
         return f"Message('{self.content}', '{self.date_sent}', '{self.username}')"
 
-class Image(db.Model):
+class Images(db.Model):
     id          = db.Column(db.Integer, primary_key=True)
     # 1 = Profile photo , 2 - 5 = Being other photos
     image_rel   = db.Column(db.Integer, nullable=False)
