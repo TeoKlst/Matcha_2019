@@ -7,6 +7,8 @@ from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm
 from matcha.models import User, Like, Message, Images, Tags, Post        
 from flask_login import login_user, current_user, logout_user, login_required
 
+from datetime import date
+
 posts = [
     {
         'title': 'Some1 Title',
@@ -36,9 +38,13 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data,
+        user = User(firstname=form.firstname.data,
+                    lastname=form.lastname.data,
+                    username=form.username.data,
                     email=form.email.data,
-                    password=hashed_password)
+                    password=hashed_password,
+                    age=form.age.data,
+                    gender=form.gender.data)
         db.session.add(user)
         db.session.commit()
         flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
@@ -88,15 +94,25 @@ def account():
     if form.validate_on_submit():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
-            current_user.image_file = picture_file 
-        current_user.username = form.username.data
-        current_user.email = form.email.data
+            current_user.image_file = picture_file
+        current_user.firstname  = form.firstname.data
+        current_user.lastname   = form.lastname.data
+        current_user.username   = form.username.data
+        current_user.email      = form.email.data
+        current_user.age        = form.age.data     
+        current_user.gender     = form.gender.data 
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('account'))
     elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.email.data = current_user.email
+        today = date.today()
+        born = date(1994, 7, 12)
+        form.firstname.data = current_user.firstname
+        form.lastname.data  = current_user.lastname
+        form.username.data  = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+        form.email.data     = current_user.email
+        form.age.data       = current_user.age
+        form.gender.data    = current_user.gender
     # PASSING IMAGE FILE TO ACCOUNT HERE
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form)

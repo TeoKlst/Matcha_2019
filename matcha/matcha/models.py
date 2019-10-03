@@ -6,15 +6,25 @@ from flask_login import UserMixin
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+choices_gender  =[('m', 'Male'), ('f', 'Female'), ('o', 'Other')]
+
+choices_age     =[('18', '18'), ('19', '19'), ('20', '20')]
+
+choices_day     =[('', 'Day'), ('1','1')]
+
+choices_month   =[('', 'Month'), ('1','Jan'), ('2','Feb'), ('3','Mar'), ('4','Apr'), ('5','May'), ('6','Jun'), ('7','Jul'), ('8','Aug'), ('9','Sept'), ('10','Oct'), ('11','Nov'), ('12','Dec')]
+
+choices_year    =[('', 'Year'), ('1994','1994')]
+
 class User(db.Model, UserMixin):
     id          = db.Column(db.Integer, primary_key=True)
-    # firstname   = db.Column(db.String(20), nullable=False)
-    # lastname    = db.Column(db.String(20), nullable=False)
-    # age         = db.Column(db.Integer, nullable=False)
+    firstname   = db.Column(db.String(20), nullable=False)
+    lastname    = db.Column(db.String(20), nullable=False)
+    age         = db.Column(db.String(20), nullable=False)
     username    = db.Column(db.String(20), unique=True, nullable=False)
     email       = db.Column(db.String(120), unique=True, nullable=False)
     password    = db.Column(db.String(60), nullable=False)
-    # gender      = db.Column(db.String(20), nullable=False)
+    gender      = db.Column(db.String(20), nullable=False)
     # sexualpref  = db.Column(db.String(20), nullable=False)
     # biography   = db.Column(db.Text, nullable=False)
     # famerating  = db.Column(db.Integer, nullable=False, default=0)
