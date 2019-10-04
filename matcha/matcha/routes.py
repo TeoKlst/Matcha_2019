@@ -37,13 +37,16 @@ def register():
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        today = date.today()
+        born = date(int(form.year.data), int(form.month.data), int(form.day.data))
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user = User(firstname=form.firstname.data,
                     lastname=form.lastname.data,
                     username=form.username.data,
                     email=form.email.data,
                     password=hashed_password,
-                    age=form.age.data,
+                    age=today.year - born.year - ((today.month, today.day) < (born.month, born.day)),
+                    birthdate=born,
                     gender=form.gender.data)
         db.session.add(user)
         db.session.commit()
@@ -99,19 +102,15 @@ def account():
         current_user.lastname   = form.lastname.data
         current_user.username   = form.username.data
         current_user.email      = form.email.data
-        current_user.age        = form.age.data     
         current_user.gender     = form.gender.data 
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('account'))
     elif request.method == 'GET':
-        today = date.today()
-        born = date(1994, 7, 12)
         form.firstname.data = current_user.firstname
         form.lastname.data  = current_user.lastname
-        form.username.data  = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+        form.username.data  = current_user.username
         form.email.data     = current_user.email
-        form.age.data       = current_user.age
         form.gender.data    = current_user.gender
     # PASSING IMAGE FILE TO ACCOUNT HERE
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)

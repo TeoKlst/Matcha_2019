@@ -3,7 +3,9 @@ from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, RadioField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from matcha.models import User, choices_gender, choices_age
+from matcha.models import User, choices_gender, choices_age, choices_day, choices_month, choices_year
+
+from datetime import date
 
 class RegistrationForm(FlaskForm):
     firstname = StringField('First name',
@@ -18,10 +20,14 @@ class RegistrationForm(FlaskForm):
                             validators=[DataRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm_Password',
                             validators=[DataRequired(), EqualTo('password')])
-    age = StringField('Age',
-                           validators=[DataRequired(), Length(min=2, max=20)])
     gender = SelectField('Gender',
                             choices=choices_gender)
+    day = SelectField('Day',
+                        choices=choices_day)
+    month = SelectField('Month',
+                        choices=choices_month)
+    year = SelectField('Year',
+                        choices=choices_year)
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
@@ -34,9 +40,16 @@ class RegistrationForm(FlaskForm):
         if user:
             raise ValidationError('That email is taken. Please choose a different one.')
 
-    # def validate_age(self, age):
-    #     if age < 18:
-    #         raise ValidationError('Invalid age')
+    # TODO FIX AGE CHECK
+    def validate_year(self, year):
+        today = date.today()
+        current_year = year=year.data
+        if int(current_year) < today.year:
+            dif = today.year - int(current_year)
+        else:
+            dif = int(current_year) - today.year
+        if dif < 18:
+            raise ValidationError('Underage account. You need to be 18 years and older to create an account.')
 
 
 class LoginForm(FlaskForm):
@@ -57,8 +70,6 @@ class UpdateAccountForm(FlaskForm):
                             validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email',
                             validators=[DataRequired(), Email()])
-    age = StringField('Age',
-                           validators=[DataRequired(), Length(min=2, max=20)])
     gender = SelectField('Gender',
                             choices=choices_gender)
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
