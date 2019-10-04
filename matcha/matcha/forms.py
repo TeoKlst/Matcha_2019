@@ -3,32 +3,32 @@ from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, RadioField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from matcha.models import User, choices_gender, choices_age, choices_day, choices_month, choices_year
+from matcha.models import User, choices_gender, choices_day, choices_month, choices_year
 
 from datetime import date
 
 class RegistrationForm(FlaskForm):
-    firstname = StringField('First name',
-                            validators=[DataRequired(), Length(min=2, max=20)])
-    lastname = StringField('Last name',
-                            validators=[DataRequired(), Length(min=2, max=20)])
-    username = StringField('Username',
-                            validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Email',
-                            validators=[DataRequired(), Email()])
-    password = PasswordField('Password',
-                            validators=[DataRequired(), Length(min=8)])
-    confirm_password = PasswordField('Confirm_Password',
-                            validators=[DataRequired(), EqualTo('password')])
-    gender = SelectField('Gender',
-                            choices=choices_gender)
-    day = SelectField('Day',
-                        choices=choices_day)
-    month = SelectField('Month',
-                        choices=choices_month)
-    year = SelectField('Year',
-                        choices=choices_year)
-    submit = SubmitField('Sign Up')
+    firstname           = StringField('First name',
+                                    validators=[DataRequired(), Length(min=2, max=20)])
+    lastname            = StringField('Last name',
+                                    validators=[DataRequired(), Length(min=2, max=20)])
+    username            = StringField('Username',
+                                    validators=[DataRequired(), Length(min=2, max=20)])
+    email               = StringField('Email',
+                                    validators=[DataRequired(), Email()])
+    PasswordField       = PasswordField('Password',
+                                    validators=[DataRequired(), Length(min=8)])
+    confirm_password    = PasswordField('Confirm_Password',
+                                    validators=[DataRequired(), EqualTo('password')])
+    gender              = SelectField('Gender',
+                                    choices=choices_gender)
+    day                 = SelectField('Day',
+                                    choices=choices_day)
+    month               = SelectField('Month',
+                                    choices=choices_month)
+    year                = SelectField('Year',
+                                    choices=choices_year)
+    submit              = SubmitField('Sign Up')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
@@ -40,7 +40,7 @@ class RegistrationForm(FlaskForm):
         if user:
             raise ValidationError('That email is taken. Please choose a different one.')
 
-    # TODO FIX AGE CHECK
+    # TODO Fix age check
     def validate_year(self, year):
         today = date.today()
         current_year = year=year.data
@@ -53,27 +53,28 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email',
+    email       = StringField('Email',
                             validators=[DataRequired(), Email()])
-    password = PasswordField('Password',
+    password    = PasswordField('Password',
                             validators=[DataRequired()])
-    remember = BooleanField('Remember Me')
-    submit = SubmitField('Login')
+    remember    = BooleanField('Remember Me')
+    submit      = SubmitField('Login')
 
 
 class UpdateAccountForm(FlaskForm):
-    firstname = StringField('First name',
+    firstname   = StringField('First name',
                             validators=[DataRequired(), Length(min=2, max=20)])
-    lastname = StringField('Last name',
+    lastname    = StringField('Last name',
                             validators=[DataRequired(), Length(min=2, max=20)])
-    username = StringField('Username',
+    username    = StringField('Username',
                             validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Email',
+    email       = StringField('Email',
                             validators=[DataRequired(), Email()])
-    gender = SelectField('Gender',
+    gender      = SelectField('Gender',
                             choices=choices_gender)
-    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
-    submit = SubmitField('Update')
+    picture     = FileField('Update Profile Picture', 
+                            validators=[FileAllowed(['jpg', 'png'])])
+    submit      = SubmitField('Update')
 
     def validate_username(self, username):
         if username.data != current_user.username:

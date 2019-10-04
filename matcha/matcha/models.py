@@ -8,8 +8,6 @@ def load_user(user_id):
 
 choices_gender  =[('m', 'Male'), ('f', 'Female'), ('o', 'Other')]
 
-choices_age     =[('18', '18'), ('19', '19'), ('20', '20')]
-
 choices_day     =[('0', 'Day'), 
                     ('1','1'), ('2','2'), ('3','3'), ('4','4'), ('5','5'), ('6','6'), ('7','7'), ('8','8'), ('9','9'), 
                     ('10','10'), ('11','11'), ('12','12'), ('13','13'), ('14','14'), ('15','15'), ('16','16'), ('17','17'), 
@@ -37,13 +35,18 @@ class User(db.Model, UserMixin):
     email       = db.Column(db.String(120), unique=True, nullable=False)
     password    = db.Column(db.String(60), nullable=False)
     gender      = db.Column(db.String(20), nullable=False)
-    # sexualpref  = db.Column(db.String(20), nullable=False)
-    # biography   = db.Column(db.Text, nullable=False)
-    # famerating  = db.Column(db.Integer, nullable=False, default=0)
-    # SET IN ROUTES ON ACCOUNT PAGE
+    # +
+    sexualpref  = db.Column(db.String(20), nullable=False, default='')
+    # +
+    biography   = db.Column(db.Text, nullable=False, default='')
+    # +
+    famerating  = db.Column(db.Integer, nullable=False, default=0)
+    # Set in routes on account page
     image_file  = db.Column(db.String(20), nullable=False, default='default.jpg')
-    # userchecks  = db.Column(db.String(100), default='')
-    # tags        = db.Column(db.String(20), default='') 
+    # +
+    userchecks  = db.Column(db.String(100), default='')
+    # +
+    tags        = db.Column(db.String(20), default='') 
     posts       = db.relationship('Post', backref='author', lazy=True)
     # likes       = db.relationship('Like', backref='userlikes', lazy=True)
     # messages    = db.relationship('Message', backref='usermessages', lazy=True)

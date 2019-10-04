@@ -6,7 +6,6 @@ from matcha import app, db, bcrypt
 from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm
 from matcha.models import User, Like, Message, Images, Tags, Post        
 from flask_login import login_user, current_user, logout_user, login_required
-
 from datetime import date
 
 posts = [
@@ -90,6 +89,7 @@ def save_picture(form_picture):
 
     return picture_fn
 
+
 @app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
@@ -112,6 +112,6 @@ def account():
         form.username.data  = current_user.username
         form.email.data     = current_user.email
         form.gender.data    = current_user.gender
-    # PASSING IMAGE FILE TO ACCOUNT HERE
+    # Passing image file to account here
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form)
