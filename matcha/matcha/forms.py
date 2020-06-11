@@ -7,6 +7,8 @@ from matcha.models import User, choices_gender, choices_day, choices_month, choi
 
 from datetime import date
 
+# Python Classes converted to html forms within templates
+
 class RegistrationForm(FlaskForm):
     firstname           = StringField('First name',
                                     validators=[DataRequired(), Length(min=2, max=20)])
@@ -16,10 +18,10 @@ class RegistrationForm(FlaskForm):
                                     validators=[DataRequired(), Length(min=2, max=20)])
     email               = StringField('Email',
                                     validators=[DataRequired(), Email()])
-    PasswordField       = PasswordField('Password',
+    password_field      = PasswordField('Password',
                                     validators=[DataRequired(), Length(min=8)])
-    confirm_password    = PasswordField('Confirm_Password',
-                                    validators=[DataRequired(), EqualTo('password')])
+    confirm_password    = PasswordField('Confirm Password',
+                                    validators=[DataRequired(), EqualTo('password_field')])
     gender              = SelectField('Gender',
                                     choices=choices_gender)
     day                 = SelectField('Day',
@@ -51,6 +53,7 @@ class RegistrationForm(FlaskForm):
         if dif < 18:
             raise ValidationError('Underage account. You need to be 18 years and older to create an account.')
 
+    # TODO validate_passwordComplexity(self, password_field):
 
 class LoginForm(FlaskForm):
     email       = StringField('Email',

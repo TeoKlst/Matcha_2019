@@ -13,3 +13,6 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
 from matcha import routes
+
+# Sectret Key Generation $> secrets.token_hex(16)
+# Helps to protect from modifying cookies and cross-site request forgery attacks. 

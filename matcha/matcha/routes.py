@@ -8,14 +8,32 @@ from matcha.models import User, Like, Message, Images, Tags, Post
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import date
 
+# Templating engine that flask uses is Jinja2
+
 posts = [
     {
+        'author': 'Dude1',
         'title': 'Some1 Title',
-        'name':  'Name1'
+        'content':  'Contents1',
+        'date_posted': 'June 06 2020'
     },
     {
+        'author': 'Dude2',
         'title': 'Some2 Title',
-        'name':  'Name2'
+        'content':  'Contents2',
+        'date_posted': 'June 06 2020'
+    },
+    {
+        'author': 'Dude3',
+        'title': 'TestTitle3',
+        'content': 'Contents3',
+        'date_posted': 'June 06 2020'
+    },
+    {
+        'author': 'Dude4',
+        'title': 'TestTitle4',
+        'content': 'Contents4',
+        'date_posted': 'June 06 2020'
     }
 ]
 
@@ -29,6 +47,9 @@ def home():
 def about():
     return render_template('about.html', title='About')
 
+@app.route('/frontpage')
+def frontpage():
+    return render_template('frontpage.html', title='FrontPage')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -38,7 +59,7 @@ def register():
     if form.validate_on_submit():
         today = date.today()
         born = date(int(form.year.data), int(form.month.data), int(form.day.data))
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        hashed_password = bcrypt.generate_password_hash(form.password_field.data).decode('utf-8')
         user = User(firstname=form.firstname.data,
                     lastname=form.lastname.data,
                     username=form.username.data,
