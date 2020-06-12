@@ -52,6 +52,7 @@ class User(db.Model, UserMixin):
     # messages    = db.relationship('Message', backref='usermessages', lazy=True)
     # user_images = db.relationship('Images', backref='userimages', lazy=True)
 
+    # How the class is printed, when it is printed out
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
