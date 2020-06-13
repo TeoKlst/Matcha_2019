@@ -11,9 +11,9 @@ cur = conn.cursor()
 
 # Dock string, a string that can be written in multiple lines without any special breaks
 cur.execute("""CREATE TABLE employees (
-            first text,
-            last text,
-            pay integer
+            first TEXT,
+            last TEXT,
+            pay INTEGER
             )""")
 
 # Inserts employee
