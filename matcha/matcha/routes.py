@@ -2,13 +2,17 @@ import os
 import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
-from matcha import app, db, bcrypt
+from matcha import app, bcrypt, sql
 from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm
-from matcha.models import User, Like, Message, Images, Tags, Post        
+# from matcha.models import Like, Message, Images, Tags, Post    
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import date
 
 # Templating engine that flask uses is Jinja2
+db = 1
+# User = 1
+from matcha.classes import User
+from matcha.dbfunctions import register_user
 
 posts = [
     {
@@ -40,6 +44,8 @@ posts = [
 @app.route('/')
 @app.route('/home')
 def home():
+    # print (current_user)
+    print (current_user.is_authenticated)
     return render_template('home.html', posts=posts)
 
 
@@ -68,10 +74,18 @@ def register():
                     age=today.year - born.year - ((today.month, today.day) < (born.month, born.day)),
                     birthdate=born,
                     gender=form.gender.data)
-        db.session.add(user)
-        db.session.commit()
+        # conn = sql.connect('matcha\\users.db')
+        # cur = conn.cursor()
+        # reg_user = regUser()
+        # register_user(conn, cur, reg_user)
+
         flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
+
+        # db.session.add(user)
+        # db.session.commit()
+        # flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
+        # return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
 
@@ -81,13 +95,36 @@ def login():
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE email=:email", {'email': form.email.data})
+        user_data = cur.fetchone()
+
+        i = 0
+        for data in user_data:
+            print(str(i), data)
+            i = i + 1
+        # print(user_data)
+
+        user = User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4],
+        user_data[5], user_data[6], user_data[7], user_data[8], user_data[9],
+        user_data[10], user_data[11], user_data[12], user_data[13], user_data[14])
+
+        if user_data and user.password == form.password.data:
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash(f'Login Unsuccessful. Please check email and password', 'danger')
+
+        # user = User.query.filter_by(email=form.email.data).first()
+        # if user and bcrypt.check_password_hash(user.password, form.password.data):
+        #     login_user(user, remember=form.remember.data)
+        #     next_page = request.args.get('next')
+        #     return redirect(next_page) if next_page else redirect(url_for('home'))
+        # else:
+        #     flash(f'Login Unsuccessful. Please check email and password', 'danger')
+
     return render_template('login.html', title='Login', form=form)
 
 

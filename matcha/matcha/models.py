@@ -1,10 +1,26 @@
 from datetime import datetime
-from matcha import db, login_manager
+from matcha import login_manager, sql
 from flask_login import UserMixin
+from matcha.classes import User
 
 @login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+def load_user(id):
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("SELECT * from users where email = (?)", [id])
+    userrow = cur.fetchone()
+    print ('id ', id)
+    print ('fetchone ', userrow)
+    # userid = userrow[0] # or whatever the index position is
+    user = User(userrow[0], userrow[1], userrow[2], userrow[3], userrow[4],
+        userrow[5], userrow[6], userrow[7], userrow[8], userrow[9],
+        userrow[10], userrow[11], userrow[12], userrow[13], userrow[14])
+    print('return id', user)
+    return (user)
+
+# @login_manager.user_loader
+# def load_user(user_id):
+#     return User.query.get(int(user_id))
 
 choices_gender  =[('m', 'Male'), ('f', 'Female'), ('o', 'Other')]
 
@@ -25,79 +41,79 @@ choices_year    =[('0', 'Year'),
                     ('1994','1994'), ('1995','1995'), ('1996','1996'), ('1997','1997'), ('1998','1998'), ('1999','1999'), ('2000','2000'), 
                     ('2001','2001'), ('2002','2002'), ('2003','2003'), ('2004','2004'), ('2005','2005'), ('2006','2006'), ('2007','2007')]
 
-class User(db.Model, UserMixin):
-    id          = db.Column(db.Integer, primary_key=True)
-    firstname   = db.Column(db.String(20), nullable=False)
-    lastname    = db.Column(db.String(20), nullable=False)
-    age         = db.Column(db.String(20), nullable=False)
-    birthdate   = db.Column(db.String(20), nullable=False)
-    username    = db.Column(db.String(20), unique=True, nullable=False)
-    email       = db.Column(db.String(120), unique=True, nullable=False)
-    password    = db.Column(db.String(60), nullable=False)
-    gender      = db.Column(db.String(20), nullable=False)
-    # +
-    sexualpref  = db.Column(db.String(20), nullable=False, default='')
-    # +
-    biography   = db.Column(db.Text, nullable=False, default='')
-    # +
-    famerating  = db.Column(db.Integer, nullable=False, default=0)
-    # Set in routes on account page
-    image_file  = db.Column(db.String(20), nullable=False, default='default.jpg')
-    # +
-    userchecks  = db.Column(db.String(100), default='')
-    # +
-    tags        = db.Column(db.String(20), default='') 
-    posts       = db.relationship('Post', backref='author', lazy=True)
-    # likes       = db.relationship('Like', backref='userlikes', lazy=True)
-    # messages    = db.relationship('Message', backref='usermessages', lazy=True)
-    # user_images = db.relationship('Images', backref='userimages', lazy=True)
+# class User(db.Model, UserMixin):
+#     id          = db.Column(db.Integer, primary_key=True)
+#     firstname   = db.Column(db.String(20), nullable=False)
+#     lastname    = db.Column(db.String(20), nullable=False)
+#     age         = db.Column(db.String(20), nullable=False)
+#     birthdate   = db.Column(db.String(20), nullable=False)
+#     username    = db.Column(db.String(20), unique=True, nullable=False)
+#     email       = db.Column(db.String(120), unique=True, nullable=False)
+#     password    = db.Column(db.String(60), nullable=False)
+#     gender      = db.Column(db.String(20), nullable=False)
+#     # +
+#     sexualpref  = db.Column(db.String(20), nullable=False, default='')
+#     # +
+#     biography   = db.Column(db.Text, nullable=False, default='')
+#     # +
+#     famerating  = db.Column(db.Integer, nullable=False, default=0)
+#     # Set in routes on account page
+#     image_file  = db.Column(db.String(20), nullable=False, default='default.jpg')
+#     # +
+#     userchecks  = db.Column(db.String(100), default='')
+#     # +
+#     tags        = db.Column(db.String(20), default='') 
+#     posts       = db.relationship('Post', backref='author', lazy=True)
+#     # likes       = db.relationship('Like', backref='userlikes', lazy=True)
+#     # messages    = db.relationship('Message', backref='usermessages', lazy=True)
+#     # user_images = db.relationship('Images', backref='userimages', lazy=True)
 
-    # How the class is printed, when it is printed out
-    def __repr__(self):
-        return f"User('{self.username}', '{self.email}', '{self.image_file}')"
+#     # How the class is printed, when it is printed out
+#     def __repr__(self):
+#         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
-class Like(db.Model):
-    id          = db.Column(db.Integer, primary_key=True)
-    username    = db.Column(db.String(20), unique=True, nullable=False)
-    user_id     = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+# class Like(db.Model):
+#     id          = db.Column(db.Integer, primary_key=True)
+#     username    = db.Column(db.String(20), unique=True, nullable=False)
+#     user_id     = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def __repr__(self):
-        return f"Like('{self.id}', '{self.user_id}', '{self.username}')"
+#     def __repr__(self):
+#         return f"Like('{self.id}', '{self.user_id}', '{self.username}')"
 
-class Message(db.Model):
-    id          = db.Column(db.Integer, primary_key=True)
-    username    = db.Column(db.String(20), unique=True, nullable=False)
-    content     = db.Column(db.Text, nullable=False)
-    date_sent   = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    user_id     = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+# class Message(db.Model):
+#     id          = db.Column(db.Integer, primary_key=True)
+#     username    = db.Column(db.String(20), unique=True, nullable=False)
+#     content     = db.Column(db.Text, nullable=False)
+#     date_sent   = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+#     user_id     = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def __repr__(self):
-        return f"Message('{self.content}', '{self.date_sent}', '{self.username}')"
+#     def __repr__(self):
+#         return f"Message('{self.content}', '{self.date_sent}', '{self.username}')"
 
-class Images(db.Model):
-    id          = db.Column(db.Integer, primary_key=True)
-    # 1 = Profile photo , 2 - 5 = Being other photos
-    image_rel   = db.Column(db.Integer, nullable=False)
-    image_file  = db.Column(db.String(20), nullable=False, default='default.jpg')
-    user_id     = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+# class Images(db.Model):
+#     id          = db.Column(db.Integer, primary_key=True)
+#     # 1 = Profile photo , 2 - 5 = Being other photos
+#     image_rel   = db.Column(db.Integer, nullable=False)
+#     image_file  = db.Column(db.String(20), nullable=False, default='default.jpg')
+#     user_id     = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def __repr__(self):
-        return f"Message('{self.content}', '{self.date_sent}', '{self.username}')"
+#     def __repr__(self):
+#         return f"Message('{self.content}', '{self.date_sent}', '{self.username}')"
 
-class Tags(db.Model):
-    id          = db.Column(db.Integer, primary_key=True)
-    title       = db.Column(db.String(100), nullable=False)
-    user_list   = db.Column(db.Text, default='')
+# class Tags(db.Model):
+#     id          = db.Column(db.Integer, primary_key=True)
+#     title       = db.Column(db.String(100), nullable=False)
+#     user_list   = db.Column(db.Text, default='')
 
-    def __repr__(self):
-        return f"Post('{self.id}', '{self.title}', '{self.user_list}')"
+#     def __repr__(self):
+#         return f"Post('{self.id}', '{self.title}', '{self.user_list}')"
 
-class Post(db.Model):
-    id          = db.Column(db.Integer, primary_key=True)
-    title       = db.Column(db.String(100), nullable=False)
-    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    content     = db.Column(db.Text, nullable=False)
-    user_id     = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+# class Post(db.Model):
+#     id          = db.Column(db.Integer, primary_key=True)
+#     title       = db.Column(db.String(100), nullable=False)
+#     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+#     content     = db.Column(db.Text, nullable=False)
+#     user_id     = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def __repr__(self):
-            return f"Post('{self.title}', '{self.date_posted}')"
+#     def __repr__(self):
+#             return f"Post('{self.title}', '{self.date_posted}')"

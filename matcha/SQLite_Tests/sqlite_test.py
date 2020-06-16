@@ -55,6 +55,21 @@ remove_emp(emp_1)
 emps = get_emps_by_name('Doe')
 print(emps)
 
+cur.execute("SELECT * FROM employees WHERE last=:last", {'last': 'Doe'})
+user_test = cur.fetchone()
+
+print ('+++++++++++++++')
+print (user_test)
+
+emp_3 = Employee(user_test[0], user_test[1], user_test[2])
+
+print('----------------')
+print(emp_3.pay)
+print (emp_3.fullname)
+
+# for row in user_test:
+#         print("{0} {1} {2}".format(row[0], row[1], row[2]))
+
 conn.close()
 
 
