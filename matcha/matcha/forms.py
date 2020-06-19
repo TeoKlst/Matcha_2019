@@ -1,10 +1,10 @@
+from matcha import sql
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, RadioField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from matcha.models import choices_gender, choices_day, choices_month, choices_year
-
 from datetime import date
 
 # Python Classes converted to html forms within templates
@@ -32,15 +32,23 @@ class RegistrationForm(FlaskForm):
                                     choices=choices_year)
     submit              = SubmitField('Sign Up')
 
-    # def validate_username(self, username):
-    #     user = User.query.filter_by(username=username.data).first()
-    #     if user:
-    #         raise ValidationError('That username is taken. Please choose a different one.')
+    def validate_username(self, username):
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE username=:username", {'username': username.data})
+        user_data = cur.fetchone()
+        conn.close()
+        if user_data:
+            raise ValidationError('That username is taken. Please choose a different one.')
 
-    # def validate_email(self, email):
-    #     user = User.query.filter_by(email=email.data).first()
-    #     if user:
-    #         raise ValidationError('That email is taken. Please choose a different one.')
+    def validate_email(self, email):
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE email=:email", {'email': email.data})
+        user_data = cur.fetchone()
+        conn.close()
+        if user_data:
+            raise ValidationError('That email is taken. Please choose a different one.')
 
     # TODO Fix age check
     def validate_year(self, year):
@@ -79,6 +87,7 @@ class UpdateAccountForm(FlaskForm):
                             validators=[FileAllowed(['jpg', 'png'])])
     submit      = SubmitField('Update')
 
+# TODO Change to sqlite query
     # def validate_username(self, username):
     #     if username.data != current_user.username:
     #         user = User.query.filter_by(username=username.data).first()

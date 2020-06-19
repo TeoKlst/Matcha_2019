@@ -3,6 +3,7 @@ from matcha import login_manager, sql
 from flask_login import UserMixin
 from matcha.classes import User
 
+# Test by changing id to user_id
 @login_manager.user_loader
 def load_user(id):
     conn = sql.connect('matcha\\users.db')

@@ -52,3 +52,5 @@ class User:
         self.username, self.email, self.password, self.gender, self.sexual_pref,
         self.biography, self.famerating, self.image_file, self.userchecks, self.tags)
 
+class RegisterUser:
+    pass

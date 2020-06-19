@@ -1,20 +1,25 @@
+# < ---------- Bcrypt --------- >
+from flask import Flask
+from flask_bcrypt import Bcrypt
+app = Flask(__name__)
+bcrypt = Bcrypt(app)
+# < ---------- Bcrypt --------- >
+
 from datetime import datetime
-from matcha import login_manager
-from flask_login import UserMixin
 import sqlite3
 
 # @login_manager.user_loader
 # def load_user(user_id):
 #     return User.query.get(int(user_id))
 
-@login_manager.user_loader
-def load_user(id):
-    conn = sqlite3.connect('users.db')
-    cur = conn.cursor()
-    cur.execute("SELECT username from users where username = (?)", [id])
-    userrow = cur.fetchone()
-    userid = userrow[0] # or whatever the index position is
-    return int(userid)
+# @login_manager.user_loader
+# def load_user(id):
+#     conn = sqlite3.connect('users.db')
+#     cur = conn.cursor()
+#     cur.execute("SELECT username from users where username = (?)", [id])
+#     userrow = cur.fetchone()
+#     userid = userrow[0] # or whatever the index position is
+#     return int(userid)
 
 conn = sqlite3.connect('users.db')
 print ("Opened database successfully")
@@ -23,25 +28,29 @@ cur = conn.cursor()
 
 cur.execute("""CREATE TABLE users (
             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            firstname TEXT,
-            lastname TEXT,
-            age INTEGER,
-            birthdate TEXT,
-            username TEXT,
-            email TEXT,
-            password TEXT,
-            gender TEXT,
-            sexual_pref TEXT,
-            biography TEXT,
-            famerating INTEGER,
-            image_file TEXT DEFAULT "default.jpg" NOT NULL,
-            userchecks INTEGER,
-            tags TEXT
+            firstname TEXT NOT NULL,
+            lastname TEXT NOT NULL,
+            age INTEGER NOT NULL,
+            birthdate TEXT NOT NULL,
+            username TEXT NOT NULL,
+            email TEXT NOT NULL,
+            password TEXT NOT NULL,
+            gender TEXT NOT NULL,
+            sexual_pref TEXT NULL,
+            biography TEXT NULL,
+            famerating INTEGER DEFAULT 100,
+            image_file TEXT DEFAULT "default.jpg",
+            userchecks INTEGER NULL,
+            tags TEXT NULL
             )""")
 
-cur.execute("""INSERT INTO users VALUES (1, 'Teo', 'Kelestura', '25', '07/12/1994', 'Tkelest',
-            'tkelest@gmail.com', 'tkelest123', 'male', 'female', 'Biography', 'Fame:1', 'default.jpg',
-            'Userchecks', 'Tags' )""")
+hashed_password = bcrypt.generate_password_hash('tkelest123').decode('utf-8')
+# cur.execute("""INSERT INTO users VALUES (1, 'Teo', 'Kelestura', '25', '07/12/1994', 'Tkelest',
+#             'tkelest@gmail.com', hashed_password, 'male', 'female', 
+#             'Biography', 'Fame:1', 'default.jpg',
+#             'Userchecks', 'Tags' )""")
+cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
+                VALUES (?,?,?,?,?,?,?,?)""",('Teo', 'Kelestura', 'Tkelest', 'tkelest@gmail.com', hashed_password, 'male', 25, '07/12/1994') )
 conn.commit()
 
 cur.execute("SELECT * FROM users WHERE lastname=:lastname", {'lastname':'Kelestura'})

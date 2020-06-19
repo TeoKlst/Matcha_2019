@@ -10,9 +10,8 @@ from datetime import date
 
 # Templating engine that flask uses is Jinja2
 db = 1
-# User = 1
 from matcha.classes import User
-from matcha.dbfunctions import register_user
+from matcha.dbfunctions import register_user, register_userTest
 
 posts = [
     {
@@ -57,6 +56,7 @@ def about():
 def frontpage():
     return render_template('frontpage.html', title='FrontPage')
 
+# TODO Close db conn
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -64,31 +64,24 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         today = date.today()
-        born = date(int(form.year.data), int(form.month.data), int(form.day.data))
+        birthdate = date(int(form.year.data), int(form.month.data), int(form.day.data))
+        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
         hashed_password = bcrypt.generate_password_hash(form.password_field.data).decode('utf-8')
-        user = User(firstname=form.firstname.data,
-                    lastname=form.lastname.data,
-                    username=form.username.data,
-                    email=form.email.data,
-                    password=hashed_password,
-                    age=today.year - born.year - ((today.month, today.day) < (born.month, born.day)),
-                    birthdate=born,
-                    gender=form.gender.data)
-        # conn = sql.connect('matcha\\users.db')
-        # cur = conn.cursor()
-        # reg_user = regUser()
-        # register_user(conn, cur, reg_user)
+
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+        user = User('user_id', form.firstname.data, form.lastname.data, age, birthdate,
+                form.username.data, form.email.data, hashed_password, form.gender.data, 'sexual_pref',
+                'biography', 'famerating', 'image_file', 'userchecks', 'tags')
+        register_userTest(conn, cur, user)
+        # register_user(conn, cur, user)
 
         flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
 
-        # db.session.add(user)
-        # db.session.commit()
-        # flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
-        # return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
-
+# Close db conn
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -110,21 +103,12 @@ def login():
         user_data[5], user_data[6], user_data[7], user_data[8], user_data[9],
         user_data[10], user_data[11], user_data[12], user_data[13], user_data[14])
 
-        if user_data and user.password == form.password.data:
+        if user_data and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash(f'Login Unsuccessful. Please check email and password', 'danger')
-
-        # user = User.query.filter_by(email=form.email.data).first()
-        # if user and bcrypt.check_password_hash(user.password, form.password.data):
-        #     login_user(user, remember=form.remember.data)
-        #     next_page = request.args.get('next')
-        #     return redirect(next_page) if next_page else redirect(url_for('home'))
-        # else:
-        #     flash(f'Login Unsuccessful. Please check email and password', 'danger')
-
     return render_template('login.html', title='Login', form=form)
 
 
