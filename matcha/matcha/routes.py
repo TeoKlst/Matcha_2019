@@ -11,7 +11,7 @@ from datetime import date
 # Templating engine that flask uses is Jinja2
 db = 1
 from matcha.classes import User
-from matcha.dbfunctions import register_user, register_userTest
+from matcha.dbfunctions import register_userTest, update_user, update_image
 
 posts = [
     {
@@ -72,10 +72,11 @@ def register():
         cur = conn.cursor()
         user = User('user_id', form.firstname.data, form.lastname.data, age, birthdate,
                 form.username.data, form.email.data, hashed_password, form.gender.data, 'sexual_pref',
-                'biography', 'famerating', 'image_file', 'userchecks', 'tags')
+                'biography', 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
+                'image_file_3', 'image_file_4', 'image_file_5', 'userchecks', 'tags')
         register_userTest(conn, cur, user)
         # register_user(conn, cur, user)
-
+        conn.close()
         flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
 
@@ -101,8 +102,10 @@ def login():
 
         user = User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4],
         user_data[5], user_data[6], user_data[7], user_data[8], user_data[9],
-        user_data[10], user_data[11], user_data[12], user_data[13], user_data[14])
+        user_data[10], user_data[11], user_data[12], user_data[13], user_data[14],
+        user_data[15], user_data[16], user_data[17], user_data[18], user_data[19])
 
+        conn.close()
         if user_data and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
@@ -131,21 +134,45 @@ def save_picture(form_picture):
 
     return picture_fn
 
-
+# TODO Update user information with a cleaner/lighter method
 @app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
-        if form.picture.data:
-            picture_file = save_picture(form.picture.data)
-            current_user.image_file = picture_file
-        current_user.firstname  = form.firstname.data
-        current_user.lastname   = form.lastname.data
-        current_user.username   = form.username.data
-        current_user.email      = form.email.data
-        current_user.gender     = form.gender.data 
-        db.session.commit()
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+
+        img_type = None
+        picture_file = None
+        if form.picture_p.data:
+            img_type = 'image_file_p'
+            picture_file = save_picture(form.picture_p.data)
+        elif form.picture_1.data:
+            img_type = 'image_file_1'
+            picture_file = save_picture(form.picture_1.data)
+        elif form.picture_2.data:
+            img_type = 'image_file_2'
+            picture_file = save_picture(form.picture_2.data)
+        elif form.picture_3.data:
+            img_type = 'image_file_3'
+            picture_file = save_picture(form.picture_3.data)
+        elif form.picture_4.data:
+            img_type = 'image_file_4'
+            picture_file = save_picture(form.picture_4.data)
+        elif form.picture_5.data:
+            img_type = 'image_file_5'
+            picture_file = save_picture(form.picture_5.data)
+        if img_type != None:
+            img = picture_file
+            update_image(conn, cur, current_user, img_type, img)
+
+        user = User('user_id', form.firstname.data, form.lastname.data, 'age', 'birthdate',
+                form.username.data, form.email.data, 'hashed_password', form.gender.data, 'sexual_pref',
+                'biography', 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
+                'image_file_3', 'image_file_4', 'image_file_5', 'userchecks', 'tags')
+        update_user(conn, cur, user)
+        conn.close()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('account'))
     elif request.method == 'GET':
@@ -155,9 +182,11 @@ def account():
         form.email.data     = current_user.email
         form.gender.data    = current_user.gender
     # Passing image file to account here
-    image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-    # image_file_2
-    # image_file_3
-    # image_file_4
-    # image_file_5
-    return render_template('account.html', title='Account', image_file=image_file, form=form)
+    image_file_p = url_for('static', filename='profile_pics/' + current_user.image_file_p)
+    image_file_1 = url_for('static', filename='profile_pics/' + current_user.image_file_1) if current_user.image_file_1 else None
+    image_file_2 = url_for('static', filename='profile_pics/' + current_user.image_file_2) if current_user.image_file_2 else None
+    image_file_3 = url_for('static', filename='profile_pics/' + current_user.image_file_3) if current_user.image_file_3 else None
+    image_file_4 = url_for('static', filename='profile_pics/' + current_user.image_file_4) if current_user.image_file_4 else None
+    image_file_5 = url_for('static', filename='profile_pics/' + current_user.image_file_5) if current_user.image_file_5 else None
+    images = [image_file_1, image_file_2, image_file_3, image_file_4, image_file_5]
+    return render_template('account.html', title='Account', image_file_p=image_file_p, images=images, form=form)

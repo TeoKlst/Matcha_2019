@@ -39,7 +39,12 @@ cur.execute("""CREATE TABLE users (
             sexual_pref TEXT NULL,
             biography TEXT NULL,
             famerating INTEGER DEFAULT 100,
-            image_file TEXT DEFAULT "default.jpg",
+            image_file_p TEXT DEFAULT "default.jpg",
+            image_file_1 TEXT NULL,
+            image_file_2 TEXT NULL,
+            image_file_3 TEXT NULL,
+            image_file_4 TEXT NULL,
+            image_file_5 TEXT NULL,
             userchecks INTEGER NULL,
             tags TEXT NULL
             )""")

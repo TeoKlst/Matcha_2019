@@ -3,7 +3,7 @@
     <div class="content-section">
         <div class="media">
             <!-- IMAGE_FILE PASSED FROM ACCOUNT ROUTES -->
-            <img class="rounded-circle account-img" src="{{ image_file }}">
+            <img class="rounded-circle account-img" src="{{ image_file_p }}">
             <div class="media-body">
                 <h2 class="account-heading">{{ current_user.username }}</h2>
                 <p class="text-secondary">{{ current_user.email }}</p>
@@ -15,17 +15,19 @@
             <img class="rounded account-img-fillers" src="{{ image_file }}">
             <img class="rounded account-img-fillers" src="{{ image_file }}">
             <img class="rounded account-img-fillers" src="{{ image_file }}"> -->
+            
+            <div>
+            <input type="file" id="file" />
+            <label for="file" data-toggle="tooltip" data-placement="top" title="Add an image" ><i class=" fa fa-plus-square fa-3x"></i></label>
+            </div>
 
-            {% if current_user.is_authenticated %}
-
-            {% else %}
-
-            {% endif %}
-            <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
-            <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
-            <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
-            <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
-            <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
+            {% for image in images %}
+                {% if image == None %}
+                <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
+                {% else %}
+                <img class="rounded account-img-fillers" src="{{ image }}">
+                {% endif %}
+            {% endfor %}
         </div>
         <form method="POST" action="" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
@@ -106,10 +108,19 @@
                 {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ form.picture.label() }}
-                    {{ form.picture(class="form-control-file") }}
-                    {% if form.picture.errors %}
-                        {% for error in form.picture.errors %}
+                    {{ form.picture_p.label() }}
+                    {{ form.picture_p(class="form-control-file") }}
+                    {% if form.picture_p.errors %}
+                        {% for error in form.picture_p.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}    
+                </div>
+                <div class="form-group">
+                    {{ form.picture_2.label() }}
+                    {{ form.picture_2(class="form-control-file") }}
+                    {% if form.picture_2.errors %}
+                        {% for error in form.picture_2.errors %}
                             <span class="text-danger">{{ error }}</span></br>
                         {% endfor %}
                     {% endif %}    
