@@ -156,4 +156,8 @@ def account():
         form.gender.data    = current_user.gender
     # Passing image file to account here
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
+    # image_file_2
+    # image_file_3
+    # image_file_4
+    # image_file_5
     return render_template('account.html', title='Account', image_file=image_file, form=form)

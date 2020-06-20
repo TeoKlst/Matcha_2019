@@ -2,12 +2,30 @@
 {% block content %}
     <div class="content-section">
         <div class="media">
-        <!-- IMAGE_FILE PASSED FROM ACCOUNT ROUTES -->
-        <img class="rounded-circle account-img" src="{{ image_file }}">
-        <div class="media-body">
-            <h2 class="account-heading">{{ current_user.username }}</h2>
-            <p class="text-secondary">{{ current_user.email }}</p>
+            <!-- IMAGE_FILE PASSED FROM ACCOUNT ROUTES -->
+            <img class="rounded-circle account-img" src="{{ image_file }}">
+            <div class="media-body">
+                <h2 class="account-heading">{{ current_user.username }}</h2>
+                <p class="text-secondary">{{ current_user.email }}</p>
+            </div>
         </div>
+        <div>
+            <!-- <img class="rounded account-img-fillers" src="{{ image_file }}">
+            <img class="rounded account-img-fillers" src="{{ image_file }}">
+            <img class="rounded account-img-fillers" src="{{ image_file }}">
+            <img class="rounded account-img-fillers" src="{{ image_file }}">
+            <img class="rounded account-img-fillers" src="{{ image_file }}"> -->
+
+            {% if current_user.is_authenticated %}
+
+            {% else %}
+
+            {% endif %}
+            <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
+            <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
+            <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
+            <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
+            <button class="btn" data-toggle="tooltip" data-placement="top" title="Add an image"><i class="account-img-icons fa fa-plus-square fa-3x"></i></button>
         </div>
         <form method="POST" action="" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
