@@ -15,9 +15,9 @@ def register_userTest(conn, cur, user):
 
 def update_user(conn, cur, user):
     with conn:
-        cur.execute("""UPDATE users SET firstname=:firstname, lastname=:lastname, username=:username, email=:email, gender=:gender
+        cur.execute("""UPDATE users SET firstname=:firstname, lastname=:lastname, username=:username, email=:email, gender=:gender, biography=:biography
                     WHERE email=:email""",
-                    {'email': user.email, 'firstname': user.firstname, 'lastname': user.lastname, 'username': user.username, 'email': user.email, 'gender': user.gender})
+                    {'email': user.email, 'firstname': user.firstname, 'lastname': user.lastname, 'username': user.username, 'email': user.email, 'gender': user.gender, 'biography': user.biography})
 
 def update_image(conn, cur, user, img_type, img):
     if img_type == 'image_file_p':      # - p -

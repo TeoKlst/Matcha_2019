@@ -169,7 +169,7 @@ def account():
 
         user = User('user_id', form.firstname.data, form.lastname.data, 'age', 'birthdate',
                 form.username.data, form.email.data, 'hashed_password', form.gender.data, 'sexual_pref',
-                'biography', 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
+                form.biography.data, 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
                 'image_file_3', 'image_file_4', 'image_file_5', 'userchecks', 'tags')
         update_user(conn, cur, user)
         conn.close()
@@ -181,6 +181,7 @@ def account():
         form.username.data  = current_user.username
         form.email.data     = current_user.email
         form.gender.data    = current_user.gender
+        form.biography.data = current_user.biography
     # Passing image file to account here
     image_file_p = url_for('static', filename='profile_pics/' + current_user.image_file_p)
     image_file_1 = url_for('static', filename='profile_pics/' + current_user.image_file_1) if current_user.image_file_1 else None

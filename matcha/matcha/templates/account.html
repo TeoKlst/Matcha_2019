@@ -108,6 +108,24 @@
                 {% endif %}
                 </div>
                 <div class="form-group">
+                    {{ form.biography.label(class="form-control-label") }}
+                    {% if form.biography.errors %}
+                        {{ form.biography(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.biography.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.biography(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div>
+                    <a class="form-control-label">Fame Rating</a>
+                    <div class="progress" style="height: 20px;">
+                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">{{ current_user.famerating }}</div>
+                </div>
+                <div class="form-group">
                     {{ form.picture_p.label() }}
                     {{ form.picture_p(class="form-control-file") }}
                     {% if form.picture_p.errors %}
@@ -117,10 +135,46 @@
                     {% endif %}    
                 </div>
                 <div class="form-group">
+                    {{ form.picture_1.label() }}
+                    {{ form.picture_1(class="form-control-file") }}
+                    {% if form.picture_1.errors %}
+                        {% for error in form.picture_1.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}    
+                </div>
+                <div class="form-group">
                     {{ form.picture_2.label() }}
                     {{ form.picture_2(class="form-control-file") }}
                     {% if form.picture_2.errors %}
                         {% for error in form.picture_2.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}    
+                </div>
+                <div class="form-group">
+                    {{ form.picture_3.label() }}
+                    {{ form.picture_3(class="form-control-file") }}
+                    {% if form.picture_3.errors %}
+                        {% for error in form.picture_3.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}    
+                </div>
+                <div class="form-group">
+                    {{ form.picture_4.label() }}
+                    {{ form.picture_4(class="form-control-file") }}
+                    {% if form.picture_4.errors %}
+                        {% for error in form.picture_4.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}    
+                </div>
+                <div class="form-group">
+                    {{ form.picture_5.label() }}
+                    {{ form.picture_5(class="form-control-file") }}
+                    {% if form.picture_5.errors %}
+                        {% for error in form.picture_5.errors %}
                             <span class="text-danger">{{ error }}</span></br>
                         {% endfor %}
                     {% endif %}    
