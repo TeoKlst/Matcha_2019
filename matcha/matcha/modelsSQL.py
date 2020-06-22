@@ -53,11 +53,35 @@ cur.execute("""CREATE TABLE users (
             )""")
 
 cur.execute("""CREATE TABLE messages (
-            message_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            message_recipient INTEGER NULL,
-            message_content TEXT NULL,
-            message_date TEXT NULL,
-            message_time TEXT NULL,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            recipient INTEGER NULL,
+            content TEXT NULL,
+            date TEXT NULL,
+            time TEXT NULL,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id)
+                REFERENCES users (user_id) 
+            )""")
+
+cur.execute("""CREATE TABLE likes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            liked_user INTEGER NULL,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id)
+                REFERENCES users (user_id) 
+            )""")
+
+cur.execute("""CREATE TABLE userviews(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            viewed_user INTEGER NULL,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id)
+                REFERENCES users (user_id) 
+            )""")
+
+cur.execute("""CREATE TABLE tags(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            content TEXT NULL,
             user_id INTEGER NOT NULL,
             FOREIGN KEY (user_id)
                 REFERENCES users (user_id) 
@@ -75,10 +99,10 @@ cur.execute("""INSERT INTO users (firstname, lastname, username, email, password
                 VALUES (?,?,?,?,?,?,?,?,?)""",('Teo', 'Kelestura', 'Tkelest', 'tkelest@gmail.com', hashed_password, 'male', 25, '07/12/1994', 2) )
 conn.commit()
 
-cur.execute("""INSERT INTO messages (message_recipient, message_content, user_id)
+cur.execute("""INSERT INTO messages (recipient, content, user_id)
                 VALUES ('2', 'Lets try this out', 1); """)
 conn.commit
-cur.execute("""INSERT INTO messages (message_recipient, message_content, user_id)
+cur.execute("""INSERT INTO messages (recipient, content, user_id)
                 VALUES ('2', 'This is the second message', 1); """)
 conn.commit
 
@@ -87,7 +111,7 @@ cur.execute("""INSERT INTO users (firstname, lastname, username, email, password
                 VALUES (?,?,?,?,?,?,?,?,?)""",('Maya', 'Haya', 'MHi', 'maya@gmail.com', hashed_password, 'female', 25, '07/12/1994', '1') )
 conn.commit()
 
-cur.execute("""INSERT INTO messages (message_recipient, message_content, user_id)
+cur.execute("""INSERT INTO messages (recipient, content, user_id)
                 VALUES ('1', 'Message is for User 1', 2); """)
 conn.commit
 
@@ -96,14 +120,14 @@ cur.execute("""INSERT INTO users (firstname, lastname, username, email, password
                 VALUES (?,?,?,?,?,?,?,?,?)""",('Jamie', 'Jameson', 'JJ', 'jayjay@gmail.com', hashed_password, 'female', 25, '07/12/1994', '1,2') )
 conn.commit()
 
-cur.execute("""INSERT INTO messages (message_recipient, message_content, user_id)
+cur.execute("""INSERT INTO messages (recipient, content, user_id)
                 VALUES ('1', 'Message is for User 1 From User 3', 3); """)
 conn.commit
 # ================================================================= USERS END ========================================================================
 
-# cur.execute("""SELECT messages.message_id, messages.message_recipient, messages.message_content, users.username
+# cur.execute("""SELECT messages.id, messages.recipient, messages.content, users.username
 #             FROM users, messages WHERE users.user_id=messages.user_id AND users.likes=2 OR users.likes=3 """)
-cur.execute("""SELECT messages.message_id, messages.message_recipient, messages.message_content, users.username
+cur.execute("""SELECT messages.id, messages.recipient, messages.content, users.username
             FROM users, messages WHERE users.user_id=messages.user_id """)
 messages = cur.fetchall()
 print (messages)
