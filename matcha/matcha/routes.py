@@ -73,7 +73,7 @@ def register():
         user = User('user_id', form.firstname.data, form.lastname.data, age, birthdate,
                 form.username.data, form.email.data, hashed_password, form.gender.data, 'sexual_pref',
                 'biography', 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
-                'image_file_3', 'image_file_4', 'image_file_5', 'userchecks', 'tags', 'likes', 'messages')
+                'image_file_3', 'image_file_4', 'image_file_5')
         register_userTest(conn, cur, user)
         # register_user(conn, cur, user)
         conn.close()
@@ -101,10 +101,9 @@ def login():
         # print(user_data)
 
         user = User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4],
-        user_data[5], user_data[6], user_data[7], user_data[8], user_data[9],
-        user_data[10], user_data[11], user_data[12], user_data[13], user_data[14],
-        user_data[15], user_data[16], user_data[17], user_data[18], user_data[19],
-        user_data[20], user_data[21])
+                    user_data[5], user_data[6], user_data[7], user_data[8], user_data[9],
+                    user_data[10], user_data[11], user_data[12], user_data[13], user_data[14],
+                    user_data[15], user_data[16], user_data[17])
 
         conn.close()
         if user_data and bcrypt.check_password_hash(user.password, form.password.data):
@@ -173,7 +172,7 @@ def account():
         user = User('user_id', form.firstname.data, form.lastname.data, 'age', 'birthdate',
                 form.username.data, form.email.data, 'hashed_password', form.gender.data, 'sexual_pref',
                 form.biography.data, 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
-                'image_file_3', 'image_file_4', 'image_file_5', 'userchecks', 'tags', 'likes', 'messages')
+                'image_file_3', 'image_file_4', 'image_file_5')
         update_user(conn, cur, user)
         conn.close()
         flash('Your account has been updated!', 'success')
@@ -200,10 +199,10 @@ def account():
 def messages():
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE likes=:likes", {'likes': current_user.user_id})
+    # cur.execute("SELECT * FROM users WHERE likes=:likes", {'likes': current_user.user_id})
     # cur.execute("SELECT * FROM users WHERE likes LIKE likes=:likes", {'likes': current_user.user_id})
-    users = cur.fetchall()
-    print(users)
+    # users = cur.fetchall()
+    # print(users)
     user_images = []
     # for user in users:
     #     image_file = url_for('static', filename='profile_pics/' + user[12])

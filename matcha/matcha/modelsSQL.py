@@ -21,8 +21,8 @@ import sqlite3
 #     userid = userrow[0] # or whatever the index position is
 #     return int(userid)
 
-# conn = sqlite3.connect('users.db')
-conn = sqlite3.connect(':memory:')
+conn = sqlite3.connect('users.db')
+# conn = sqlite3.connect(':memory:')
 print ("Opened database successfully")
 
 cur = conn.cursor()
@@ -45,11 +45,7 @@ cur.execute("""CREATE TABLE users (
             image_file_2 TEXT NULL,
             image_file_3 TEXT NULL,
             image_file_4 TEXT NULL,
-            image_file_5 TEXT NULL,
-            userchecks INTEGER NULL,
-            tags TEXT NULL,
-            likes TEXT NULL,
-            messages TEXT NULL
+            image_file_5 TEXT NULL
             )""")
 
 cur.execute("""CREATE TABLE messages (
@@ -95,8 +91,8 @@ hashed_password = bcrypt.generate_password_hash('tkelest123').decode('utf-8')
 #             'Userchecks', 'Tags' )""")
 
 # ------ UserID 1 ------
-cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate, likes) 
-                VALUES (?,?,?,?,?,?,?,?,?)""",('Teo', 'Kelestura', 'Tkelest', 'tkelest@gmail.com', hashed_password, 'male', 25, '07/12/1994', 2) )
+cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
+                VALUES (?,?,?,?,?,?,?,?)""",('Teo', 'Kelestura', 'Tkelest', 'tkelest@gmail.com', hashed_password, 'male', 25, '07/12/1994') )
 conn.commit()
 
 cur.execute("""INSERT INTO messages (recipient, content, user_id)
@@ -107,8 +103,8 @@ cur.execute("""INSERT INTO messages (recipient, content, user_id)
 conn.commit
 
 # ------ UserID 2 ------
-cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate, likes) 
-                VALUES (?,?,?,?,?,?,?,?,?)""",('Maya', 'Haya', 'MHi', 'maya@gmail.com', hashed_password, 'female', 25, '07/12/1994', '1') )
+cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
+                VALUES (?,?,?,?,?,?,?,?)""",('Maya', 'Haya', 'MHi', 'maya@gmail.com', hashed_password, 'female', 25, '07/12/1994') )
 conn.commit()
 
 cur.execute("""INSERT INTO messages (recipient, content, user_id)
@@ -116,8 +112,8 @@ cur.execute("""INSERT INTO messages (recipient, content, user_id)
 conn.commit
 
 # ------ UserID 3 ------
-cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate, likes) 
-                VALUES (?,?,?,?,?,?,?,?,?)""",('Jamie', 'Jameson', 'JJ', 'jayjay@gmail.com', hashed_password, 'female', 25, '07/12/1994', '1,2') )
+cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
+                VALUES (?,?,?,?,?,?,?,?)""",('Jamie', 'Jameson', 'JJ', 'jayjay@gmail.com', hashed_password, 'female', 25, '07/12/1994') )
 conn.commit()
 
 cur.execute("""INSERT INTO messages (recipient, content, user_id)

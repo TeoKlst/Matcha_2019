@@ -14,10 +14,9 @@ def load_user(id):
     print ('fetchone ', userrow)
     # userid = userrow[0] # or whatever the index position is
     user = User(userrow[0], userrow[1], userrow[2], userrow[3], userrow[4],
-        userrow[5], userrow[6], userrow[7], userrow[8], userrow[9],
-        userrow[10], userrow[11], userrow[12], userrow[13], userrow[14], 
-        userrow[15], userrow[16], userrow[17], userrow[18], userrow[19],
-        userrow[20], userrow[21])
+            userrow[5], userrow[6], userrow[7], userrow[8], userrow[9],
+            userrow[10], userrow[11], userrow[12], userrow[13], userrow[14], 
+            userrow[15], userrow[16], userrow[17])
     print('return id', user)
     return (user)
 
