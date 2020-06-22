@@ -96,11 +96,20 @@ cur.execute("""INSERT INTO users (firstname, lastname, username, email, password
 conn.commit()
 
 cur.execute("""INSERT INTO messages (recipient, content, user_id)
-                VALUES ('2', 'Lets try this out', 1); """)
-conn.commit
+                VALUES (?,?,?)""",('2', 'Lets try this out. Hey Maya.', 1) )
+conn.commit()
+
 cur.execute("""INSERT INTO messages (recipient, content, user_id)
-                VALUES ('2', 'This is the second message', 1); """)
-conn.commit
+                VALUES (?,?,?)""",('3', 'This is the second message for Jamie', 1) )
+conn.commit()
+
+cur.execute("""INSERT INTO likes (liked_user, user_id)
+                VALUES (?,?)""",(2, 1) )
+conn.commit()
+
+cur.execute("""INSERT INTO likes (liked_user, user_id)
+                VALUES (?,?)""",(3, 1) )
+conn.commit()
 
 # ------ UserID 2 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
@@ -108,31 +117,45 @@ cur.execute("""INSERT INTO users (firstname, lastname, username, email, password
 conn.commit()
 
 cur.execute("""INSERT INTO messages (recipient, content, user_id)
-                VALUES ('1', 'Message is for User 1', 2); """)
-conn.commit
+                VALUES (?,?,?)""",('1', 'Message is for Teo', 2) )
+conn.commit()
+
+cur.execute("""INSERT INTO likes (liked_user, user_id)
+                VALUES (?,?)""",(1, 2) )
+conn.commit()
 
 # ------ UserID 3 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",('Jamie', 'Jameson', 'JJ', 'jayjay@gmail.com', hashed_password, 'female', 25, '07/12/1994') )
 conn.commit()
 
-cur.execute("""INSERT INTO messages (recipient, content, user_id)
-                VALUES ('1', 'Message is for User 1 From User 3', 3); """)
-conn.commit
+# cur.execute("""INSERT INTO messages (recipient, content, user_id)
+#                 VALUES (?,?,?)""",('1', 'Message is for Teo. Jamie Here', 3) )
+# conn.commit()
+
+# cur.execute("""INSERT INTO likes (liked_user, user_id)
+#                 VALUES (?,?)""",(1, 3) )
+# conn.commit()
+
+cur.execute("""INSERT INTO likes (liked_user, user_id)
+                VALUES (?,?)""",(2, 3) )
+conn.commit()
 # ================================================================= USERS END ========================================================================
 
 # cur.execute("""SELECT messages.id, messages.recipient, messages.content, users.username
 #             FROM users, messages WHERE users.user_id=messages.user_id AND users.likes=2 OR users.likes=3 """)
-cur.execute("""SELECT messages.id, messages.recipient, messages.content, users.username
-            FROM users, messages WHERE users.user_id=messages.user_id """)
-messages = cur.fetchall()
-print (messages)
+# cur.execute("""SELECT messages.id, messages.recipient, messages.content, users.username
+#             FROM users, messages WHERE users.user_id=messages.user_id """)
+# messages = cur.fetchall()
+# print (messages)
 
-cur.execute("SELECT * FROM messages WHERE user_id=:user_id", {'user_id': 1})
-messages1 = cur.fetchall()
-print (messages1)
+# cur.execute("SELECT * FROM messages WHERE user_id=:user_id", {'user_id': 1})
+# messages1 = cur.fetchall()
+# print (messages1)
 
-
+# cur.execute("SELECT * FROM likes WHERE id")
+# messages1 = cur.fetchall()
+# print (messages1)
 
 # cur.execute("SELECT * FROM users WHERE lastname=:lastname", {'lastname':'Kelestura'})
 # print(cur.fetchall())

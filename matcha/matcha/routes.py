@@ -201,11 +201,24 @@ def messages():
     cur = conn.cursor()
     # cur.execute("SELECT * FROM users WHERE likes=:likes", {'likes': current_user.user_id})
     # cur.execute("SELECT * FROM users WHERE likes LIKE likes=:likes", {'likes': current_user.user_id})
-    # users = cur.fetchall()
-    # print(users)
+    cur.execute("SELECT * FROM likes WHERE likes.user_id=:currentuser", {'currentuser': current_user.user_id})
+    users_liked = cur.fetchall()
+    print('Likes BY Current user:            ', users_liked)
+    cur.execute("SELECT likes.liked_user, likes.user_id, users.username, users.image_file_p FROM likes, users WHERE likes.liked_user=:currentuser AND likes.user_id=users.user_id", {'currentuser': current_user.user_id})
+    users_likedby = cur.fetchall()
+    print('Likes FROM Users -> Current user: ', users_likedby)
+
+    true_likes = []
+    for index, like in enumerate(users_liked):
+        try:
+            if like[1] == users_likedby[index][1]:
+                true_likes.append(users_likedby[index])
+        except IndexError:
+            pass
+    
     user_images = []
     # for user in users:
     #     image_file = url_for('static', filename='profile_pics/' + user[12])
     #     user_images.append(image_file)
     conn.close()
-    return render_template('messages.html', title='Messages', users=users) #user_images=user_images)
+    return render_template('messages.html', title='Messages', users=true_likes) #user_images=user_images)
