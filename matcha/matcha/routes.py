@@ -120,7 +120,8 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-
+# TODO Make 2nd high res image for viewwing
+# Delete older image of user when a new one is uploaded
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
@@ -143,6 +144,7 @@ def account():
         conn = sql.connect('matcha\\users.db')
         cur = conn.cursor()
 
+        # ------ Image Data ------
         img_type = None
         picture_file = None
         if form.picture_p.data:
@@ -191,3 +193,8 @@ def account():
     image_file_5 = url_for('static', filename='profile_pics/' + current_user.image_file_5) if current_user.image_file_5 else None
     images = [image_file_1, image_file_2, image_file_3, image_file_4, image_file_5]
     return render_template('account.html', title='Account', image_file_p=image_file_p, images=images, form=form)
+
+@app.route('/messages')
+@login_required
+def messages():
+     return render_template('messages.html', title='Messages')
