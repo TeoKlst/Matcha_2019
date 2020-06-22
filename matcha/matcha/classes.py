@@ -4,7 +4,7 @@ class User:
                 username, email, password, gender, sexual_pref,
                 biography, famerating, image_file_p, image_file_1, 
                 image_file_2, image_file_3, image_file_4, image_file_5, 
-                userchecks, tags):
+                userchecks, tags, likes, messages):
         self.user_id = user_id
         self.firstname = firstname
         self.lastname = lastname
@@ -25,6 +25,9 @@ class User:
         self.image_file_5 = image_file_5
         self.userchecks = userchecks
         self.tags = tags
+        self.likes = likes
+        self.messages = messages
+        
 
     def get_id(self):
         return (self.user_id)
@@ -54,12 +57,12 @@ class User:
     #     return '{} {}'.format(self.first, self.last)
 
     def __repr__(self):
-        return "User('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {})".format(
+        return "User('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {})".format(
         self.user_id, self.firstname, self.lastname, self.age, self.birthdate,
         self.username, self.email, self.password, self.gender, self.sexual_pref,
         self.biography, self.famerating, self.image_file_p, self.image_file_1,
         self.image_file_2, self.image_file_3, self.image_file_4, self.image_file_5, 
-        self.userchecks, self.tags)
+        self.userchecks, self.tags, self.likes, self.messages)
 
 class RegisterUser:
     pass

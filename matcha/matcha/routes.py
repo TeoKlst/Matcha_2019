@@ -73,7 +73,7 @@ def register():
         user = User('user_id', form.firstname.data, form.lastname.data, age, birthdate,
                 form.username.data, form.email.data, hashed_password, form.gender.data, 'sexual_pref',
                 'biography', 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
-                'image_file_3', 'image_file_4', 'image_file_5', 'userchecks', 'tags')
+                'image_file_3', 'image_file_4', 'image_file_5', 'userchecks', 'tags', 'likes', 'messages')
         register_userTest(conn, cur, user)
         # register_user(conn, cur, user)
         conn.close()
@@ -103,7 +103,8 @@ def login():
         user = User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4],
         user_data[5], user_data[6], user_data[7], user_data[8], user_data[9],
         user_data[10], user_data[11], user_data[12], user_data[13], user_data[14],
-        user_data[15], user_data[16], user_data[17], user_data[18], user_data[19])
+        user_data[15], user_data[16], user_data[17], user_data[18], user_data[19],
+        user_data[20], user_data[21])
 
         conn.close()
         if user_data and bcrypt.check_password_hash(user.password, form.password.data):
@@ -172,7 +173,7 @@ def account():
         user = User('user_id', form.firstname.data, form.lastname.data, 'age', 'birthdate',
                 form.username.data, form.email.data, 'hashed_password', form.gender.data, 'sexual_pref',
                 form.biography.data, 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
-                'image_file_3', 'image_file_4', 'image_file_5', 'userchecks', 'tags')
+                'image_file_3', 'image_file_4', 'image_file_5', 'userchecks', 'tags', 'likes', 'messages')
         update_user(conn, cur, user)
         conn.close()
         flash('Your account has been updated!', 'success')
@@ -184,7 +185,7 @@ def account():
         form.email.data     = current_user.email
         form.gender.data    = current_user.gender
         form.biography.data = current_user.biography
-    # Passing image file to account here
+    # Passing image file to account here (Maybe push to GET?)
     image_file_p = url_for('static', filename='profile_pics/' + current_user.image_file_p)
     image_file_1 = url_for('static', filename='profile_pics/' + current_user.image_file_1) if current_user.image_file_1 else None
     image_file_2 = url_for('static', filename='profile_pics/' + current_user.image_file_2) if current_user.image_file_2 else None
@@ -197,4 +198,15 @@ def account():
 @app.route('/messages')
 @login_required
 def messages():
-     return render_template('messages.html', title='Messages')
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE likes=:likes", {'likes': current_user.user_id})
+    # cur.execute("SELECT * FROM users WHERE likes LIKE likes=:likes", {'likes': current_user.user_id})
+    users = cur.fetchall()
+    print(users)
+    user_images = []
+    # for user in users:
+    #     image_file = url_for('static', filename='profile_pics/' + user[12])
+    #     user_images.append(image_file)
+    conn.close()
+    return render_template('messages.html', title='Messages', users=users) #user_images=user_images)

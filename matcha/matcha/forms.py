@@ -117,3 +117,6 @@ class UpdateAccountForm(FlaskForm):
             conn.close()
             if user_data:
                 raise ValidationError('That email is taken. Please choose a different one.')
+
+class MessageForm(FlaskForm):
+    pass
