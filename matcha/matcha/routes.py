@@ -223,14 +223,18 @@ def inbox():
     conn.close()
     return render_template('inbox.html', title='Inbox', users=true_likes) #user_images=user_images)
 
-@app.route('/messages', methods=['GET', 'POST'])
+@app.route('/messages/<user_id>', methods=['GET', 'POST'])
 @login_required
-def messages():
+def messages(user_id):
     form = MessagesForm()
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
-    cur.execute("SELECT * FROM messages WHERE messages.user_id=:currentuser", {'currentuser': current_user.user_id})
-    messages = cur.fetchall()
+    # Current_User
+    cur.execute("SELECT * FROM messages WHERE user_id=:currentuser AND recipient=:recipient", {'currentuser': current_user.user_id, 'recipient': user_id})
+    messages1 = cur.fetchall()
+    # Other_User
+    cur.execute("SELECT * FROM messages, users WHERE messages.user_id=:seconduser AND messages.recipient=:currentuser AND users.user_id=:seconduser", {'seconduser': user_id, 'currentuser': current_user.user_id})
+    messages2 = cur.fetchall()
     conn.close()
     if form.validate_on_submit():
         conn = sql.connect('matcha\\users.db')
@@ -238,9 +242,9 @@ def messages():
         Ts = timedelta(hours = 0, minutes = 0, seconds = 0)
         timenow = datetime.now()
         Ts += timedelta(hours=timenow.hour, minutes=timenow.minute, seconds=timenow.second)
-        message = Message('id', 'recipient', form.message_content.data, date.today(), str(Ts)[:-3], current_user.user_id)
+        message = Message('id', user_id , form.message_content.data, date.today(), str(Ts)[:-3], current_user.user_id)
         create_message(conn, cur, message)
         conn.close()
         flash('Sent!', 'success')
-        return redirect(url_for('messages'))
-    return render_template('messages.html', title='Messages', form=form, messages=messages)
+        return redirect(url_for('messages', user_id=user_id))
+    return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2)

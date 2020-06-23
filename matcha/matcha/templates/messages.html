@@ -3,12 +3,24 @@
 <div class="content-section">
     <form method="POST" action="">
         {{ form.hidden_tag() }}
+        <div class="mt-2">
+            <img class="rounded-circle account-img-fillers" src="/static/profile_pics/{{ messages2[1][18] }}">
+            {{ messages2[1][11] }}
+        </div>
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Messages</legend>
             <div class="mb-4">
-                {% for message in messages %}
-                    <button type="button" class="btn btn-secondary mb-1">{{ message[2] }}</button>
+                {% for message in messages1 %}
+                <div class="mb-1 text-left">
+                    <button type="button" class="btn btn-secondary">{{ message[2] }}</button>
                     <small class="text-muted pull-right">{{ message[4] }}</small><br>
+                </div>
+                {% endfor %}
+                {% for message in messages2 %}
+                <div class="mb-1 text-right">
+                    <small class="text-muted pull-left">{{ message[4] }}</small>
+                    <button type="button" class="btn btn-info">{{ message[2] }}</button><br>
+                </div>
                 {% endfor %}
             </div>
             <div class="form-group border-top">
