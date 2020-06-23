@@ -252,3 +252,14 @@ def messages(user_id):
         flash('Sent!', 'success')
         return redirect(url_for('messages', user_id=user_id))
     return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2)
+
+# legend="Name" can be used to be passed to other routes to change naming {{ legend }}
+
+# To add a action to a button
+# <form action="{{ url_for('unlike', user_id=user.id) }}" method="POST">
+#   <input class="btn btn-danger" type="submit" value="Delete">
+# </form>
+# @app.route('/messages/<user_id>/unlike', methods=['POST'])
+# @login_required
+# def unlike(user_id):
+#     pass
