@@ -45,3 +45,7 @@ def update_image(conn, cur, user, img_type, img):
                     WHERE email=:email""",
                     {'email': user.email, 'img': img})
 
+def create_message(conn, cur, message):
+    with conn:
+        cur.execute("""INSERT INTO messages (recipient, content, date, time, user_id) 
+                VALUES (?,?,?,?,?)""",(message.recipient, message.content, message.date, message.time, message.user_id) )

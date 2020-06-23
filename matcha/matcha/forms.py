@@ -2,7 +2,7 @@ from matcha import sql
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, RadioField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, RadioField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from matcha.models import choices_gender, choices_day, choices_month, choices_year, choices_sexpreference
 from datetime import date
@@ -83,7 +83,7 @@ class UpdateAccountForm(FlaskForm):
                             validators=[DataRequired(), Email()])
     gender      = SelectField('Gender',
                             choices=choices_gender)
-    biography   = StringField('Biography')
+    biography   = TextAreaField('Biography')
     picture_p   = FileField('Update Profile Picture', 
                             validators=[FileAllowed(['jpg', 'png'])])
     picture_1   = FileField('Update Picture 1', 
@@ -118,5 +118,8 @@ class UpdateAccountForm(FlaskForm):
             if user_data:
                 raise ValidationError('That email is taken. Please choose a different one.')
 
-class MessageForm(FlaskForm):
+class MessagesForm(FlaskForm):
+    message_content = StringField('Message Content',
+                                    validators=[DataRequired()])
+    submit          = SubmitField('Send')
     pass

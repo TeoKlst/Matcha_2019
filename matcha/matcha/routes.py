@@ -3,15 +3,15 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from matcha import app, bcrypt, sql
-from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, MessagesForm
 # from matcha.models import Like, Message, Images, Tags, Post    
 from flask_login import login_user, current_user, logout_user, login_required
-from datetime import date
+from datetime import date, timedelta, datetime
 
 # Templating engine that flask uses is Jinja2
 db = 1
-from matcha.classes import User
-from matcha.dbfunctions import register_userTest, update_user, update_image
+from matcha.classes import User, Message
+from matcha.dbfunctions import register_userTest, update_user, update_image, create_message
 
 posts = [
     {
@@ -194,9 +194,9 @@ def account():
     images = [image_file_1, image_file_2, image_file_3, image_file_4, image_file_5]
     return render_template('account.html', title='Account', image_file_p=image_file_p, images=images, form=form)
 
-@app.route('/messages')
+@app.route('/inbox')
 @login_required
-def messages():
+def inbox():
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
     # cur.execute("SELECT * FROM users WHERE likes=:likes", {'likes': current_user.user_id})
@@ -216,9 +216,31 @@ def messages():
         except IndexError:
             pass
     
-    user_images = []
+    # user_images = []
     # for user in users:
     #     image_file = url_for('static', filename='profile_pics/' + user[12])
     #     user_images.append(image_file)
     conn.close()
-    return render_template('messages.html', title='Messages', users=true_likes) #user_images=user_images)
+    return render_template('inbox.html', title='Inbox', users=true_likes) #user_images=user_images)
+
+@app.route('/messages', methods=['GET', 'POST'])
+@login_required
+def messages():
+    form = MessagesForm()
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM messages WHERE messages.user_id=:currentuser", {'currentuser': current_user.user_id})
+    messages = cur.fetchall()
+    conn.close()
+    if form.validate_on_submit():
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+        Ts = timedelta(hours = 0, minutes = 0, seconds = 0)
+        timenow = datetime.now()
+        Ts += timedelta(hours=timenow.hour, minutes=timenow.minute, seconds=timenow.second)
+        message = Message('id', 'recipient', form.message_content.data, date.today(), str(Ts)[:-3], current_user.user_id)
+        create_message(conn, cur, message)
+        conn.close()
+        flash('Sent!', 'success')
+        return redirect(url_for('messages'))
+    return render_template('messages.html', title='Messages', form=form, messages=messages)

@@ -60,3 +60,16 @@ class User:
 
 class RegisterUser:
     pass
+
+class Message:
+    def __init__(self, id, recipient, content, date, time, user_id):
+        self.id = id
+        self.recipient = recipient
+        self.content = content
+        self.date = date
+        self.time = time
+        self.user_id = user_id
+    
+    def __repr__(self):
+        return "User('{}', '{}', '{}', '{}', '{}', '{}')".format(
+        self.id, self.recipient, self.content, self.date, self.time, self.user_id)

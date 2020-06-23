@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+{% for user in users %}
+    <!-- {% print('++++++++++++++ ', user, ' +++++++++++++++++') %} -->
+    <!-- {{ loop.index0 }} -->
+    <a href="{{ url_for('messages') }}" role="button" class="btn btn-outline-info btn-lg">{{ user[2] }}
+        <img class="rounded-circle account-img" src="/static/profile_pics/{{ user[3] }}">
+        <span class="badge badge-pill badge-info">9</span>
+    </a>
+{% else %}
+{% endfor %}
+{% endblock content %}
