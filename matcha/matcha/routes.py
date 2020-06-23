@@ -1,7 +1,7 @@
 import os
 import secrets
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, abort
 from matcha import app, bcrypt, sql
 from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, MessagesForm
 # from matcha.models import Like, Message, Images, Tags, Post    
@@ -215,17 +215,21 @@ def inbox():
                 true_likes.append(users_likedby[index])
         except IndexError:
             pass
-    
-    # user_images = []
-    # for user in users:
-    #     image_file = url_for('static', filename='profile_pics/' + user[12])
-    #     user_images.append(image_file)
+
     conn.close()
     return render_template('inbox.html', title='Inbox', users=true_likes) #user_images=user_images)
 
 @app.route('/messages/<user_id>', methods=['GET', 'POST'])
 @login_required
 def messages(user_id):
+    # true_likes = request.args.get('true_likes')
+    # print('+++++++++++++++++++++++++++', true_likes)
+    # checker = True
+    # for like in true_likes:
+    #     if user_id == like[0]:
+    #         checker = None
+    # if checker:
+    #     abort(403)
     form = MessagesForm()
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
