@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from matcha import app, bcrypt, sql
-from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, MessagesForm
+from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, MessagesForm, SearchForm
 # from matcha.models import Like, Message, Images, Tags, Post    
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import date, timedelta, datetime
@@ -47,6 +47,10 @@ def home():
     print (current_user.is_authenticated)
     return render_template('home.html', posts=posts)
 
+@app.route('/cover')
+def cover():
+    # print (current_user)
+    return render_template('cover.html', posts=posts)
 
 @app.route('/about')
 def about():
@@ -263,3 +267,69 @@ def messages(user_id):
 # @login_required
 # def unlike(user_id):
 #     pass
+
+@app.route('/search', methods=['GET', 'POST'])
+@login_required
+def search():
+    form = SearchForm()
+    if form.validate_on_submit():
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+
+        age_gap = form.age.data
+        fame_gap = form.fame_rating.data
+
+        if age_gap != '0':
+            upA = (int(age_gap) + current_user.age)
+            lowA= (int(age_gap) - current_user.age) if int(age_gap) > current_user.age else (current_user.age - int(age_gap))
+            # print (upA)
+            # print (lowA)
+            cur.execute("SELECT user_id FROM users WHERE (age BETWEEN ? AND ?)", (lowA, upA))
+            found_age_users = cur.fetchall()
+
+        if fame_gap != '0':
+            upF = (int(fame_gap) + current_user.famerating)
+            lowF= (int(fame_gap) - current_user.famerating) if int(fame_gap) > current_user.famerating else (current_user.famerating - int(fame_gap))
+            # print ('Fame',upF)
+            # print ('Fame',lowF)
+            cur.execute("SELECT user_id FROM users WHERE (famerating BETWEEN ? AND ?)", (lowF, upF))
+            found_fame_users = cur.fetchall()
+
+        # -------------------> WIP
+        # if location != '0':
+            # pass
+        # if tags != '0':
+            # pass
+        # -------------------> WIP
+
+        cur.execute("SELECT user_id FROM users WHERE user_id")
+        all_users = cur.fetchall()
+        filtered_users = []
+
+        filtered_users1 = []
+        if age_gap != '0':
+            for index, user in enumerate(found_age_users):
+                i = 0
+                while i != len(all_users):
+                    if user == all_users[i]:
+                        filtered_users1.append(user)
+                        break
+                    i = i + 1
+
+        filtered_users2 = []
+        if fame_gap != '0':
+            for index, user in enumerate(found_fame_users):
+                i = 0
+                while i != len(filtered_users1):
+                    if user == filtered_users1[i]:
+                        filtered_users2.append(user)
+                        break
+                    i = i + 1
+
+        print('SEARCH RESULT:', filtered_users2)
+
+        flash('Validated!', 'success')
+        return redirect(url_for('search'))
+    elif request.method == 'GET':
+        pass
+    return render_template('search.html', title='Likes', form=form)

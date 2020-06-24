@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <div class="form-group">
+                {{ form.age.label(class="form-control-label") }}
+                {% if form.age.errors %}
+                {{ form.age(class="form-control form-control-lg is-invalid", placeholder="name@example.com") }}
+                <div class="invalid-feedback">
+                    {% for error in form.age.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.age(class="form-control form-control-lg", placeholder="name@example.com") }}
+            {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.fame_rating.label(class="form-control-label") }}
+                {% if form.fame_rating.errors %}
+                {{ form.fame_rating(class="form-control form-control-lg is-invalid", placeholder="name@example.com") }}
+                <div class="invalid-feedback">
+                    {% for error in form.fame_rating.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.fame_rating(class="form-control form-control-lg", placeholder="name@example.com") }}
+            {% endif %}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-success") }}
+        </div>
+        <div class="border-top mt-4 mb-4">
+        </div>
+        <div class="mb-3">
+            <div class="card" style="width: 10rem;">
+                <!-- <img src="..." class="card-img-top" alt="..."> -->
+                <img class="rounded-circle account-img " src="" >
+                <div class="card-body text-center">
+                    <h5 class="card-title">User Name</h5>
+                  <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+                    <a href="#" class="btn btn-primary">Like</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock content %}
