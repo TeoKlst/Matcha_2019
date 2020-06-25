@@ -11,7 +11,7 @@ from datetime import date, timedelta, datetime
 # Templating engine that flask uses is Jinja2
 db = 1
 from matcha.classes import User, Message
-from matcha.dbfunctions import register_userTest, update_user, update_image, create_message
+from matcha.dbfunctions import register_userTest, update_user, update_image, create_message, register_userTags, update_tag
 
 posts = [
     {
@@ -67,7 +67,6 @@ def register():
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Create 5 tags in tags table for user
         today = date.today()
         birthdate = date(int(form.year.data), int(form.month.data), int(form.day.data))
         age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
@@ -80,7 +79,8 @@ def register():
                 'biography', 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
                 'image_file_3', 'image_file_4', 'image_file_5')
         register_userTest(conn, cur, user)
-        # register_user(conn, cur, user)
+        registered_user_ID = cur.lastrowid
+        register_userTags(conn, cur, registered_user_ID)
         conn.close()
         flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
@@ -145,11 +145,10 @@ def save_picture(form_picture):
 @login_required
 def account():
     form = UpdateAccountForm()
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
     if form.validate_on_submit():
-        conn = sql.connect('matcha\\users.db')
-        cur = conn.cursor()
-
-        # ------ Image Data ------
+        # ------ Images ------
         img_type = None
         picture_file = None
         if form.picture_p.data:
@@ -173,12 +172,15 @@ def account():
         if img_type != None:
             img = picture_file
             update_image(conn, cur, current_user, img_type, img)
-
+        # ------ User ------
         user = User('user_id', form.firstname.data, form.lastname.data, 'age', 'birthdate',
                 form.username.data, form.email.data, 'hashed_password', form.gender.data, 'sexual_pref',
                 form.biography.data, 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
                 'image_file_3', 'image_file_4', 'image_file_5')
         update_user(conn, cur, user)
+        # ------ Tags ------
+        update_tag(conn, cur, current_user.user_id, form.user_tag1.data, form.user_tag2.data, form.user_tag3.data, form.user_tag4.data, form.user_tag5.data)
+
         conn.close()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('account'))
@@ -189,8 +191,14 @@ def account():
         form.email.data     = current_user.email
         form.gender.data    = current_user.gender
         form.biography.data = current_user.biography
-        # Query for user tag data
-        # form.user_tag1.data = 
+        cur.execute("SELECT * FROM tags WHERE user_id=:user_id", {'user_id': current_user.user_id})
+        tags = cur.fetchall()
+        form.user_tag1.data = tags[0][1]
+        form.user_tag2.data = tags[1][1]
+        form.user_tag3.data = tags[2][1]
+        form.user_tag4.data = tags[3][1]
+        form.user_tag5.data = tags[4][1]
+        conn.close()
     # Passing image file to account here (Maybe push to GET?)
     image_file_p = url_for('static', filename='profile_pics/' + current_user.image_file_p)
     image_file_1 = url_for('static', filename='profile_pics/' + current_user.image_file_1) if current_user.image_file_1 else None

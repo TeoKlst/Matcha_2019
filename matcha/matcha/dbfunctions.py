@@ -13,11 +13,45 @@ def register_userTest(conn, cur, user):
         cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",(user.firstname, user.lastname, user.username, user.email, user.password, user.age, user.birthdate, user.gender) )
 
+def register_userTags(conn, cur, user_id):
+    with conn:
+        cur.execute("""INSERT INTO tags (content, user_id)
+                    VALUES (?,?)""",('0', user_id) )
+        cur.execute("""INSERT INTO tags (content, user_id)
+                    VALUES (?,?)""",('0', user_id) )
+        cur.execute("""INSERT INTO tags (content, user_id)
+                    VALUES (?,?)""",('0', user_id) )
+        cur.execute("""INSERT INTO tags (content, user_id)
+                    VALUES (?,?)""",('0', user_id) )
+        cur.execute("""INSERT INTO tags (content, user_id)
+                    VALUES (?,?)""",('0', user_id) )
+
 def update_user(conn, cur, user):
     with conn:
         cur.execute("""UPDATE users SET firstname=:firstname, lastname=:lastname, username=:username, email=:email, gender=:gender, biography=:biography
                     WHERE email=:email""",
                     {'email': user.email, 'firstname': user.firstname, 'lastname': user.lastname, 'username': user.username, 'email': user.email, 'gender': user.gender, 'biography': user.biography})
+
+def update_tag(conn, cur, user_id, tag1cont, tag2cont, tag3cont, tag4cont, tag5cont):
+    cur.execute("""SELECT * FROM tags WHERE user_id=:user_id""", {'user_id': user_id})
+    user_tags = cur.fetchall()
+    with conn:
+        cur.execute("""UPDATE tags SET content=:content
+                    WHERE id=:tag_id""",
+                    {'tag_id': user_tags[0][0], 'content': tag1cont})
+        cur.execute("""UPDATE tags SET content=:content
+                    WHERE id=:tag_id""",
+                    {'tag_id': user_tags[1][0], 'content': tag2cont})
+        cur.execute("""UPDATE tags SET content=:content
+                    WHERE id=:tag_id""",
+                    {'tag_id': user_tags[2][0], 'content': tag3cont})
+        cur.execute("""UPDATE tags SET content=:content
+                    WHERE id=:tag_id""",
+                    {'tag_id': user_tags[3][0], 'content': tag4cont})
+        cur.execute("""UPDATE tags SET content=:content
+                    WHERE id=:tag_id""",
+                    {'tag_id': user_tags[4][0], 'content': tag5cont})
+
 
 def update_image(conn, cur, user, img_type, img):
     if img_type == 'image_file_p':      # - p -
