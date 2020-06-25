@@ -243,15 +243,15 @@ def inbox():
     cur.execute("SELECT likes.liked_user, likes.user_id, users.username, users.image_file_p FROM likes, users WHERE likes.liked_user=:currentuser AND likes.user_id=users.user_id", {'currentuser': current_user.user_id})
     users_likedby = cur.fetchall()
     print('Likes FROM Users -> Current user: ', users_likedby)
-
-    # Fix iteration of likes
+    
     true_likes = []
     for index, like in enumerate(users_liked):
-        try:
-            if like[1] == users_likedby[index][1]:
-                true_likes.append(users_likedby[index])
-        except IndexError:
-            pass
+                i = 0
+                while i != len(users_likedby):
+                    if like[1] == users_likedby[i][1]:
+                        true_likes.append(users_likedby[i])
+                        break
+                    i = i + 1
     print('True Likes, visible users!      : ', true_likes)
     conn.close()
     return render_template('inbox.html', title='Inbox', users=true_likes) #user_images=user_images)
