@@ -94,6 +94,7 @@
                     <label class="form-control-label">Birthdate</label>
                     <input class="form-control form-control-lg" type="text" placeholder="{{ current_user.birthdate }}" readonly>
                 </div>
+                <!-- Gender -->
                 <div class="form-group">
                     {{ form.gender.label(class="form-control-label") }}
                     {% if form.gender.errors %}
@@ -107,6 +108,7 @@
                     {{ form.gender(class="form-control form-control-lg") }}
                 {% endif %}
                 </div>
+                <!-- Biography -->
                 <div class="form-group">
                     {{ form.biography.label(class="form-control-label") }}
                     {% if form.biography.errors %}
@@ -120,6 +122,82 @@
                         {{ form.biography(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
+                <!-- Tags -->
+                <div>
+                    <p class="form-control-label">User Tags</p>
+                    <div class="form-row">
+                        <div class="col">
+                            <!-- {{ form.user_tag1.label(class="form-control-label") }} -->
+                            {% if form.user_tag1.errors %}
+                            {{ form.user_tag1(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.user_tag1.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.user_tag1(class="form-control form-control-lg") }}
+                        {% endif %}
+                        </div>
+                        <div class="col">
+                            <!-- {{ form.user_tag2.label(class="form-control-label") }} -->
+                            {% if form.user_tag2.errors %}
+                            {{ form.user_tag2(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.user_tag2.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.user_tag2(class="form-control form-control-lg") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <!-- {{ form.user_tag3.label(class="form-control-label") }} -->
+                            {% if form.user_tag3.errors %}
+                            {{ form.user_tag3(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.user_tag3.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.user_tag3(class="form-control form-control-lg") }}
+                        {% endif %}
+                        </div>
+                        <div class="col">
+                            <!-- {{ form.user_tag4.label(class="form-control-label") }} -->
+                            {% if form.user_tag4.errors %}
+                            {{ form.user_tag4(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.user_tag4.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.user_tag4(class="form-control form-control-lg") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <!-- {{ form.user_tag5.label(class="form-control-label") }} -->
+                            {% if form.user_tag5.errors %}
+                            {{ form.user_tag5(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.user_tag5.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.user_tag5(class="form-control form-control-lg") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Fame Rating -->
                 <div>
                     <a class="form-control-label">Fame Rating</a>
                     <div class="progress" style="height: 20px;">

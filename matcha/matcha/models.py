@@ -57,6 +57,10 @@ choices_gap     =[('0', 'Choose Range'),
                     ('80','80'), ('81','81'), ('82','82'), ('83','83'), ('84','84'), ('85','85'), ('86','86'), ('87','87'), ('88','88'), ('89','89'),
                     ('90','90'), ('91','91'), ('92','92'), ('93','93'), ('94','94'), ('95','95'), ('96','96'), ('97','97'), ('98','98'), ('99','99'),]
 
+choices_tags    =[('0','Choose a tag...'), ('Food','Food'), ('Sports','Sports'), ('Movies','Movies'), ('Fitness','Fitness'), ('Animals','Animals'), ('Tech','Tech'), ('Art','Art'), ('Music','Music'),
+                    ('Night Owl','Night Owl'), ('Early Bird','Early Bird'), ('Drinks','Drinks'), ('Reading','Reading'), ('Outdoors','Outdoors'), ('Homebody','Homebody'),
+                    ('City Slicker','City Slicker'), ('Fashion','Fashion'), ('Camping','Camping'), ('Travelling','Travelling'), ('Hobby Collector','Hobby Collector'), ('Cooking','Cooking')]
+
 # class User(db.Model, UserMixin):
 #     id          = db.Column(db.Integer, primary_key=True)
 #     firstname   = db.Column(db.String(20), nullable=False)

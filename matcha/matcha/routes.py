@@ -67,6 +67,7 @@ def register():
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        # Create 5 tags in tags table for user
         today = date.today()
         birthdate = date(int(form.year.data), int(form.month.data), int(form.day.data))
         age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
@@ -188,6 +189,8 @@ def account():
         form.email.data     = current_user.email
         form.gender.data    = current_user.gender
         form.biography.data = current_user.biography
+        # Query for user tag data
+        # form.user_tag1.data = 
     # Passing image file to account here (Maybe push to GET?)
     image_file_p = url_for('static', filename='profile_pics/' + current_user.image_file_p)
     image_file_1 = url_for('static', filename='profile_pics/' + current_user.image_file_1) if current_user.image_file_1 else None
@@ -326,7 +329,7 @@ def search():
                         break
                     i = i + 1
 
-        print('SEARCH RESULT:', filtered_users2)
+        print('--------SEARCH RESULT:', filtered_users2)
 
         flash('Validated!', 'success')
         return redirect(url_for('search'))
