@@ -59,10 +59,14 @@ postsMass = [
 @app.route('/')
 @app.route('/home')
 def home():
-    posts = postsMass.paginate()
-    # print (current_user)
+    posts = postsMass
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE user_id")
+    users = cur.fetchall()
     print (current_user.is_authenticated)
-    return render_template('home.html', posts=posts)
+    conn.close()
+    return render_template('home.html', posts=posts, users=users)
 
 @app.route('/cover')
 def cover():
@@ -240,6 +244,7 @@ def inbox():
     users_likedby = cur.fetchall()
     print('Likes FROM Users -> Current user: ', users_likedby)
 
+    # Fix iteration of likes
     true_likes = []
     for index, like in enumerate(users_liked):
         try:
@@ -247,7 +252,7 @@ def inbox():
                 true_likes.append(users_likedby[index])
         except IndexError:
             pass
-
+    print('True Likes, visible users!      : ', true_likes)
     conn.close()
     return render_template('inbox.html', title='Inbox', users=true_likes) #user_images=user_images)
 
@@ -270,9 +275,13 @@ def messages(user_id):
     cur.execute("SELECT * FROM messages WHERE user_id=:currentuser AND recipient=:recipient", {'currentuser': current_user.user_id, 'recipient': user_id})
     messages1 = cur.fetchall()
     # Other_User
-    cur.execute("SELECT * FROM messages, users WHERE messages.user_id=:seconduser AND messages.recipient=:currentuser AND users.user_id=:seconduser", {'seconduser': user_id, 'currentuser': current_user.user_id})
+    cur.execute("SELECT * FROM messages WHERE messages.user_id=:seconduser AND messages.recipient=:currentuser", {'seconduser': user_id, 'currentuser': current_user.user_id})
     messages2 = cur.fetchall()
+    cur.execute("SELECT image_file_p, username FROM users WHERE user_id=:seconduser", {'seconduser': user_id})
+    seconduser_data = cur.fetchone()
     conn.close()
+    messages1 = messages1 if messages1 else [(None, None, '. . .', None, '', None)]
+    messages2 = messages2 if messages2 else [(None, None, '. . .', None, '', None)]
     if form.validate_on_submit():
         conn = sql.connect('matcha\\users.db')
         cur = conn.cursor()
@@ -284,7 +293,7 @@ def messages(user_id):
         conn.close()
         flash('Sent!', 'success')
         return redirect(url_for('messages', user_id=user_id))
-    return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2)
+    return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2, seconduser_data=seconduser_data)
 
 # legend="Name" can be used to be passed to other routes to change naming {{ legend }}
 
