@@ -13,7 +13,7 @@ db = 1
 from matcha.classes import User, Message
 from matcha.dbfunctions import register_userTest, update_user, update_image, create_message, register_userTags, update_tag
 
-posts = [
+postsMass = [
     {
         'author': 'Dude1',
         'title': 'Some1 Title',
@@ -37,12 +37,29 @@ posts = [
         'title': 'TestTitle4',
         'content': 'Contents4',
         'date_posted': 'June 06 2020'
-    }
+    },
+    {
+    },
+        {
+    },
+        {
+    },
+        {
+    },
+        {
+    },
+        {
+    },
+        {
+    },
+        {
+    },
 ]
 
 @app.route('/')
 @app.route('/home')
 def home():
+    posts = postsMass.paginate()
     # print (current_user)
     print (current_user.is_authenticated)
     return render_template('home.html', posts=posts)

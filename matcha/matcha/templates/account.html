@@ -197,6 +197,20 @@
                         </div>
                     </div>
                 </div>
+                <!-- Geo Tag -->
+                <div class="form-group">
+                    {{ form.geo_tag.label(class="form-control-label") }}
+                    {% if form.geo_tag.errors %}
+                        {{ form.geo_tag(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.geo_tag.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.geo_tag(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
                 <!-- Fame Rating -->
                 <div>
                     <a class="form-control-label">Fame Rating</a>

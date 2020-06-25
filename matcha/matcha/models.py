@@ -61,6 +61,7 @@ choices_tags    =[('0','Choose a tag...'), ('Food','Food'), ('Sports','Sports'),
                     ('Night Owl','Night Owl'), ('Early Bird','Early Bird'), ('Drinks','Drinks'), ('Reading','Reading'), ('Outdoors','Outdoors'), ('Homebody','Homebody'),
                     ('City Slicker','City Slicker'), ('Fashion','Fashion'), ('Camping','Camping'), ('Travelling','Travelling'), ('Hobby Collector','Hobby Collector'), ('Cooking','Cooking')]
 
+choices_geo     =[('0','Off'), ('1','On')]
 # class User(db.Model, UserMixin):
 #     id          = db.Column(db.Integer, primary_key=True)
 #     firstname   = db.Column(db.String(20), nullable=False)

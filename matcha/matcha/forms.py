@@ -4,7 +4,7 @@ from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, RadioField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from matcha.models import choices_gender, choices_day, choices_month, choices_year, choices_sexpreference, choices_gap, choices_tags
+from matcha.models import choices_gender, choices_day, choices_month, choices_year, choices_sexpreference, choices_gap, choices_tags, choices_geo
 from datetime import date
 
 # Python Classes converted to html forms within templates
@@ -94,6 +94,8 @@ class UpdateAccountForm(FlaskForm):
                             choices=choices_tags)   
     user_tag5   =SelectField('User Tag1',
                             choices=choices_tags)
+    geo_tag     =SelectField('Geo Tag',
+                            choices=choices_geo)
     picture_p   = FileField('Update Profile Picture', 
                             validators=[FileAllowed(['jpg', 'png'])])
     picture_1   = FileField('Update Picture 1', 
