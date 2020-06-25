@@ -103,3 +103,5 @@ venv.bak/
 # mypy
 .mypy_cache/
 matcha/site.db
+matcha/matcha/users.db
+matcha/matcha/users.db

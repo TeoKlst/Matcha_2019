@@ -92,53 +92,60 @@ hashed_password = bcrypt.generate_password_hash('tkelest123').decode('utf-8')
 
 # ------ UserID 1 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
-                VALUES (?,?,?,?,?,?,?,?)""",('Teo', 'Kelestura', 'Tkelest', 'tkelest@gmail.com', hashed_password, 'male', 25, '07/12/1994') )
-conn.commit()
-
-cur.execute("""INSERT INTO messages (recipient, content, user_id)
-                VALUES (?,?,?)""",('2', 'Lets try this out. Hey Maya.', 1) )
-conn.commit()
-
-cur.execute("""INSERT INTO messages (recipient, content, user_id)
-                VALUES (?,?,?)""",('3', 'This is the second message for Jamie', 1) )
-conn.commit()
+                VALUES (?,?,?,?,?,?,?,?)""",('Teo', 'Kelestura', 'Tkelest', 'tkelest@gmail.com', hashed_password, 'm', 25, '07/12/1994') )
 
 cur.execute("""INSERT INTO likes (liked_user, user_id)
                 VALUES (?,?)""",(2, 1) )
-conn.commit()
 
 cur.execute("""INSERT INTO likes (liked_user, user_id)
                 VALUES (?,?)""",(3, 1) )
-conn.commit()
+
+for i in range(5):
+    cur.execute("""INSERT INTO tags (content, user_id)
+                    VALUES (?,?)""",('0', 1) )
 
 # ------ UserID 2 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
-                VALUES (?,?,?,?,?,?,?,?)""",('Maya', 'Haya', 'MHi', 'maya@gmail.com', hashed_password, 'female', 25, '07/12/1994') )
-conn.commit()
-
-cur.execute("""INSERT INTO messages (recipient, content, user_id)
-                VALUES (?,?,?)""",('1', 'Message is for Teo', 2) )
-conn.commit()
+                VALUES (?,?,?,?,?,?,?,?)""",('Maya', 'Haya', 'MHi', 'maya@gmail.com', hashed_password, 'f', 25, '07/12/1994') )
 
 cur.execute("""INSERT INTO likes (liked_user, user_id)
                 VALUES (?,?)""",(1, 2) )
-conn.commit()
+
+for i in range(5):
+    cur.execute("""INSERT INTO tags (content, user_id)
+                    VALUES (?,?)""",('0', 2) )
 
 # ------ UserID 3 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
-                VALUES (?,?,?,?,?,?,?,?)""",('Jamie', 'Jameson', 'JJ', 'jayjay@gmail.com', hashed_password, 'female', 25, '07/12/1994') )
-conn.commit()
+                VALUES (?,?,?,?,?,?,?,?)""",('Jamie', 'Jameson', 'JJ', 'jayjay@gmail.com', hashed_password, 'f', 30, '07/12/1994') )
 
-# cur.execute("""INSERT INTO messages (recipient, content, user_id)
-#                 VALUES (?,?,?)""",('1', 'Message is for Teo. Jamie Here', 3) )
-# conn.commit()
-
-# cur.execute("""INSERT INTO likes (liked_user, user_id)
-#                 VALUES (?,?)""",(1, 3) )
-# conn.commit()
+cur.execute("""INSERT INTO likes (liked_user, user_id)
+                VALUES (?,?)""",(1, 3) )
 
 cur.execute("""INSERT INTO likes (liked_user, user_id)
                 VALUES (?,?)""",(2, 3) )
+
+cur.execute("""INSERT INTO likes (liked_user, user_id)
+                VALUES (?,?)""",(4, 3) )
+
+for i in range(5):
+    cur.execute("""INSERT INTO tags (content, user_id)
+                    VALUES (?,?)""",('0', 3) )
+
+# ------ UserID 4 ------
+cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
+                VALUES (?,?,?,?,?,?,?,?)""",('Brad', 'Bradson', 'BB', 'brad@gmail.com', hashed_password, 'm', 35, '07/12/1994') )
+
+cur.execute("""INSERT INTO likes (liked_user, user_id)
+                VALUES (?,?)""",(2, 4) )
+
+cur.execute("""INSERT INTO likes (liked_user, user_id)
+                VALUES (?,?)""",(3, 4) )
+
+for i in range(5):
+    cur.execute("""INSERT INTO tags (content, user_id)
+                    VALUES (?,?)""",('0', 4) )
+
 conn.commit()
 # ================================================================= USERS END ========================================================================
 
