@@ -71,15 +71,11 @@ def home():
 @app.route('/cover')
 def cover():
     # print (current_user)
-    return render_template('cover.html', posts=posts)
+    return render_template('cover.html')
 
 @app.route('/about')
 def about():
     return render_template('about.html', title='About')
-
-@app.route('/frontpage')
-def frontpage():
-    return render_template('frontpage.html', title='FrontPage')
 
 # TODO Close db conn
 @app.route('/register', methods=['GET', 'POST'])
@@ -230,6 +226,7 @@ def account():
     images = [image_file_1, image_file_2, image_file_3, image_file_4, image_file_5]
     return render_template('account.html', title='Account', image_file_p=image_file_p, images=images, form=form)
 
+
 @app.route('/inbox')
 @login_required
 def inbox():
@@ -295,8 +292,62 @@ def messages(user_id):
         return redirect(url_for('messages', user_id=user_id))
     return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2, seconduser_data=seconduser_data)
 
-# legend="Name" can be used to be passed to other routes to change naming {{ legend }}
 
+@app.route('/likes', methods=['GET', 'POST'])
+@login_required
+def likes():
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    # cur.execute("SELECT * FROM users WHERE likes=:likes", {'likes': current_user.user_id})
+    # cur.execute("SELECT * FROM users WHERE likes LIKE likes=:likes", {'likes': current_user.user_id})
+    cur.execute("SELECT * FROM likes WHERE likes.user_id=:currentuser", {'currentuser': current_user.user_id})
+    users_liked = cur.fetchall()
+    print('Likes BY Current user:            ', users_liked)
+    cur.execute("SELECT likes.liked_user, likes.user_id, users.username, users.image_file_p FROM likes, users WHERE likes.liked_user=:currentuser AND likes.user_id=users.user_id", {'currentuser': current_user.user_id})
+    users_likedby = cur.fetchall()
+    print('Likes FROM Users -> Current user: ', users_likedby)
+    
+    # Matching current_user likes against all
+    true_likes = []
+    currentuser_unmatched_likes = []
+    for index, like in enumerate(users_liked):
+        i = 0
+        while i != len(users_likedby):
+            if like[1] == users_likedby[i][1]:
+                true_likes.append(users_likedby[i])
+                break
+            i = i + 1
+        try:
+            if like[1] != true_likes[len(true_likes) - 1][1]:
+                currentuser_unmatched_likes.append(like)
+        except IndexError:
+            currentuser_unmatched_likes.append(like)
+    print('True Likes, visible users!      : ', true_likes)
+    print('UserOnlyLikes,haventliked!      : ', currentuser_unmatched_likes)
+    
+    # STOPPED HERE
+    # Matching other users likes again current_user
+    otheruser_unmatched_likes = []
+    for index, like in enumerate(users_likedby):
+        i = 0
+        check = None
+        while i != len(users_liked):
+            if like[1] == users_liked[i][1]:
+                check = True
+            i = i + 1 
+        if not check:
+            otheruser_unmatched_likes.append(like)
+    print('UNMAETCHEDlikesofotherUsers    :', otheruser_unmatched_likes)
+    conn.close()
+    return render_template('likes.html', title='Likes', matched_users=true_likes,
+    currentuser_unmatched_likes=currentuser_unmatched_likes, otheruser_unmatched_likes=otheruser_unmatched_likes)
+
+
+@app.route('/views')
+def views():
+    return render_template('views.html', title='Views')
+
+# legend="Name" can be used to be passed to other routes to change naming {{ legend }}
 # To add a action to a button
 # <form action="{{ url_for('unlike', user_id=user.id) }}" method="POST">
 #   <input class="btn btn-danger" type="submit" value="Delete">

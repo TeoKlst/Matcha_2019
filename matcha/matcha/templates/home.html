@@ -3,19 +3,22 @@
 <div class="container">
     <div class="row">
     {% for user in users %}
-    <div class="mb-3 mr-3">
-        <div class="card" style="width: 10rem;">
-            <!-- <img src="..." class="card-img-top" alt="..."> -->
-            <div class="text-center">
-                <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[12] }}" >
-            </div>
-                <div class="card-body text-center">
-                <h5 class="card-title">{{ user[5] }}</h5>
-              <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-                <a href="#" class="btn btn-success">Like</a>
+
+        <div class="mb-3 mr-3">
+            <div class="card" style="width: 10rem;">
+                <!-- <img src="..." class="card-img-top" alt="..."> -->
+                <div class="text-center">
+                    <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[12] }}" >
+                </div>
+                    <div class="card-body text-center">
+                    <h5 class="card-title">{{ user[5] }}</h5>
+                <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
+                    <!-- <a href="#" class="btn btn-success">Like</a> -->
+                    <input class="btn btn-success" type = "submit" value = "Like" />
+                </div>
             </div>
         </div>
-    </div>
+
     {% endfor %}
     </div>
 </div>

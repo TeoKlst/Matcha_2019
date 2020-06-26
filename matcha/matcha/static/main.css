@@ -78,6 +78,7 @@ body {
   .usercard-img {
     height: 125px;
     width: 125px;
+    margin-top: 16px;
     margin-bottom: 16px;
   }
 
