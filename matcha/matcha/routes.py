@@ -86,7 +86,9 @@ def register():
     if form.validate_on_submit():
         today = date.today()
         birthdate = date(int(form.year.data), int(form.month.data), int(form.day.data))
+        print('BIRTHDATE ===> ',birthdate)
         age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+        print('AGE =========> ',age)
         hashed_password = bcrypt.generate_password_hash(form.password_field.data).decode('utf-8')
 
         conn = sql.connect('matcha\\users.db')
@@ -95,6 +97,11 @@ def register():
                 form.username.data, form.email.data, hashed_password, form.gender.data, 'sexual_pref',
                 'biography', 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
                 'image_file_3', 'image_file_4', 'image_file_5')
+
+        user1= User('user_id', 'firstname','lastname', 'age', 'brithdate',
+                    'username', 'email', 'password', 'gender', 'sexualpref',
+                    'biography', 'famerating', 'imgp', 'img1', 'img2',
+                    'img3', 'img4', 'img5')
         register_userTest(conn, cur, user)
         registered_user_ID = cur.lastrowid
         register_userTags(conn, cur, registered_user_ID)
@@ -191,7 +198,7 @@ def account():
             update_image(conn, cur, current_user, img_type, img)
         # ------ User ------
         user = User('user_id', form.firstname.data, form.lastname.data, 'age', 'birthdate',
-                form.username.data, form.email.data, 'hashed_password', form.gender.data, 'sexual_pref',
+                form.username.data, form.email.data, 'hashed_password', form.gender.data, form.sexual_pref.data,
                 form.biography.data, 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
                 'image_file_3', 'image_file_4', 'image_file_5')
         update_user(conn, cur, user)
@@ -202,12 +209,13 @@ def account():
         flash('Your account has been updated!', 'success')
         return redirect(url_for('account'))
     elif request.method == 'GET':
-        form.firstname.data = current_user.firstname
-        form.lastname.data  = current_user.lastname
-        form.username.data  = current_user.username
-        form.email.data     = current_user.email
-        form.gender.data    = current_user.gender
-        form.biography.data = current_user.biography
+        form.firstname.data     = current_user.firstname
+        form.lastname.data      = current_user.lastname
+        form.username.data      = current_user.username
+        form.email.data         = current_user.email
+        form.gender.data        = current_user.gender
+        form.sexual_pref.data   = current_user.sexual_pref
+        form.biography.data     = current_user.biography
         cur.execute("SELECT * FROM tags WHERE user_id=:user_id", {'user_id': current_user.user_id})
         tags = cur.fetchall()
         form.user_tag1.data = tags[0][1]

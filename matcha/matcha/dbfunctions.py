@@ -10,7 +10,7 @@ from matcha import sql
 # TODO Possible SQL injection vulnerability
 def register_userTest(conn, cur, user):
     with conn:
-        cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
+        cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, age, birthdate, gender) 
                 VALUES (?,?,?,?,?,?,?,?)""",(user.firstname, user.lastname, user.username, user.email, user.password, user.age, user.birthdate, user.gender) )
 
 def register_userTags(conn, cur, user_id):
@@ -28,9 +28,9 @@ def register_userTags(conn, cur, user_id):
 
 def update_user(conn, cur, user):
     with conn:
-        cur.execute("""UPDATE users SET firstname=:firstname, lastname=:lastname, username=:username, email=:email, gender=:gender, biography=:biography
+        cur.execute("""UPDATE users SET firstname=:firstname, lastname=:lastname, username=:username, email=:email, gender=:gender, biography=:biography, sexual_pref=:sexual_pref
                     WHERE email=:email""",
-                    {'email': user.email, 'firstname': user.firstname, 'lastname': user.lastname, 'username': user.username, 'email': user.email, 'gender': user.gender, 'biography': user.biography})
+                    {'email': user.email, 'firstname': user.firstname, 'lastname': user.lastname, 'username': user.username, 'email': user.email, 'gender': user.gender, 'biography': user.biography, 'sexual_pref': user.sexual_pref})
 
 def update_tag(conn, cur, user_id, tag1cont, tag2cont, tag3cont, tag4cont, tag5cont):
     cur.execute("""SELECT * FROM tags WHERE user_id=:user_id""", {'user_id': user_id})
