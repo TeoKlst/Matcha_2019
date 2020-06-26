@@ -77,7 +77,6 @@ def cover():
 def about():
     return render_template('about.html', title='About')
 
-# TODO Close db conn
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -261,7 +260,6 @@ def inbox():
     conn.close()
     return render_template('inbox.html', title='Inbox', users=true_likes) #user_images=user_images)
 
-# TODO Error on Null Messages
 @app.route('/messages/<user_id>', methods=['GET', 'POST'])
 @login_required
 def messages(user_id):

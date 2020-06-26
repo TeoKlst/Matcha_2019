@@ -50,7 +50,7 @@ class RegistrationForm(FlaskForm):
         if user_data:
             raise ValidationError('That email is taken. Please choose a different one.')
 
-    # TODO Fix age check
+    # TODO Validate age check
     def validate_year(self, year):
         today = date.today()
         current_year = year=year.data
