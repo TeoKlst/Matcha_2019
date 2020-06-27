@@ -95,12 +95,9 @@ def register():
         user = User('user_id', form.firstname.data, form.lastname.data, age, birthdate,
                 form.username.data, form.email.data, hashed_password, form.gender.data, 'sexual_pref',
                 'biography', 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
-                'image_file_3', 'image_file_4', 'image_file_5')
+                'image_file_3', 'image_file_4', 'image_file_5', 'geo_track', 'location_city',
+                'location_region')
 
-        user1= User('user_id', 'firstname','lastname', 'age', 'brithdate',
-                    'username', 'email', 'password', 'gender', 'sexualpref',
-                    'biography', 'famerating', 'imgp', 'img1', 'img2',
-                    'img3', 'img4', 'img5')
         register_userTest(conn, cur, user)
         registered_user_ID = cur.lastrowid
         register_userTags(conn, cur, registered_user_ID)
@@ -131,7 +128,8 @@ def login():
         user = User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4],
                     user_data[5], user_data[6], user_data[7], user_data[8], user_data[9],
                     user_data[10], user_data[11], user_data[12], user_data[13], user_data[14],
-                    user_data[15], user_data[16], user_data[17])
+                    user_data[15], user_data[16], user_data[17], user_data[18], user_data[19],
+                    user_data[20])
 
         conn.close()
         if user_data and bcrypt.check_password_hash(user.password, form.password.data):
@@ -199,7 +197,8 @@ def account():
         user = User('user_id', form.firstname.data, form.lastname.data, 'age', 'birthdate',
                 form.username.data, form.email.data, 'hashed_password', form.gender.data, form.sexual_pref.data,
                 form.biography.data, 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
-                'image_file_3', 'image_file_4', 'image_file_5')
+                'image_file_3', 'image_file_4', 'image_file_5', form.geo_tag.data, 'location_city',
+                'location_region')
         update_user(conn, cur, user)
         # ------ Tags ------
         update_tag(conn, cur, current_user.user_id, form.user_tag1.data, form.user_tag2.data, form.user_tag3.data, form.user_tag4.data, form.user_tag5.data)
@@ -215,6 +214,7 @@ def account():
         form.gender.data        = current_user.gender
         form.sexual_pref.data   = current_user.sexual_pref
         form.biography.data     = current_user.biography
+        form.geo_tag.data       = current_user.geo_track
         cur.execute("SELECT * FROM tags WHERE user_id=:user_id", {'user_id': current_user.user_id})
         tags = cur.fetchall()
         form.user_tag1.data = tags[0][1]

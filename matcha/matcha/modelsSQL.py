@@ -45,7 +45,10 @@ cur.execute("""CREATE TABLE users (
             image_file_2 TEXT NULL,
             image_file_3 TEXT NULL,
             image_file_4 TEXT NULL,
-            image_file_5 TEXT NULL
+            image_file_5 TEXT NULL,
+            geo_track TEXT DEFAULT "1",
+            location_city TEXT NULL,
+            location_region TEXT NULL
             )""")
 
 cur.execute("""CREATE TABLE messages (

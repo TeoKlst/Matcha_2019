@@ -3,7 +3,8 @@ class User:
     def __init__(self, user_id, firstname, lastname, age, birthdate,
                 username, email, password, gender, sexual_pref,
                 biography, famerating, image_file_p, image_file_1, 
-                image_file_2, image_file_3, image_file_4, image_file_5):
+                image_file_2, image_file_3, image_file_4, image_file_5,
+                geo_track, location_city, location_region):
         self.user_id = user_id
         self.firstname = firstname
         self.lastname = lastname
@@ -22,6 +23,9 @@ class User:
         self.image_file_3 = image_file_3
         self.image_file_4 = image_file_4
         self.image_file_5 = image_file_5
+        self.geo_track = geo_track
+        self.location_city = location_city
+        self.location_region = location_region
         
 
     def get_id(self):
@@ -52,11 +56,12 @@ class User:
     #     return '{} {}'.format(self.first, self.last)
 
     def __repr__(self):
-        return "User('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {})".format(
+        return "User('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {})".format(
         self.user_id, self.firstname, self.lastname, self.age, self.birthdate,
         self.username, self.email, self.password, self.gender, self.sexual_pref,
         self.biography, self.famerating, self.image_file_p, self.image_file_1,
-        self.image_file_2, self.image_file_3, self.image_file_4, self.image_file_5)
+        self.image_file_2, self.image_file_3, self.image_file_4, self.image_file_5,
+        self.geo_track, self.location_city, self.location_region)
 
 class RegisterUser:
     pass
