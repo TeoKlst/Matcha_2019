@@ -260,6 +260,8 @@ def inbox():
     conn.close()
     return render_template('inbox.html', title='Inbox', users=true_likes) #user_images=user_images)
 
+# TODO Sort by date 1st, then within date sections sort by time
+# TODO Clean data passing (messages1 & 2)
 @app.route('/messages/<user_id>', methods=['GET', 'POST'])
 @login_required
 def messages(user_id):
@@ -285,18 +287,26 @@ def messages(user_id):
     conn.close()
     messages1 = messages1 if messages1 else [(None, None, '. . .', None, '', None)]
     messages2 = messages2 if messages2 else [(None, None, '. . .', None, '', None)]
+
+    messages3 = []
+    messages3 = messages1 + messages2
+    # Sorting Tuple
+    def getKey(item):
+        return item[4]
+    messages3 = sorted(messages3, key=getKey)
+    # print ('================= messages 3 =====================',messages3)
     if form.validate_on_submit():
         conn = sql.connect('matcha\\users.db')
         cur = conn.cursor()
         Ts = timedelta(hours = 0, minutes = 0, seconds = 0)
         timenow = datetime.now()
         Ts += timedelta(hours=timenow.hour, minutes=timenow.minute, seconds=timenow.second)
-        message = Message('id', user_id , form.message_content.data, date.today(), str(Ts)[:-3], current_user.user_id)
+        message = Message('id', user_id , form.message_content.data, date.today(), str(Ts), current_user.user_id)
         create_message(conn, cur, message)
         conn.close()
         flash('Sent!', 'success')
         return redirect(url_for('messages', user_id=user_id))
-    return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2, seconduser_data=seconduser_data)
+    return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2, seconduser_data=seconduser_data, messages3=messages3)
 
 
 @app.route('/likes', methods=['GET', 'POST'])
