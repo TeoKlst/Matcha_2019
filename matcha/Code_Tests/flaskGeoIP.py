@@ -15,7 +15,6 @@ def get_data():
     json_request = requests.get('https://api.ipify.org?format=json').json()
     ip      = json_request['ip']
     ipAdress= 'ipAddress=' + ip
-
     json_request = requests.get(http + key + ipAdress).json()
     data  = (json_request)
     print (data['location']['country'])

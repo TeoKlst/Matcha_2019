@@ -14,7 +14,8 @@
                     <h5 class="card-title">{{ user[5] }}</h5>
                 <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
                     <!-- <a href="#" class="btn btn-success">Like</a> -->
-                    <input class="btn btn-success" type = "submit" value = "Like" />
+                    <!-- <input class="btn btn-success" type = "submit" value = "Like" /> -->
+                    <a href="{{ url_for('likes_func', user_id=user[0]) }}" role="button" class="btn btn-success">Like</a>
                 </div>
             </div>
         </div>

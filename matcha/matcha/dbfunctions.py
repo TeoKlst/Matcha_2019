@@ -13,6 +13,11 @@ def register_userTest(conn, cur, user):
         cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, age, birthdate, gender) 
                 VALUES (?,?,?,?,?,?,?,?)""",(user.firstname, user.lastname, user.username, user.email, user.password, user.age, user.birthdate, user.gender) )
 
+def create_like(conn, cur, liked, likee):
+    with conn:
+        cur.execute("""INSERT INTO likes (liked_user, user_id)
+                    VALUES (?,?)""",(liked, likee))
+
 def register_userTags(conn, cur, user_id):
     with conn:
         cur.execute("""INSERT INTO tags (content, user_id)

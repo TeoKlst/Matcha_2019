@@ -170,7 +170,7 @@ cur.execute("""INSERT INTO likes (liked_user, user_id)
 
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
-                    VALUES (?,?)""",('0', 4) )
+                    VALUES (?,?)""",('0', 5) )
 
 
 

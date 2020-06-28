@@ -11,7 +11,7 @@ from datetime import date, timedelta, datetime
 # Templating engine that flask uses is Jinja2
 db = 1
 from matcha.classes import User, Message
-from matcha.dbfunctions import register_userTest, update_user, update_image, create_message, register_userTags, update_tag
+from matcha.dbfunctions import register_userTest, update_user, update_image, create_message, register_userTags, update_tag, create_like
 
 postsMass = [
     {
@@ -297,7 +297,8 @@ def inbox():
     return render_template('inbox.html', title='Inbox', users=true_likes) #user_images=user_images)
 
 # TODO Sort by date 1st, then within date sections sort by time
-# TODO Clean data passing (messages1 & 2)
+# TODO Clean data passing (messages1 & 2)???
+# Null message add user_id so it can be split
 @app.route('/messages/<user_id>', methods=['GET', 'POST'])
 @login_required
 def messages(user_id):
@@ -344,7 +345,7 @@ def messages(user_id):
         return redirect(url_for('messages', user_id=user_id))
     return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2, seconduser_data=seconduser_data, messages3=messages3)
 
-
+# Get image data from current_user like -> another_user. So if the other user hasn't liked back.
 @app.route('/likes', methods=['GET', 'POST'])
 @login_required
 def likes():
@@ -394,6 +395,14 @@ def likes():
     return render_template('likes.html', title='Likes', matched_users=true_likes,
     currentuser_unmatched_likes=currentuser_unmatched_likes, otheruser_unmatched_likes=otheruser_unmatched_likes)
 
+
+@app.route('/like_func/<user_id>', methods=['GET', 'POST'])
+def likes_func(user_id):
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    create_like(conn, cur, user_id, current_user.user_id)
+    flash('Like Successful!', 'success')
+    return render_template('home.html', title='Views')
 
 @app.route('/views')
 def views():
