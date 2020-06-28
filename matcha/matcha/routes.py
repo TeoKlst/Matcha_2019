@@ -68,6 +68,45 @@ def home():
     conn.close()
     return render_template('home.html', posts=posts, users=users)
 
+@app.route('/user/<username>', methods=['GET', 'POST'])
+def user_profile(username):
+    form = UpdateAccountForm()
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE username=:username", {'username': username})
+    user = cur.fetchone()
+    userClass = User(user[0], user[1], user[2], user[3], user[4], user[5], user[6],
+                user[7], user[8], user[9], user[10], user[11], user[12], user[13],
+                user[14], user[15], user[16], user[17], user[18],
+                user[19], user[20])
+    print ('++++++++++++++++++++++++++++++++++++ User Data=>',userClass)
+    # ============
+    form.firstname.data     = userClass.firstname
+    form.lastname.data      = userClass.lastname
+    form.username.data      = userClass.username
+    form.email.data         = userClass.email
+    form.gender.data        = userClass.gender
+    form.sexual_pref.data   = userClass.sexual_pref
+    form.biography.data     = userClass.biography
+    form.geo_tag.data       = userClass.geo_track
+    cur.execute("SELECT * FROM tags WHERE user_id=:user_id", {'user_id': userClass.user_id})
+    tags = cur.fetchall()
+    form.user_tag1.data = tags[0][1]
+    form.user_tag2.data = tags[1][1]
+    form.user_tag3.data = tags[2][1]
+    form.user_tag4.data = tags[3][1]
+    form.user_tag5.data = tags[4][1]
+    # Passing image file to account here (Maybe push to GET?)
+    image_file_p = url_for('static', filename='profile_pics/' + userClass.image_file_p)
+    image_file_1 = url_for('static', filename='profile_pics/' + userClass.image_file_1) if userClass.image_file_1 else None
+    image_file_2 = url_for('static', filename='profile_pics/' + userClass.image_file_2) if userClass.image_file_2 else None
+    image_file_3 = url_for('static', filename='profile_pics/' + userClass.image_file_3) if userClass.image_file_3 else None
+    image_file_4 = url_for('static', filename='profile_pics/' + userClass.image_file_4) if userClass.image_file_4 else None
+    image_file_5 = url_for('static', filename='profile_pics/' + userClass.image_file_5) if userClass.image_file_5 else None
+    images = [image_file_1, image_file_2, image_file_3, image_file_4, image_file_5]
+    conn.close()
+    return render_template('userprofile.html', title='User Profile', form=form, user=userClass, images=images)
+
 @app.route('/cover')
 def cover():
     # print (current_user)
