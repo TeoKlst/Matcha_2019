@@ -96,7 +96,6 @@ def user_profile(username):
     form.user_tag3.data = tags[2][1]
     form.user_tag4.data = tags[3][1]
     form.user_tag5.data = tags[4][1]
-    # Passing image file to account here (Maybe push to GET?)
     image_file_p = url_for('static', filename='profile_pics/' + userClass.image_file_p)
     image_file_1 = url_for('static', filename='profile_pics/' + userClass.image_file_1) if userClass.image_file_1 else None
     image_file_2 = url_for('static', filename='profile_pics/' + userClass.image_file_2) if userClass.image_file_2 else None
@@ -124,9 +123,7 @@ def register():
     if form.validate_on_submit():
         today = date.today()
         birthdate = date(int(form.year.data), int(form.month.data), int(form.day.data))
-        print('BIRTHDATE ===> ',birthdate)
         age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
-        print('AGE =========> ',age)
         hashed_password = bcrypt.generate_password_hash(form.password_field.data).decode('utf-8')
 
         conn = sql.connect('matcha\\users.db')
