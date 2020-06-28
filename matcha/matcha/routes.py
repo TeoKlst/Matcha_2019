@@ -396,7 +396,7 @@ def likes():
     currentuser_unmatched_likes=currentuser_unmatched_likes, otheruser_unmatched_likes=otheruser_unmatched_likes)
 
 
-@app.route('/like_func/<user_id>', methods=['GET', 'POST'])
+@app.route('/like_func/<string:user_id>', methods=['GET', 'POST'])
 def likes_func(user_id):
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
