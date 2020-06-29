@@ -10,6 +10,7 @@ app.config['SECRET_KEY'] = '02f223f600f6e93454be89fb8ec9c78c'
 # SQLAlchemy database instance
 # Represent database structure as classes/models
 # Each class will be a table in the database
+geoKey = 'apiKey=at_FsPa7wR7Y78vT9riB4HeMjpAWhD3N&'
 sql = sqlite3
 socketio = SocketIO(app)
 bcrypt = Bcrypt(app)

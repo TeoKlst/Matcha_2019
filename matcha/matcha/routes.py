@@ -1,8 +1,9 @@
 import os
 import secrets
+import requests
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request, abort
-from matcha import app, bcrypt, sql
+from flask import render_template, url_for, flash, redirect, request, abort, json
+from matcha import app, bcrypt, sql, geoKey
 from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, MessagesForm, SearchForm
 # from matcha.models import Like, Message, Images, Tags, Post    
 from flask_login import login_user, current_user, logout_user, login_required
@@ -13,7 +14,7 @@ db = 1
 from matcha.classes import User, Message
 from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_message, register_userTags, update_tag, \
-                                create_like, remove_like, create_view
+                                create_like, remove_like, create_view, save_location
 
 postsMass = [
     {
@@ -204,12 +205,22 @@ def login():
                     user_data[15], user_data[16], user_data[17], user_data[18], user_data[19],
                     user_data[20])
 
-        conn.close()
         if user_data and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
+            # --- Geo Location ---
+            http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
+            json_request = requests.get('https://api.ipify.org?format=json').json()
+            ip      = json_request['ip']
+            ipAdress= 'ipAddress=' + ip
+            json_request = requests.get(http + geoKey + ipAdress).json()
+            data  = (json_request)
+            save_location(conn, cur, current_user.user_id, data)
+
+            conn.close()
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
+            conn.close()
             flash(f'Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
@@ -360,7 +371,7 @@ def messages(user_id):
     seconduser_data = cur.fetchone()
     conn.close()
     messages1 = messages1 if messages1 else [(None, None, '. . .', None, '', None)]
-    messages2 = messages2 if messages2 else [(None, None, '. . .', None, '', None)]
+    messages2 = messages2 if messages2 else [(None, current_user.user_id, '. . .', None, '', None)]
 
     messages3 = []
     messages3 = messages1 + messages2

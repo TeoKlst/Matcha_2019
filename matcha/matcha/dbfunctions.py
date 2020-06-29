@@ -27,6 +27,11 @@ def create_view(conn, cur, viewed_user, user_id):
         cur.execute("""INSERT INTO userviews (viewed_user, user_id)
                     VALUES (?,?)""",(viewed_user, user_id))
 
+def save_location(conn, cur, user_id, location):
+    with conn:
+        cur.execute("""UPDATE users SET location_city=:city, location_region=:region
+        WHERE user_id=:user_id""", {'city': location['location']['country'], 'region': location['location']['city'], 'user_id': user_id})
+
 def register_userTags(conn, cur, user_id):
     with conn:
         cur.execute("""INSERT INTO tags (content, user_id)

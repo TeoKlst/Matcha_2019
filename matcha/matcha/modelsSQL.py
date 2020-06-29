@@ -51,6 +51,14 @@ cur.execute("""CREATE TABLE users (
             location_region TEXT NULL
             )""")
 
+cur.execute("""CREATE TABLE location (
+            lat INTEGER NULL,
+            long INTEGER NULL,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id)
+                REFERENCES users (user_id) 
+            )""")
+
 cur.execute("""CREATE TABLE messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             recipient INTEGER NULL,
