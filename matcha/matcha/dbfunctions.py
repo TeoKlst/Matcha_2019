@@ -22,6 +22,11 @@ def remove_like(conn, cur, liked, likee):
     with conn:
         cur.execute("DELETE FROM likes WHERE liked_user=:liked AND user_id=:likee",{'liked':liked, 'likee':likee})
 
+def create_view(conn, cur, viewed_user, user_id):
+    with conn:
+        cur.execute("""INSERT INTO userviews (viewed_user, user_id)
+                    VALUES (?,?)""",(viewed_user, user_id))
+
 def register_userTags(conn, cur, user_id):
     with conn:
         cur.execute("""INSERT INTO tags (content, user_id)

@@ -11,7 +11,9 @@ from datetime import date, timedelta, datetime
 # Templating engine that flask uses is Jinja2
 db = 1
 from matcha.classes import User, Message
-from matcha.dbfunctions import register_userTest, update_user, update_image, create_message, register_userTags, update_tag, create_like, remove_like
+from matcha.dbfunctions import register_userTest, update_user, update_image,\
+                                create_message, register_userTags, update_tag, \
+                                create_like, remove_like, create_view
 
 postsMass = [
     {
@@ -103,10 +105,43 @@ def user_profile(username):
     image_file_5 = url_for('static', filename='profile_pics/' + userClass.image_file_5) if userClass.image_file_5 else None
     images = [image_file_1, image_file_2, image_file_3, image_file_4, image_file_5]
 
+    # User View Creation on Profile Inspect
+    cur.execute("SELECT * FROM userviews WHERE viewed_user=:viewed_user AND user_id=:user_id", \
+                {'viewed_user': userClass.user_id, 'user_id': current_user.user_id })
+    view_check = cur.fetchone()
+
+    if not view_check:
+        create_view(conn, cur, userClass.user_id, current_user.user_id)
+
+    cur.execute("SELECT * FROM userviews")
+    test = cur.fetchall()
+    print('ALL USERVIEWS: ',test)
+
     # cur.execute("SELECT * FROM likes WHERE liked_user=:user_id AND user_id=:current_user", {'user_id': userClass.user_id, 'current_user': current_user.user_id})
     # likes = cur.fetchone()
     conn.close()
     return render_template('userprofile.html', title='User Profile', form=form, user=userClass, images=images)
+
+
+@app.route('/views')
+def views():
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM userviews WHERE viewed_user=:current_user", {'current_user': current_user.user_id})
+    userviews = cur.fetchall()
+    userData = []
+    for user in userviews:
+        cur.execute("SELECT username, image_file_p FROM users WHERE user_id=:user_id", {'user_id': user[2]})
+        data = cur.fetchone()
+        if data:
+            data = list(data)
+            data.insert(0, user[2])
+            data = tuple(data)
+            userData.append(data)
+
+    print('USERDATA: ',userData)
+    return render_template('views.html', title='Views', userviews=userData)
+
 
 @app.route('/cover')
 def cover():
@@ -415,10 +450,6 @@ def unlike_func(user_id):
     flash('User Unliked!', 'warning')
     return render_template('home.html', title='Views')
 
-
-@app.route('/views')
-def views():
-    return render_template('views.html', title='Views')
 
 # legend="Name" can be used to be passed to other routes to change naming {{ legend }}
 # To add a action to a button
