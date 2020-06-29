@@ -18,6 +18,10 @@ def create_like(conn, cur, liked, likee):
         cur.execute("""INSERT INTO likes (liked_user, user_id)
                     VALUES (?,?)""",(liked, likee))
 
+def remove_like(conn, cur, liked, likee):
+    with conn:
+        cur.execute("DELETE FROM likes WHERE liked_user=:liked AND user_id=:likee",{'liked':liked, 'likee':likee})
+
 def register_userTags(conn, cur, user_id):
     with conn:
         cur.execute("""INSERT INTO tags (content, user_id)

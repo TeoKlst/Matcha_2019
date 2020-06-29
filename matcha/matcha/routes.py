@@ -11,7 +11,7 @@ from datetime import date, timedelta, datetime
 # Templating engine that flask uses is Jinja2
 db = 1
 from matcha.classes import User, Message
-from matcha.dbfunctions import register_userTest, update_user, update_image, create_message, register_userTags, update_tag, create_like
+from matcha.dbfunctions import register_userTest, update_user, update_image, create_message, register_userTags, update_tag, create_like, remove_like
 
 postsMass = [
     {
@@ -80,7 +80,6 @@ def user_profile(username):
                 user[14], user[15], user[16], user[17], user[18],
                 user[19], user[20])
     print ('++++++++++++++++++++++++++++++++++++ User Data=>',userClass)
-    # ============
     form.firstname.data     = userClass.firstname
     form.lastname.data      = userClass.lastname
     form.username.data      = userClass.username
@@ -103,6 +102,9 @@ def user_profile(username):
     image_file_4 = url_for('static', filename='profile_pics/' + userClass.image_file_4) if userClass.image_file_4 else None
     image_file_5 = url_for('static', filename='profile_pics/' + userClass.image_file_5) if userClass.image_file_5 else None
     images = [image_file_1, image_file_2, image_file_3, image_file_4, image_file_5]
+
+    # cur.execute("SELECT * FROM likes WHERE liked_user=:user_id AND user_id=:current_user", {'user_id': userClass.user_id, 'current_user': current_user.user_id})
+    # likes = cur.fetchone()
     conn.close()
     return render_template('userprofile.html', title='User Profile', form=form, user=userClass, images=images)
 
@@ -403,6 +405,16 @@ def likes_func(user_id):
     create_like(conn, cur, user_id, current_user.user_id)
     flash('Like Successful!', 'success')
     return render_template('home.html', title='Views')
+
+
+@app.route('/unlike_func/<string:user_id>', methods=['GET','POST'])
+def unlike_func(user_id):
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    remove_like(conn, cur, user_id, current_user.user_id)
+    flash('User Unliked!', 'warning')
+    return render_template('home.html', title='Views')
+
 
 @app.route('/views')
 def views():

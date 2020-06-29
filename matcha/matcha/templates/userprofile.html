@@ -10,9 +10,15 @@
                 <p class="text-secondary">See if online/Last Online</p>
             </div>
             <div class="text-center">
+                {% if like %}
                 <div>
                     <a href="{{ url_for('messages', user_id=user[1]) }}" role="button" class="btn btn-warning">Unlike</a>
                 </div>
+                {% else %}
+                <div>
+                    <a href="{{ url_for('messages', user_id=user[1]) }}" role="button" class="btn btn-success">Like</a>
+                </div>
+                {% endif %}
                 <div>
                     <a href="{{ url_for('messages', user_id=user[1]) }}" role="button" class="btn btn-outline-danger">Report</a>
                 </div>

@@ -7,7 +7,8 @@
             <div class="card" style="width: 10rem;">
                 <!-- <img src="..." class="card-img-top" alt="..."> -->
                 <div class="text-center">
-                    <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[3] }}" >
+                    <a href="{{ url_for('user_profile', username=user[2]) }}" data-toggle="tooltip" data-placement="top" title="Inspect Profile">
+                        <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[3] }}" ></a>
                 </div>
                 <div class="card-body text-center">
                     <h5 class="card-title">{{ user[2] }}</h5>
@@ -15,7 +16,7 @@
                     <!-- <a href="#" class="btn btn-success">Like</a> -->
                     <div class="text-center"><i class="account-img-icons fa fa-chain fa-2x"></i></div>
                     
-                    <input class="btn btn-warning" type = "submit" value = "Unlike" />
+                    <a href="{{ url_for('unlike_func', user_id=user[1]) }}" role="button" class="btn btn-warning">Unlike</a>
                     <input class="btn btn-outline-danger" type = "submit" value = "Report" />
                 </div>
             </div>
@@ -26,14 +27,15 @@
             <div class="card" style="width: 10rem;">
                 <!-- <img src="..." class="card-img-top" alt="..."> -->
                 <div class="text-center">
-                    <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[12] }}" >
+                    <a href="{{ url_for('user_profile', username=user[2]) }}" data-toggle="tooltip" data-placement="top" title="Inspect Profile">
+                        <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[3] }}" ></a>
                 </div>
                     <div class="card-body text-center">
                     <h5 class="card-title">{{ user[1] }}</h5>
                 <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
                     <!-- <a href="#" class="btn btn-success">Like</a> -->
                     <div class="text-center"><i class="account-img-icons fa fa-unlink fa-2x"></i></div>
-                    <input class="btn btn-warning" type = "submit" value = "Unlike" />
+                    <a href="{{ url_for('unlike_func', user_id=user[1]) }}" role="button" class="btn btn-warning">Unlike</a>
                 </div>
             </div>
         </div>
@@ -43,14 +45,15 @@
             <div class="card" style="width: 10rem;">
                 <!-- <img src="..." class="card-img-top" alt="..."> -->
                 <div class="text-center">
-                    <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[3] }}" >
+                    <a href="{{ url_for('user_profile', username=user[2]) }}" data-toggle="tooltip" data-placement="top" title="Inspect Profile">
+                        <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[3] }}" ></a>
                 </div>
                     <div class="card-body text-center">
                     <h5 class="card-title">{{ user[2] }}</h5>
                 <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
                     <!-- <a href="#" class="btn btn-success">Like</a> -->
                     <div class="text-center"><i class="account-img-icons fa fa-unlink fa-2x"></i></div>
-                    <input class="btn btn-warning" type = "submit" value = "Like back" />
+                    <a href="{{ url_for('likes_func', user_id=user[1]) }}" role="button" class="btn btn-success">Like Back</a>
                 </div>
             </div>
         </div>
