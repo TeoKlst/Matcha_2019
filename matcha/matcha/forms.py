@@ -145,3 +145,24 @@ class SearchForm(FlaskForm):
     fame_rating     = SelectField('Fame Gap',
                                 choices=choices_gap)
     submit          = SubmitField('Search')
+
+class RequestResetForm(FlaskForm):
+    email       = StringField('Email',
+                            validators=[DataRequired(), Email()])
+    submit          = SubmitField('Request Password Reset')
+
+    def validate_email(self, email):
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE email=:email", {'email': email.data})
+        user_data = cur.fetchone()
+        conn.close()
+        if user_data is None:
+            raise ValidationError('No account with that email. Please check email again or register.')
+
+class ResetPasswordForm(FlaskForm):
+    password_field      = PasswordField('Password',
+                                    validators=[DataRequired(), Length(min=8)])
+    confirm_password    = PasswordField('Confirm Password',
+                                    validators=[DataRequired(), EqualTo('password_field')])
+    submit          = SubmitField('Request Password Reset')

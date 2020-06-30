@@ -4,7 +4,8 @@ import requests
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort, json
 from matcha import app, bcrypt, sql, geoKey
-from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, MessagesForm, SearchForm
+from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, \
+                        MessagesForm, SearchForm, RequestResetForm, ResetPasswordForm
 # from matcha.models import Like, Message, Images, Tags, Post    
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import date, timedelta, datetime
@@ -130,7 +131,7 @@ def views():
     cur = conn.cursor()
     cur.execute("SELECT * FROM userviews WHERE viewed_user=:current_user", {'current_user': current_user.user_id})
     userviews = cur.fetchall()
-    userData = []
+    userData1 = []
     for user in userviews:
         cur.execute("SELECT username, image_file_p FROM users WHERE user_id=:user_id", {'user_id': user[2]})
         data = cur.fetchone()
@@ -138,10 +139,22 @@ def views():
             data = list(data)
             data.insert(0, user[2])
             data = tuple(data)
-            userData.append(data)
+            userData1.append(data)
 
-    print('USERDATA: ',userData)
-    return render_template('views.html', title='Views', userviews=userData)
+    cur.execute("SELECT * FROM userviews WHERE user_id=:current_user", {'current_user': current_user.user_id})
+    viewHistory = cur.fetchall()
+    userData2 = []
+    for user in viewHistory:
+        cur.execute("SELECT username, image_file_p FROM users WHERE user_id=:user_id", {'user_id': user[1]})
+        data = cur.fetchone()
+        if data:
+            data = list(data)
+            data.insert(0, user[2])
+            data = tuple(data)
+            userData2.append(data)
+
+    print('USERDATA: ', userData2)
+    return render_template('views.html', title='Views', userviews=userData1, viewHistory=userData2)
 
 
 @app.route('/cover')
@@ -537,3 +550,15 @@ def search():
     elif request.method == 'GET':
         pass
     return render_template('search.html', title='Likes', form=form)
+
+
+# @app.route('/home', methods=['GET', 'POST'])
+# def home():
+#     posts = postsMass
+#     conn = sql.connect('matcha\\users.db')
+#     cur = conn.cursor()
+#     cur.execute("SELECT * FROM users WHERE user_id")
+#     users = cur.fetchall()
+#     print (current_user.is_authenticated)
+#     conn.close()
+#     return render_template('home.html', posts=posts, users=users)

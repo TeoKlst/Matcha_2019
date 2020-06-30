@@ -94,6 +94,14 @@ cur.execute("""CREATE TABLE tags(
                 REFERENCES users (user_id) 
             )""")
 
+cur.execute("""CREATE TABLE blocks(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_blocked INTEGER NULL,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id)
+                REFERENCES users (user_id) 
+            )""")
+
 # =================================================================== USERS ==========================================================================
 hashed_password = bcrypt.generate_password_hash('tkelest123').decode('utf-8')
 # cur.execute("""INSERT INTO users VALUES (1, 'Teo', 'Kelestura', '25', '07/12/1994', 'Tkelest',
