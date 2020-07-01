@@ -3,11 +3,12 @@ import secrets
 import requests
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort, json
-from matcha import app, bcrypt, sql, geoKey
+from matcha import app, bcrypt, sql, geoKey, mail
 from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, \
                         MessagesForm, SearchForm, RequestResetForm, ResetPasswordForm
 # from matcha.models import Like, Message, Images, Tags, Post    
 from flask_login import login_user, current_user, logout_user, login_required
+from flask_mail import Message as flask_message
 from datetime import date, timedelta, datetime
 
 # Templating engine that flask uses is Jinja2
@@ -15,7 +16,8 @@ db = 1
 from matcha.classes import User, Message
 from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_message, register_userTags, update_tag, \
-                                create_like, remove_like, create_view, save_location
+                                create_like, remove_like, create_view, save_location, \
+                                get_reset_token, verify_reset_token
 
 postsMass = [
     {
@@ -562,3 +564,61 @@ def search():
 #     print (current_user.is_authenticated)
 #     conn.close()
 #     return render_template('home.html', posts=posts, users=users)
+
+
+def send_reset_email(user):
+    token = get_reset_token(user[1])
+    # print (token)
+    msg = flask_message('Password Reset Request', 
+                    sender='noreply@matcha.com', 
+                    recipients=[user[0]])
+    msg.body = f'''To reset you password, visit the following link:
+{url_for('reset_token', token=token, _external=True)}
+
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+    mail.send(msg)
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+        cur.execute("SELECT email, user_id FROM users WHERE email=:email", {'email': form.email.data})
+        user_data = cur.fetchone()
+        # print (user_data)
+        send_reset_email(user_data)
+        conn.close()
+        flash('An email has been sent with instructions to reset you password', 'info')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html', title='Reset Password', form=form)
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    user = verify_reset_token(conn, cur, token)
+    conn.close()
+    if not user:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+        print (form.password_field.data)
+        print (user[0])
+        hashed_password = bcrypt.generate_password_hash(form.password_field.data).decode('utf-8')
+        with conn:
+            cur.execute("""UPDATE users SET password=:new_password
+                        WHERE user_id=:token_id""",
+                        {'token_id': user[0], 'new_password': hashed_password})
+        conn.close()
+        flash('Password updated!', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_token.html', title='Reset Password', form=form)

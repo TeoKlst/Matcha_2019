@@ -1,4 +1,7 @@
 from matcha import sql
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from matcha import app
+
 # None added
 # def register_user(conn, cur, user):
 #     with conn:
@@ -12,6 +15,21 @@ def register_userTest(conn, cur, user):
     with conn:
         cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, age, birthdate, gender) 
                 VALUES (?,?,?,?,?,?,?,?)""",(user.firstname, user.lastname, user.username, user.email, user.password, user.age, user.birthdate, user.gender) )
+
+def get_reset_token(user_id, expires_sec=1800):
+    s = Serializer(app.config['SECRET_KEY'], expires_sec)
+    return s.dumps({'user_id': user_id}).decode('utf-8')
+
+
+def verify_reset_token(conn, cur, token):
+    s = Serializer(app.config['SECRET_KEY'])
+    try:
+        user_id = s.loads(token)['user_id']
+    except:
+        return None
+    cur.execute("""SELECT user_id FROM users WHERE user_id=:user_id""", {'user_id': user_id})
+    user = cur.fetchone()
+    return user
 
 def create_like(conn, cur, liked, likee):
     with conn:
