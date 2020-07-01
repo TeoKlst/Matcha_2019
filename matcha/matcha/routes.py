@@ -554,8 +554,8 @@ def search():
     return render_template('search.html', title='Likes', form=form)
 
 
-# @app.route('/home', methods=['GET', 'POST'])
-# def home():
+# @app.route('/block_user/<user_id>', methods=['GET', 'POST'])
+# def block_user(user_id):
 #     posts = postsMass
 #     conn = sql.connect('matcha\\users.db')
 #     cur = conn.cursor()
