@@ -17,7 +17,7 @@ from matcha.classes import User, Message
 from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_message, register_userTags, update_tag, \
                                 create_like, remove_like, create_view, save_location, \
-                                get_reset_token, verify_reset_token
+                                get_reset_token, verify_reset_token, create_block
 
 postsMass = [
     {
@@ -554,16 +554,15 @@ def search():
     return render_template('search.html', title='Likes', form=form)
 
 
-# @app.route('/block_user/<user_id>', methods=['GET', 'POST'])
-# def block_user(user_id):
-#     posts = postsMass
-#     conn = sql.connect('matcha\\users.db')
-#     cur = conn.cursor()
-#     cur.execute("SELECT * FROM users WHERE user_id")
-#     users = cur.fetchall()
-#     print (current_user.is_authenticated)
-#     conn.close()
-#     return render_template('home.html', posts=posts, users=users)
+@app.route('/block_user/<user_id>', methods=['GET', 'POST'])
+def block_user(user_id):
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    create_block(conn, cur, user_id, current_user.user_id)
+    cur.execute("SELECT * FROM blocks where user_id")
+    conn.close()
+    flash('User has been blocked', 'danger')
+    return redirect(url_for('home'))
 
 
 def send_reset_email(user):

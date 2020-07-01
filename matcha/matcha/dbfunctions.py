@@ -16,6 +16,11 @@ def register_userTest(conn, cur, user):
         cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, age, birthdate, gender) 
                 VALUES (?,?,?,?,?,?,?,?)""",(user.firstname, user.lastname, user.username, user.email, user.password, user.age, user.birthdate, user.gender) )
 
+def create_block(conn, cur, blocked_user, user_id):
+    with conn:
+        cur.execute("""INSERT INTO blocks (user_blocked, user_id)
+                    VALUES (?,?)""", (blocked_user, user_id))
+
 def get_reset_token(user_id, expires_sec=1800):
     s = Serializer(app.config['SECRET_KEY'], expires_sec)
     return s.dumps({'user_id': user_id}).decode('utf-8')
