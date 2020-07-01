@@ -565,6 +565,22 @@ def block_user(user_id):
     return redirect(url_for('home'))
 
 
+@app.route('/report_user/<username>', methods=['GET', 'POST'])
+def report_user(username):
+    send_report_email(username, current_user.email)
+    flash('User has been reported, an email has been sent to log the report.', 'danger')
+    return redirect(url_for('home'))
+
+
+def send_report_email(reported_user, current_user):
+    msg = flask_message('User Report', 
+                    sender='noreply@matcha.com', 
+                    recipients=[current_user])
+    msg.body = f'''Thank you for your report on user:{reported_user}, we will investigate the matter.
+'''
+    mail.send(msg)
+
+
 def send_reset_email(user):
     token = get_reset_token(user[1])
     # print (token)

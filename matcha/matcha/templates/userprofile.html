@@ -20,7 +20,7 @@
                 </div>
                 {% endif %}
                 <div>
-                    <a href="{{ url_for('messages', user_id=user[1]) }}" role="button" class="btn btn-block btn-outline-danger">Report</a>
+                    <a href="{{ url_for('report_user', username=user.username) }}" role="button" class="btn btn-block btn-outline-danger">Report</a>
                 </div>
                 <div>
                     <a href="{{ url_for('block_user', user_id=user.user_id) }}" role="button" class="btn btn-block btn-danger">Block</a>
