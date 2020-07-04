@@ -173,6 +173,7 @@ def cover():
 def about():
     return render_template('about.html', title='About')
 
+# TODO move view_notification insert into db functions
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
