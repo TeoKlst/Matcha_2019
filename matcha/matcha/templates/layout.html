@@ -76,7 +76,10 @@
                     <p class='text-muted'>You can put any information here you'd like.
                     <ul class="list-group">
                         <a href="{{ url_for('inbox') }}" class="list-group-item list-group-item-light">Inbox <span class="badge badge-pill badge-primary">{{ posts|length }}</span></a>
-                        <a href="{{ url_for('likes') }}" class="list-group-item list-group-item-light">Likes <span class="badge badge-pill badge-primary">{{ posts|length }}</span></a>
+                        <a href="{{ url_for('likes') }}" class="list-group-item list-group-item-light">Likes 
+                            {% set new_messages = current_user.age %}
+                            <span id="likes_count" class="badge badge-pill badge-primary"></span>
+                        </a>
                         <a href="{{ url_for('views') }}" class="list-group-item list-group-item-light">Views <span class="badge badge-pill badge-primary">{{ posts|length }}</span></a>
                     </ul>
                     </p>
@@ -92,5 +95,30 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    
+    {% block scripts %}
+    {% endblock scripts %}
+    
+    <script>
+        function set_likes_count(n) {
+            var myDiv = document.getElementById("likes_count");
+            myDiv.innerHTML = n;
+            // $('#likes_count').text(n);
+        }
+    </script>
+    <script>
+        var since = 0;
+        setInterval(function() {
+            $.ajax("{{ url_for('like_notifications') }}").done(
+                function(like_notifications) {
+                    set_likes_count(like_notifications.likes)
+                }
+            );
+        }, 2000);
+    </script>
+
+<!-- <script src="static/js/test.js"></script> -->
+
 </body>
 </html>

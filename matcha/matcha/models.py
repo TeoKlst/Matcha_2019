@@ -10,15 +10,15 @@ def load_user(id):
     cur = conn.cursor()
     cur.execute("SELECT * from users where email = (?)", [id])
     userrow = cur.fetchone()
-    print ('id ', id)
-    print ('fetchone ', userrow)
+    # print ('id ', id)
+    # print ('fetchone ', userrow)
     # userid = userrow[0] # or whatever the index position is
     user = User(userrow[0], userrow[1], userrow[2], userrow[3], userrow[4],
             userrow[5], userrow[6], userrow[7], userrow[8], userrow[9],
             userrow[10], userrow[11], userrow[12], userrow[13], userrow[14], 
             userrow[15], userrow[16], userrow[17], userrow[18], userrow[19],
             userrow[20])
-    print('return id', user)
+    # print('return id', user)
     return (user)
 
 # @login_manager.user_loader

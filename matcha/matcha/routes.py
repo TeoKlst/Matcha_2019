@@ -2,7 +2,7 @@ import os
 import secrets
 import requests
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request, abort, json
+from flask import render_template, url_for, flash, redirect, request, abort, json, jsonify
 from matcha import app, bcrypt, sql, geoKey, mail
 from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, \
                         MessagesForm, SearchForm, RequestResetForm, ResetPasswordForm
@@ -637,3 +637,17 @@ def reset_token(token):
         flash('Password updated!', 'success')
         return redirect(url_for('login'))
     return render_template('reset_token.html', title='Reset Password', form=form)
+
+
+@app.route('/like_notifications')
+def like_notifications():
+    print ('START:', datetime.now())
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("""SELECT * FROM likes where user_id=:user_id""", {'user_id': current_user.user_id})
+    all_likes = cur.fetchall()
+    conn.close()
+    likes_amount = len(all_likes)
+    print ('END  :', datetime.now())
+    # return jsonify(likes_amount)
+    return jsonify({'likes': likes_amount})
