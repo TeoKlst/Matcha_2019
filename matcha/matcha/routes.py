@@ -155,6 +155,11 @@ def views():
             data = tuple(data)
             userData2.append(data)
 
+    view_notification = len(userData1)
+    with conn:
+        cur.execute("""UPDATE view_notifications SET view_notification=:view_notification
+        WHERE user_id=:user_id""", {'view_notification': view_notification ,'user_id': current_user.user_id})
+    conn.close
     print('USERDATA: ', userData2)
     return render_template('views.html', title='Views', userviews=userData1, viewHistory=userData2)
 
@@ -190,6 +195,9 @@ def register():
         register_userTest(conn, cur, user)
         registered_user_ID = cur.lastrowid
         register_userTags(conn, cur, registered_user_ID)
+        with conn:
+            cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
+                    VALUES (?,?)""",(0, registered_user_ID) )
         conn.close()
         flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
@@ -641,13 +649,23 @@ def reset_token(token):
 
 @app.route('/like_notifications')
 def like_notifications():
-    print ('START:', datetime.now())
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
     cur.execute("""SELECT * FROM likes where user_id=:user_id""", {'user_id': current_user.user_id})
     all_likes = cur.fetchall()
     conn.close()
     likes_amount = len(all_likes)
-    print ('END  :', datetime.now())
-    # return jsonify(likes_amount)
     return jsonify({'likes': likes_amount})
+
+
+@app.route('/view_notifications')
+def view_notifications():
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("""SELECT view_notification FROM view_notifications where user_id=:user_id""", {'user_id': current_user.user_id})
+    last_viewed = cur.fetchone()
+    cur.execute("""SELECT * FROM userviews where viewed_user=:viewed_user""", {'viewed_user': current_user.user_id})
+    total_views = len(cur.fetchall())
+    conn.close()
+    view_notification = total_views - last_viewed[0] if total_views > last_viewed[0] else last_viewed[0] - total_views
+    return jsonify({'views': view_notification})

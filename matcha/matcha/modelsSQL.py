@@ -102,6 +102,22 @@ cur.execute("""CREATE TABLE blocks(
                 REFERENCES users (user_id) 
             )""")
 
+cur.execute("""CREATE TABLE like_notifications(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            like_notification INTEGER NULL,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id)
+                REFERENCES users (user_id) 
+            )""")
+
+cur.execute("""CREATE TABLE view_notifications(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            view_notification INTEGER NULL,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id)
+                REFERENCES users (user_id) 
+            )""")
+
 # =================================================================== USERS ==========================================================================
 hashed_password = bcrypt.generate_password_hash('tkelest123').decode('utf-8')
 # cur.execute("""INSERT INTO users VALUES (1, 'Teo', 'Kelestura', '25', '07/12/1994', 'Tkelest',
@@ -123,6 +139,9 @@ for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
                     VALUES (?,?)""",('0', 1) )
 
+cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
+                VALUES (?,?)""",(0, 1) )
+
 # ------ UserID 2 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",('Maya', 'Haya', 'MayaHi', 'maya@gmail.com', hashed_password, 'f', 25, '07/12/1994') )
@@ -136,6 +155,9 @@ cur.execute("""INSERT INTO likes (liked_user, user_id)
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
                     VALUES (?,?)""",('0', 2) )
+
+cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
+                VALUES (?,?)""",(0, 2) )
 
 # ------ UserID 3 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
@@ -157,6 +179,9 @@ for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
                     VALUES (?,?)""",('0', 3) )
 
+cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
+                VALUES (?,?)""",(0, 3) )
+
 # ------ UserID 4 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",('Brad', 'Bradson', 'BradB', 'brad@gmail.com', hashed_password, 'm', 35, '07/12/1994') )
@@ -170,6 +195,9 @@ cur.execute("""INSERT INTO likes (liked_user, user_id)
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
                     VALUES (?,?)""",('0', 4) )
+
+cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
+                VALUES (?,?)""",(0, 4) )
 
 # ------ UserID 5 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
@@ -187,6 +215,9 @@ cur.execute("""INSERT INTO likes (liked_user, user_id)
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
                     VALUES (?,?)""",('0', 5) )
+
+cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
+                VALUES (?,?)""",(0, 5) )
 
 
 
