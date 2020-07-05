@@ -94,6 +94,13 @@ body {
     margin-bottom: 16px;
   }
 
+  .header-profile-img {
+    height: 35px;
+    width: 35px;
+    /* margin-right: 20px; */
+    /* margin-bottom: 16px; */
+  }
+
   .invisible {
     visibility: hidden;
   }
