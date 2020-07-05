@@ -3,7 +3,7 @@
 {% for user in users %}
     <a href="{{ url_for('messages', user_id=user[1]) }}" role="button" class="btn btn-outline-info btn-lg">{{ user[2] }}
         <img class="rounded-circle account-img" src="/static/profile_pics/{{ user[3] }}">
-        <span class="badge badge-pill badge-info">9</span>
+        <span class="badge badge-pill badge-info">{{ user[4] }}</span>
     </a>
 {% else %}
 {% endfor %}

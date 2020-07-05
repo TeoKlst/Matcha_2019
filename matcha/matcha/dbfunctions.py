@@ -16,6 +16,32 @@ def register_userTest(conn, cur, user):
         cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, age, birthdate, gender) 
                 VALUES (?,?,?,?,?,?,?,?)""",(user.firstname, user.lastname, user.username, user.email, user.password, user.age, user.birthdate, user.gender) )
 
+def check_match(conn, cur, user_id, current_user_id):
+    with conn:
+        cur.execute("""SELECT * FROM likes WHERE liked_user=:liked_user
+                    AND user_id=:user_id""", {'liked_user': current_user_id, 'user_id': user_id})
+        liked = cur.fetchone()
+        cur.execute("""SELECT * FROM likes WHERE liked_user=:liked_user
+                    AND user_id=:user_id""", {'liked_user': user_id, 'user_id': current_user_id})
+        likee = cur.fetchone()
+    if liked[1] == likee[2]:
+        return (True)
+    else:
+        return(False)
+
+def update_message_notification(conn, cur, updated_message, user_id, current_user_id):
+    with conn:
+        cur.execute("""UPDATE message_notifications SET new_messages=:new_messages
+                    WHERE last_seen_user_id=:last_seen_user_id AND user_id=:user_id
+                    """, {'new_messages': updated_message, 'last_seen_user_id': user_id, 'user_id': current_user_id})
+
+def create_message_notification(conn, cur, user_id, current_user_id):
+    with conn:
+        cur.execute("""INSERT INTO message_notifications (last_seen_user_id, user_id)
+                    VALUES (?,?)""", (user_id, current_user_id))
+        cur.execute("""INSERT INTO message_notifications (last_seen_user_id, user_id)
+                    VALUES (?,?)""", (current_user_id, user_id))
+
 def create_block(conn, cur, blocked_user, user_id):
     with conn:
         cur.execute("""INSERT INTO blocks (user_blocked, user_id)

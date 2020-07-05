@@ -17,7 +17,8 @@ from matcha.classes import User, Message
 from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_message, register_userTags, update_tag, \
                                 create_like, remove_like, create_view, save_location, \
-                                get_reset_token, verify_reset_token, create_block
+                                get_reset_token, verify_reset_token, create_block, \
+                                create_message_notification, check_match, update_message_notification
 
 postsMass = [
     {
@@ -343,6 +344,25 @@ def account():
     images = [image_file_1, image_file_2, image_file_3, image_file_4, image_file_5]
     return render_template('account.html', title='Account', image_file_p=image_file_p, images=images, form=form)
 
+def message_notifications(conn, cur, user_id, current_user):
+    cur.execute("""SELECT new_messages FROM message_notifications 
+                WHERE last_seen_user_id=:last_seen_user_id""", {'last_seen_user_id': user_id})
+    new_messages = cur.fetchone()
+    cur.execute("""SELECT id FROM messages 
+                WHERE recipient=:recipient AND user_id=:user_id""", {'recipient': current_user, 'user_id': user_id})
+    all_messages = len(cur.fetchall())
+    if all_messages is None:
+        all_messages = 0
+    message_notif = all_messages - new_messages[0] if all_messages > new_messages[0] else new_messages[0] - all_messages 
+    return (message_notif)
+
+def append_to_tuple(tuple_data, data_to_append):
+    tuple_data = list(tuple_data)
+    print ('TUPLE DATA', tuple_data)
+    tuple_data.insert(4, data_to_append)
+    print ('TUPLE DATA AFTER APPEND', tuple_data)
+    tuple_data = tuple(tuple_data)
+    return (tuple_data)
 
 @app.route('/inbox')
 @login_required
@@ -357,13 +377,14 @@ def inbox():
     cur.execute("SELECT likes.liked_user, likes.user_id, users.username, users.image_file_p FROM likes, users WHERE likes.liked_user=:currentuser AND likes.user_id=users.user_id", {'currentuser': current_user.user_id})
     users_likedby = cur.fetchall()
     print('Likes FROM Users -> Current user: ', users_likedby)
-    
     true_likes = []
     for index, like in enumerate(users_liked):
                 i = 0
                 while i != len(users_likedby):
                     if like[1] == users_likedby[i][1]:
-                        true_likes.append(users_likedby[i])
+                        notification = message_notifications(conn, cur, users_likedby[i][1], current_user.user_id)
+                        new_data = append_to_tuple(users_likedby[i], notification)
+                        true_likes.append(new_data)
                         break
                     i = i + 1
     print('True Likes, visible users!      : ', true_likes)
@@ -393,6 +414,8 @@ def messages(user_id):
     # Other_User
     cur.execute("SELECT * FROM messages WHERE messages.user_id=:seconduser AND messages.recipient=:currentuser", {'seconduser': user_id, 'currentuser': current_user.user_id})
     messages2 = cur.fetchall()
+    print ('messages from clicked user', len(messages2))
+    update_message_notification(conn, cur, len(messages2), user_id, current_user.user_id)
     cur.execute("SELECT image_file_p, username FROM users WHERE user_id=:seconduser", {'seconduser': user_id})
     seconduser_data = cur.fetchone()
     conn.close()
@@ -426,8 +449,6 @@ def messages(user_id):
 def likes():
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
-    # cur.execute("SELECT * FROM users WHERE likes=:likes", {'likes': current_user.user_id})
-    # cur.execute("SELECT * FROM users WHERE likes LIKE likes=:likes", {'likes': current_user.user_id})
     cur.execute("SELECT * FROM likes WHERE likes.user_id=:currentuser", {'currentuser': current_user.user_id})
     users_liked = cur.fetchall()
     print('Likes BY Current user:            ', users_liked)
@@ -482,6 +503,14 @@ def likes_func(user_id):
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
     create_like(conn, cur, user_id, current_user.user_id)
+
+    if check_match(conn, cur, user_id, current_user.user_id):
+        cur.execute("""SELECT * FROM message_notifications WHERE last_seen_user_id=:last_seen_user_id
+                AND user_id=:user_id""", {'last_seen_user_id': current_user.user_id, 'user_id': user_id})
+        all_message_notifs = cur.fetchall()
+        if not all_message_notifs:
+            create_message_notification(conn, cur, user_id, current_user.user_id)
+    conn.close()
     flash('Like Successful!', 'success')
     return render_template('home.html', title='Views')
 
@@ -491,6 +520,7 @@ def unlike_func(user_id):
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
     remove_like(conn, cur, user_id, current_user.user_id)
+    conn.close()
     flash('User Unliked!', 'warning')
     return render_template('home.html', title='Views')
 
@@ -656,14 +686,31 @@ def reset_token(token):
         return redirect(url_for('login'))
     return render_template('reset_token.html', title='Reset Password', form=form)
 
+@app.route('/inbox_notifications')
+def inbox_notifications():
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("SELECT new_messages FROM message_notifications WHERE user_id=:user_id", {'user_id': current_user.user_id})
+    notification = cur.fetchall()
+    print ('ALL NOTIFICATIONS', notification)
+    cur.execute("SELECT * FROM messages WHERE recipient=:recipient", {'recipient': current_user.user_id})
+    all_messages = len(cur.fetchall())
+    conn.close()
+    total_notes = 0
+    for note in notification:
+        total_notes = total_notes + note[0]
+    if total_notes is None:
+        total_notes = 0
+    message_notification = all_messages - total_notes if all_messages > total_notes else total_notes - all_messages
+    return jsonify({'inbox': message_notification})
 
 @app.route('/like_notifications')
 def like_notifications():
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
-    cur.execute("""SELECT * FROM likes where liked_user=:liked_user""", {'liked_user': current_user.user_id})
+    cur.execute("""SELECT * FROM likes WHERE liked_user=:liked_user""", {'liked_user': current_user.user_id})
     likes_to_user = len(cur.fetchall())
-    cur.execute("""SELECT like_notification FROM like_notifications where user_id=:user_id""", {'user_id': current_user.user_id})
+    cur.execute("""SELECT like_notification FROM like_notifications WHERE user_id=:user_id""", {'user_id': current_user.user_id})
     notification = cur.fetchone()
     conn.close()
     like_notification = likes_to_user - notification[0] if likes_to_user > notification[0] else notification[0] - likes_to_user

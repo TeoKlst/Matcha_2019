@@ -102,6 +102,17 @@ cur.execute("""CREATE TABLE blocks(
                 REFERENCES users (user_id) 
             )""")
 
+cur.execute("""CREATE TABLE message_notifications(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            last_seen_date TEXT NULL,
+            last_seen_time TEXT NULL,
+            last_seen_user_id INTEGER NULL,
+            new_messages INTEGER DEFAULT 0,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id)
+                REFERENCES users (user_id) 
+            )""")
+
 cur.execute("""CREATE TABLE like_notifications(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             like_notification INTEGER NULL,
