@@ -121,13 +121,26 @@
     </script> -->
 
     {% if current_user.is_authenticated %}
+    <!-- LIKE NOTIFICATIONS -->
+    <script>
+        var likeBadge = document.getElementById("likes_count");
+        setInterval(function() {
+            $.ajax("{{ url_for('like_notifications') }}").done(
+                function(like_notifications) {
+                    likeBadge.innerHTML = like_notifications.likes;
+                }
+            );
+        }, 2000);
+    </script>
+    <!-- END LIKE NOTIFICATIONS -->
+
     <!-- VIEW NOTIFICATIONS -->
     <script>
-        var myDiv = document.getElementById("views_count");
+        var viewBadge = document.getElementById("views_count");
         setInterval(function() {
             $.ajax("{{ url_for('view_notifications') }}").done(
                 function(view_notifications) {
-                    myDiv.innerHTML = view_notifications.views;
+                    viewBadge.innerHTML = view_notifications.views;
                 }
             );
         }, 2000);

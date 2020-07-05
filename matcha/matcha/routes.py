@@ -199,6 +199,8 @@ def register():
         with conn:
             cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
                     VALUES (?,?)""",(0, registered_user_ID) )
+            cur.execute("""INSERT INTO like_notifications (like_notification, user_id) 
+                    VALUES (?,?)""",(0, registered_user_ID) )
         conn.close()
         flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
@@ -418,6 +420,7 @@ def messages(user_id):
     return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2, seconduser_data=seconduser_data, messages3=messages3)
 
 # Get image data from current_user like -> another_user. So if the other user hasn't liked back.
+# TODO Investigate like notification if it works properly
 @app.route('/likes', methods=['GET', 'POST'])
 @login_required
 def likes():
@@ -463,6 +466,12 @@ def likes():
         if not check:
             otheruser_unmatched_likes.append(like)
     print('UNMAETCHEDlikesofotherUsers    :', otheruser_unmatched_likes)
+
+    cur.execute("SELECT liked_user FROM likes WHERE liked_user=:currentuser", {'currentuser': current_user.user_id})
+    like_notification = len(cur.fetchall())
+    with conn:
+        cur.execute("""UPDATE like_notifications SET like_notification=:like_notification
+        WHERE user_id=:user_id""", {'like_notification': like_notification ,'user_id': current_user.user_id})
     conn.close()
     return render_template('likes.html', title='Likes', matched_users=true_likes,
     currentuser_unmatched_likes=currentuser_unmatched_likes, otheruser_unmatched_likes=otheruser_unmatched_likes)
@@ -652,11 +661,13 @@ def reset_token(token):
 def like_notifications():
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
-    cur.execute("""SELECT * FROM likes where user_id=:user_id""", {'user_id': current_user.user_id})
-    all_likes = cur.fetchall()
+    cur.execute("""SELECT * FROM likes where liked_user=:liked_user""", {'liked_user': current_user.user_id})
+    likes_to_user = len(cur.fetchall())
+    cur.execute("""SELECT like_notification FROM like_notifications where user_id=:user_id""", {'user_id': current_user.user_id})
+    notification = cur.fetchone()
     conn.close()
-    likes_amount = len(all_likes)
-    return jsonify({'likes': likes_amount})
+    like_notification = likes_to_user - notification[0] if likes_to_user > notification[0] else notification[0] - likes_to_user
+    return jsonify({'likes': like_notification})
 
 
 @app.route('/view_notifications')

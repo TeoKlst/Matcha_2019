@@ -142,6 +142,9 @@ for i in range(5):
 cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
                 VALUES (?,?)""",(0, 1) )
 
+cur.execute("""INSERT INTO like_notifications (like_notification, user_id) 
+                VALUES (?,?)""",(0, 1) )
+
 # ------ UserID 2 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",('Maya', 'Haya', 'MayaHi', 'maya@gmail.com', hashed_password, 'f', 25, '07/12/1994') )
@@ -157,6 +160,9 @@ for i in range(5):
                     VALUES (?,?)""",('0', 2) )
 
 cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
+                VALUES (?,?)""",(0, 2) )
+
+cur.execute("""INSERT INTO like_notifications (like_notification, user_id) 
                 VALUES (?,?)""",(0, 2) )
 
 # ------ UserID 3 ------
@@ -182,6 +188,9 @@ for i in range(5):
 cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
                 VALUES (?,?)""",(0, 3) )
 
+cur.execute("""INSERT INTO like_notifications (like_notification, user_id) 
+                VALUES (?,?)""",(0, 3) )
+
 # ------ UserID 4 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",('Brad', 'Bradson', 'BradB', 'brad@gmail.com', hashed_password, 'm', 35, '07/12/1994') )
@@ -197,6 +206,9 @@ for i in range(5):
                     VALUES (?,?)""",('0', 4) )
 
 cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
+                VALUES (?,?)""",(0, 4) )
+
+cur.execute("""INSERT INTO like_notifications (like_notification, user_id) 
                 VALUES (?,?)""",(0, 4) )
 
 # ------ UserID 5 ------
@@ -217,6 +229,9 @@ for i in range(5):
                     VALUES (?,?)""",('0', 5) )
 
 cur.execute("""INSERT INTO view_notifications (view_notification, user_id) 
+                VALUES (?,?)""",(0, 5) )
+
+cur.execute("""INSERT INTO like_notifications (like_notification, user_id) 
                 VALUES (?,?)""",(0, 5) )
 
 
