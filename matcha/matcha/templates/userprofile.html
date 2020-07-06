@@ -1,4 +1,16 @@
 {% extends "layout.html" %}
+{% block scripts %}
+<script>
+    var lastSeenLoad = document.getElementById("last_seen_load");
+    setInterval(function() {
+        $.ajax("{{ url_for('last_seen_load', user_id=user.user_id ) }}").done(
+            function(last_seen_load) {
+                lastSeenLoad.innerHTML = last_seen_load.last_seen_time;
+            }
+        );
+    }, 2000);
+</script>
+{% endblock scripts %}
 {% block content %}
     <div class="content-section">
         <!-- Profile Image -->
@@ -7,7 +19,7 @@
             <div class="media-body">
                 <h2 class="account-heading">{{ user.username }}</h2>
                 <p class="text-secondary">{{ user.email }}</p>
-                <p class="text-secondary">See if online/Last Online</p>
+                <p id="last_seen_load" class="text-secondary"></p>
             </div>
             <div class="text-center">
                 {% if like %}

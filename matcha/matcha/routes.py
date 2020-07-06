@@ -1,4 +1,4 @@
-import os
+import os, re
 import secrets
 import requests
 from PIL import Image
@@ -755,15 +755,39 @@ def realtime_chat(user_id):
                                   '<button type="button" class="btn btn-info">' + 'MESSAGE CONTENT' + '</button><br></div>',
                     'update'    : update })
 
-# @app.route('/last_seen_set')
-# def last_seen_set():
-#     conn = sql.connect('matcha\\users.db')
-#     cur = conn.cursor()
-#     update_last_seen(conn, cur, datetime.now(), current_user.user_id)
-#     return jsonify({'last_seen'   : ""})
+@app.route('/last_seen_set')
+def last_seen_set():
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    current_time = datetime.now()
+
+    Ts = timedelta(hours = 0, minutes = 0, seconds = 0)
+    timenow = datetime.now()
+    Ts += timedelta(hours=timenow.hour, minutes=timenow.minute, seconds=timenow.second)
+    time_now = str(Ts)
+    date_now = date.today()
+    time_check = Ts + timedelta(minutes=5)
+    info = str(date_now) + ' ' + time_now
+
+    update_last_seen(conn, cur, current_time, current_user.user_id)
+    return jsonify({})
 
 
-# @app.route('/last_seen_load/<user_id>', methods=['GET', 'POST'])
-# def last_seen_load(user_id):
-#     conn = sql.connect('matcha\\users.db')
-#     cur = conn.cursor()
+@app.route('/last_seen_load/<user_id>')
+def last_seen_load(user_id):
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("""SELECT last_seen FROM users WHERE user_id=:user_id""",
+                {'user_id': user_id})
+    last_seen = cur.fetchone()
+    Ts = timedelta(hours = 0, minutes = 0, seconds = 0)
+    timenow = datetime.now()
+    Ts += timedelta(hours=timenow.hour, minutes=timenow.minute, seconds=timenow.second)
+    Ts -= timedelta(seconds=5)
+    split1 = last_seen[0].split(' ') 
+    split2 = split1[1].split(':')
+    convert_time = timedelta(hours = int(split2[0]), minutes = int(split2[1]), seconds = int(split2[2][:-7]))
+    if (convert_time > Ts):
+        return jsonify({'last_seen_time'   : '<p class="text-success">' + 'Online' + '</p>'})
+    else:
+        return jsonify({'last_seen_time'   : last_seen[0][:-10]})

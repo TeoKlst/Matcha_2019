@@ -161,6 +161,17 @@
         }, 2000);
     </script>
     <!-- END VIEW NOTIFICATIONS -->
+
+    <!-- LAST SEEN  -->
+    <script>
+        setInterval(function() {
+            $.ajax("{{ url_for('last_seen_set') }}").done(
+                function(last_seen_set) {
+                }
+            );
+        }, 2000);
+    </script>
+    <!-- END LAST SEEN  -->
     {% else %}
     {% endif %}
 
