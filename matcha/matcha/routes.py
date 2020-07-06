@@ -10,7 +10,7 @@ from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, \
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message as flask_message
 from datetime import date, timedelta, datetime
-
+from collections import Counter
 # Templating engine that flask uses is Jinja2
 db = 1
 from matcha.classes import User, Message
@@ -237,13 +237,17 @@ def login():
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             # --- Geo Location ---
-            http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
-            json_request = requests.get('https://api.ipify.org?format=json').json()
-            ip      = json_request['ip']
-            ipAdress= 'ipAddress=' + ip
-            json_request = requests.get(http + geoKey + ipAdress).json()
-            data  = (json_request)
-            save_location(conn, cur, current_user.user_id, data)
+            cur.execute("""SELECT location_city FROM users WHERE user_id=:user_id""",
+                                                {'user_id': current_user.user_id})
+            location = cur.fetchall()
+            if not location:
+                http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
+                json_request = requests.get('https://api.ipify.org?format=json').json()
+                ip      = json_request['ip']
+                ipAdress= 'ipAddress=' + ip
+                json_request = requests.get(http + geoKey + ipAdress).json()
+                data  = (json_request)
+                save_location(conn, cur, current_user.user_id, data)
 
             conn.close()
             return redirect(next_page) if next_page else redirect(url_for('home'))
@@ -544,63 +548,213 @@ def search():
         conn = sql.connect('matcha\\users.db')
         cur = conn.cursor()
 
-        age_gap = form.age.data
-        fame_gap = form.fame_rating.data
+        age_min = form.age_min.data
+        age_max = form.age_max.data
 
-        if age_gap != '0':
-            upA = (int(age_gap) + current_user.age)
-            lowA= (int(age_gap) - current_user.age) if int(age_gap) > current_user.age else (current_user.age - int(age_gap))
-            # print (upA)
-            # print (lowA)
-            cur.execute("SELECT user_id FROM users WHERE (age BETWEEN ? AND ?)", (lowA, upA))
-            found_age_users = cur.fetchall()
+        fame_min = form.fame_rating_min.data
+        fame_max = form.fame_rating_max.data
 
-        if fame_gap != '0':
-            upF = (int(fame_gap) + current_user.famerating)
-            lowF= (int(fame_gap) - current_user.famerating) if int(fame_gap) > current_user.famerating else (current_user.famerating - int(fame_gap))
-            # print ('Fame',upF)
-            # print ('Fame',lowF)
-            cur.execute("SELECT user_id FROM users WHERE (famerating BETWEEN ? AND ?)", (lowF, upF))
-            found_fame_users = cur.fetchall()
+        location = form.location.data
 
-        # -------------------> WIP
-        # if location != '0':
-            # pass
-        # if tags != '0':
-            # pass
-        # -------------------> WIP
+        tag1 = form.tag1.data
+        tag2 = form.tag2.data
+        tag3 = form.tag3.data
+        tag4 = form.tag4.data
+        tag5 = form.tag5.data
+
+        # AGE
+        found_age_users = []
+        if age_min != '0' or age_max != '0':
+            min_check = False
+            max_check = False
+
+            if age_min != '0':
+                min_check = True
+            if age_max != '0':
+                max_check = True
+
+            if min_check and max_check:
+                # SEARCH FROM A TO B
+                cur.execute("""SELECT user_id FROM users WHERE (age BETWEEN ? AND ?)""",
+                                                        (int(age_min), int(age_max)))
+                found_age_users = cur.fetchall()
+            elif min_check:
+                # SEARCH FROM LOWEST TO HIGHEST
+                cur.execute("""SELECT user_id FROM users WHERE (age BETWEEN ? AND ?)""",
+                                                        (int(age_min), 100))
+                found_age_users = cur.fetchall()
+            elif max_check:
+                # SEARCH HIGHEST TO LOWEST
+                cur.execute("""SELECT user_id FROM users WHERE (age BETWEEN ? AND ?)""",
+                                                        (0, int(age_max)))
+                found_age_users = cur.fetchall()
+            
+            # Checks if valid user was found, if none fails search criteria
+            if not found_age_users:
+                found_age_users = False
+
+        # FAME
+        found_fame_users = []
+        if fame_min != '0' or fame_max != '0':
+            min_check = False
+            max_check = False
+
+            if fame_min != '0':
+                min_check = True
+            if fame_max != '0':
+                max_check = True
+
+            if min_check and max_check:
+                # SEARCH FROM A TO B
+                cur.execute("""SELECT user_id FROM users WHERE (famerating BETWEEN ? AND ?)""",
+                                                        (int(fame_min), int(fame_max)))
+                found_fame_users = cur.fetchall()
+            elif min_check:
+                # SEARCH FROM LOWEST TO HIGHEST
+                cur.execute("""SELECT user_id FROM users WHERE (famerating BETWEEN ? AND ?)""",
+                                                        (int(fame_min), 200))
+                found_fame_users = cur.fetchall()
+            elif max_check:
+                # SEARCH HIGHEST TO LOWEST
+                cur.execute("""SELECT user_id FROM users WHERE (famerating BETWEEN ? AND ?)""",
+                                                        (0, int(fame_max)))
+                found_fame_users = cur.fetchall()
+
+            # Checks if valid user was found, if none fails search criteria
+            if not found_fame_users:
+                found_fame_users = False
+
+        # TAG
+        found_tags_users = []
+        if tag1 != '0' or tag2 != '0' or tag3 != '0' or tag4 != '0' or tag5 != '0':
+
+            tag_list = []
+            if tag1 != '0':
+                tag_list.append(tag1)
+            if tag2 != '0':
+                tag_list.append(tag2)
+            if tag3 != '0':
+                tag_list.append(tag3)
+            if tag4 != '0':
+                tag_list.append(tag4)
+            if tag5 != '0':
+                tag_list.append(tag5)
+
+            tag_list_len = len(tag_list)
+
+            if tag_list_len == 1:
+                cur.execute("""SELECT user_id FROM tags WHERE content=:content1""",
+                                                        {'content1': tag_list[0]})
+                found_tags_users = cur.fetchall()
+            elif tag_list_len == 2:
+                cur.execute("""SELECT user_id FROM tags WHERE content IN (?, ?)""", 
+                                                        (tag_list[0], tag_list[1]))
+                found_tags_users = cur.fetchall()
+            elif tag_list_len == 3:
+                cur.execute("""SELECT user_id FROM tags WHERE content IN (?, ?, ?)""",
+                                                        (tag_list[0], tag_list[1], tag_list[2]))
+                found_tags_users = cur.fetchall()
+            elif tag_list_len == 4:
+                cur.execute("""SELECT user_id FROM tags WHERE content IN (?, ?, ?, ?)""",
+                                                        (tag_list[0], tag_list[1], tag_list[2], tag_list[3]))
+                found_tags_users = cur.fetchall()
+            elif tag_list_len == 5:
+                cur.execute("""SELECT user_id FROM tags WHERE content IN (?, ?, ?, ?, ?)""",
+                                                        (tag_list[0], tag_list[1], tag_list[2], tag_list[3], tag_list[4]))
+                found_tags_users = cur.fetchall()
+
+            # Checks if valid user was found, if none fails search criteria
+            if not found_tags_users:
+                found_tags_users = False
+            else:
+                if found_tags_users:
+                    temp_list1 = []
+                    for user in found_tags_users:
+                        temp_list1.append(user[0])
+
+                    counted = Counter(temp_list1)
+
+                    temp_list2 = []
+                    for x in counted:
+                        if int(counted[x]) == tag_list_len:
+                            temp_list2.append(x)
+                    found_tags_users = temp_list2
+
+        # found_tags_users = tuple([user] for user in found_tags_users)
+        print ('ALL USERS FOUND IN TAGS: ', found_tags_users)
 
         cur.execute("SELECT user_id FROM users WHERE user_id")
         all_users = cur.fetchall()
         filtered_users = []
 
-        filtered_users1 = []
-        if age_gap != '0':
+        filtered_age = []
+        if found_age_users:
             for index, user in enumerate(found_age_users):
                 i = 0
                 while i != len(all_users):
                     if user == all_users[i]:
-                        filtered_users1.append(user)
+                        filtered_age.append(user)
                         break
                     i = i + 1
+        if filtered_age:
+            filtered_users = filtered_age
+            all_users = filtered_users
 
-        filtered_users2 = []
-        if fame_gap != '0':
+        filtered_fame = []
+        if found_fame_users:
             for index, user in enumerate(found_fame_users):
                 i = 0
-                while i != len(filtered_users1):
-                    if user == filtered_users1[i]:
-                        filtered_users2.append(user)
+                while i != len(all_users):
+                    if user == all_users[i]:
+                        filtered_fame.append(user)
                         break
                     i = i + 1
+        if filtered_fame:
+            filtered_users = filtered_fame
+            all_users = filtered_users
 
-        print('--------SEARCH RESULT:', filtered_users2)
+        # TODO ADD EXCEPTION IF INFO IS NOT FOUND
+        filtered_tags = []
+        if found_tags_users:
+            for index, user in enumerate(found_tags_users):
+                i = 0
+                while i != len(all_users):
+                    if user == all_users[i][0]:
+                        filtered_tags.append(user)
+                        break
+                    i = i + 1
+        if filtered_tags:
+            filtered_users = filtered_tags
+            all_users = filtered_users
 
-        flash('Validated!', 'success')
-        return redirect(url_for('search'))
+        print ('FILTERED USER CRITERIA AFTER AGE, FAME, TAGS CHECK: ',filtered_users)
+
+        # SEARCH FOR MATCHING USERS
+        if found_age_users == False or found_fame_users == False or found_tags_users == False:
+            flash('No users found!', 'warning')
+            return redirect(url_for('search'))
+        else:
+            filtered_users_data = []
+            if found_tags_users:
+                for user in filtered_users:
+                    cur.execute("""SELECT * FROM users WHERE user_id=:user_id""",
+                                                                {'user_id': user})
+                    user_data = cur.fetchone()
+                    filtered_users_data.append(user_data)
+            else:
+                for user in filtered_users:
+                    cur.execute("""SELECT * FROM users WHERE user_id=:user_id""",
+                                                                {'user_id': user[0]})
+                    user_data = cur.fetchone()
+                    filtered_users_data.append(user_data)
+
+            print ('USER DATA FETCH AFTER ALL PASS SEARCH CRITERIA: ',filtered_users_data)
+
+            flash('Validated!', 'success')
+            return redirect(url_for('search', users=filtered_users_data))
     elif request.method == 'GET':
         pass
-    return render_template('search.html', title='Likes', form=form)
+    return render_template('search.html', title='Search', form=form)
 
 
 @app.route('/block_user/<user_id>', methods=['GET', 'POST'])

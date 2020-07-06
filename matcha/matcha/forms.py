@@ -4,7 +4,7 @@ from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, RadioField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from matcha.models import choices_gender, choices_day, choices_month, choices_year, choices_sexpreference, choices_gap, choices_tags, choices_geo
+from matcha.models import choices_gender, choices_day, choices_month, choices_year, choices_sexpreference, choices_gap, choices_tags, choices_geo, choices_gap_fame, choices_gap_age
 from datetime import date
 
 # Python Classes converted to html forms within templates
@@ -140,10 +140,26 @@ class MessagesForm(FlaskForm):
 
 
 class SearchForm(FlaskForm):
-    age             = SelectField('Age Gap',
-                                choices=choices_gap)
-    fame_rating     = SelectField('Fame Gap',
-                                choices=choices_gap)
+    age_min         = SelectField('Min. Age',
+                                choices=choices_gap_age)
+    age_max         = SelectField('Max Age',
+                                choices=choices_gap_age)
+    fame_rating_min = SelectField('Min. Fame',
+                                choices=choices_gap_fame)
+    fame_rating_max = SelectField('Max Fame',
+                                choices=choices_gap_fame)
+    location        = SelectField('Location',
+                                choices=choices_tags)
+    tag1            =SelectField('Tag1',
+                                choices=choices_tags)
+    tag2            =SelectField('Tag2',
+                                choices=choices_tags)
+    tag3            =SelectField('Tag3',
+                                choices=choices_tags)
+    tag4            =SelectField('Tag4',
+                                choices=choices_tags)
+    tag5            =SelectField('Tag5',
+                            choices=choices_tags)
     submit          = SubmitField('Search')
 
 class RequestResetForm(FlaskForm):
