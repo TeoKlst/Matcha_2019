@@ -16,6 +16,11 @@ def register_userTest(conn, cur, user):
         cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, age, birthdate, gender) 
                 VALUES (?,?,?,?,?,?,?,?)""",(user.firstname, user.lastname, user.username, user.email, user.password, user.age, user.birthdate, user.gender) )
 
+def update_last_seen(conn, cur, time, current_user_id):
+    with conn:
+        cur.execute("""UPDATE users SET last_seen=:last_seen
+                WHERE user_id=:user_id""", {'last_seen': time, 'user_id': current_user_id})
+
 def check_match(conn, cur, user_id, current_user_id):
     with conn:
         cur.execute("""SELECT * FROM likes WHERE liked_user=:liked_user

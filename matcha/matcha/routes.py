@@ -18,7 +18,8 @@ from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_message, register_userTags, update_tag, \
                                 create_like, remove_like, create_view, save_location, \
                                 get_reset_token, verify_reset_token, create_block, \
-                                create_message_notification, check_match, update_message_notification
+                                create_message_notification, check_match, update_message_notification, \
+                                update_last_seen
 
 postsMass = [
     {
@@ -416,7 +417,7 @@ def messages(user_id):
     messages2 = cur.fetchall()
     print ('messages from clicked user', len(messages2))
     update_message_notification(conn, cur, len(messages2), user_id, current_user.user_id)
-    cur.execute("SELECT image_file_p, username FROM users WHERE user_id=:seconduser", {'seconduser': user_id})
+    cur.execute("SELECT image_file_p, username, user_id FROM users WHERE user_id=:seconduser", {'seconduser': user_id})
     seconduser_data = cur.fetchone()
     conn.close()
     messages1 = messages1 if messages1 else [(None, None, '. . .', None, '', None)]
@@ -692,7 +693,6 @@ def inbox_notifications():
     cur = conn.cursor()
     cur.execute("SELECT new_messages FROM message_notifications WHERE user_id=:user_id", {'user_id': current_user.user_id})
     notification = cur.fetchall()
-    print ('ALL NOTIFICATIONS', notification)
     cur.execute("SELECT * FROM messages WHERE recipient=:recipient", {'recipient': current_user.user_id})
     all_messages = len(cur.fetchall())
     conn.close()
@@ -728,3 +728,42 @@ def view_notifications():
     conn.close()
     view_notification = total_views - last_viewed[0] if total_views > last_viewed[0] else last_viewed[0] - total_views
     return jsonify({'views': view_notification})
+
+@app.route('/realtime_chat/<user_id>')
+def realtime_chat(user_id):
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    cur.execute("""SELECT * FROM messages WHERE recipient=:recipient AND user_id=:user_id"""
+                , {'recipient': current_user.user_id, 'user_id': user_id})
+    other_user_message = cur.fetchall()
+    cur.execute("""SELECT new_messages FROM message_notifications WHERE last_seen_user_id=:last_seen_user_id AND user_id=:user_id"""
+                , {'last_seen_user_id': user_id, 'user_id': current_user.user_id})
+    new_messages = cur.fetchone()
+    len_other_messages = len(other_user_message)
+    message = []
+    if len_other_messages > new_messages[0]:
+        update_message_notification(conn, cur, len_other_messages, user_id, current_user.user_id)
+        ranges =  len_other_messages - (len_other_messages - new_messages[0])
+        for x in range(ranges, (len_other_messages)):
+            message.append(other_user_message[x])
+            update = 'True'
+        return jsonify({'message'   : '<div class="mb-1 text-right"><small class="text-muted pull-left">' + message[0][4][:-3] + '</small>' + \
+                                      '<button type="button" class="btn btn-info">' + message[0][2] + '</button><br></div>',
+                        'update'    : update})
+    update = 'False'
+    return jsonify({'message'   : '<div class="mb-1 text-right"><small class="text-muted pull-left">' + 'TIME DATA' + '</small>' + \
+                                  '<button type="button" class="btn btn-info">' + 'MESSAGE CONTENT' + '</button><br></div>',
+                    'update'    : update })
+
+# @app.route('/last_seen_set')
+# def last_seen_set():
+#     conn = sql.connect('matcha\\users.db')
+#     cur = conn.cursor()
+#     update_last_seen(conn, cur, datetime.now(), current_user.user_id)
+#     return jsonify({'last_seen'   : ""})
+
+
+# @app.route('/last_seen_load/<user_id>', methods=['GET', 'POST'])
+# def last_seen_load(user_id):
+#     conn = sql.connect('matcha\\users.db')
+#     cur = conn.cursor()
