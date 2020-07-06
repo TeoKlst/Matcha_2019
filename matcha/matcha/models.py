@@ -17,7 +17,7 @@ def load_user(id):
             userrow[5], userrow[6], userrow[7], userrow[8], userrow[9],
             userrow[10], userrow[11], userrow[12], userrow[13], userrow[14], 
             userrow[15], userrow[16], userrow[17], userrow[18], userrow[19],
-            userrow[20])
+            userrow[20], userrow[21], userrow[22], userrow[23])
     # print('return id', user)
     return (user)
 

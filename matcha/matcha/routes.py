@@ -86,7 +86,7 @@ def user_profile(username):
     userClass = User(user[0], user[1], user[2], user[3], user[4], user[5], user[6],
                 user[7], user[8], user[9], user[10], user[11], user[12], user[13],
                 user[14], user[15], user[16], user[17], user[18],
-                user[19], user[20])
+                user[19], user[20], user[21], user[22], user[23])
     print ('++++++++++++++++++++++++++++++++++++ User Data=>',userClass)
     form.firstname.data     = userClass.firstname
     form.lastname.data      = userClass.lastname
@@ -193,7 +193,7 @@ def register():
                 form.username.data, form.email.data, hashed_password, form.gender.data, 'sexual_pref',
                 'biography', 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
                 'image_file_3', 'image_file_4', 'image_file_5', 'geo_track', 'location_city',
-                'location_region')
+                'location_region', 'lat_data', 'long_data', 'last_seen')
 
         register_userTest(conn, cur, user)
         registered_user_ID = cur.lastrowid
@@ -231,7 +231,7 @@ def login():
                     user_data[5], user_data[6], user_data[7], user_data[8], user_data[9],
                     user_data[10], user_data[11], user_data[12], user_data[13], user_data[14],
                     user_data[15], user_data[16], user_data[17], user_data[18], user_data[19],
-                    user_data[20])
+                    user_data[20], user_data[21], user_data[22], user_data[23])
 
         if user_data and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
@@ -310,7 +310,7 @@ def account():
                 form.username.data, form.email.data, 'hashed_password', form.gender.data, form.sexual_pref.data,
                 form.biography.data, 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
                 'image_file_3', 'image_file_4', 'image_file_5', form.geo_tag.data, 'location_city',
-                'location_region')
+                'location_region', 'lat_data', 'long_data', 'last_seen')
         update_user(conn, cur, user)
         # ------ Tags ------
         update_tag(conn, cur, current_user.user_id, form.user_tag1.data, form.user_tag2.data, form.user_tag3.data, form.user_tag4.data, form.user_tag5.data)

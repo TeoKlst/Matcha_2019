@@ -48,15 +48,10 @@ cur.execute("""CREATE TABLE users (
             image_file_5 TEXT NULL,
             geo_track TEXT DEFAULT "1",
             location_city TEXT NULL,
-            location_region TEXT NULL
-            )""")
-
-cur.execute("""CREATE TABLE location (
-            lat INTEGER NULL,
-            long INTEGER NULL,
-            user_id INTEGER NOT NULL,
-            FOREIGN KEY (user_id)
-                REFERENCES users (user_id) 
+            location_region TEXT NULL,
+            lat_data INTEGER NULL,
+            long_data INTEGER NULL,
+            last_seen TEXT NULL
             )""")
 
 cur.execute("""CREATE TABLE messages (
@@ -140,12 +135,6 @@ hashed_password = bcrypt.generate_password_hash('tkelest123').decode('utf-8')
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",('Teo', 'Kelestura', 'Tkelest', 'tkelest@gmail.com', hashed_password, 'm', 25, '07/12/1994') )
 
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(2, 1) )
-
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(3, 1) )
-
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
                     VALUES (?,?)""",('0', 1) )
@@ -159,12 +148,6 @@ cur.execute("""INSERT INTO like_notifications (like_notification, user_id)
 # ------ UserID 2 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",('Maya', 'Haya', 'MayaHi', 'maya@gmail.com', hashed_password, 'f', 25, '07/12/1994') )
-
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(1, 2) )
-
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(5, 2) )
 
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
@@ -180,18 +163,6 @@ cur.execute("""INSERT INTO like_notifications (like_notification, user_id)
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",('Jamie', 'Jameson', 'Jay', 'jayjay@gmail.com', hashed_password, 'f', 30, '07/12/1994') )
 
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(1, 3) )
-
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(2, 3) )
-
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(4, 3) )
-
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(5, 3) )
-
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
                     VALUES (?,?)""",('0', 3) )
@@ -206,12 +177,6 @@ cur.execute("""INSERT INTO like_notifications (like_notification, user_id)
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",('Brad', 'Bradson', 'BradB', 'brad@gmail.com', hashed_password, 'm', 35, '07/12/1994') )
 
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(2, 4) )
-
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(3, 4) )
-
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
                     VALUES (?,?)""",('0', 4) )
@@ -225,15 +190,6 @@ cur.execute("""INSERT INTO like_notifications (like_notification, user_id)
 # ------ UserID 5 ------
 cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
                 VALUES (?,?,?,?,?,?,?,?)""",('Tommy', 'Thomson', 'TheDankEngine', 'dank@gmail.com', hashed_password, 'm', 40, '07/12/1994') )
-
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(2, 5) )
-
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(3, 5) )
-
-cur.execute("""INSERT INTO likes (liked_user, user_id)
-                VALUES (?,?)""",(4, 5) )
 
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
