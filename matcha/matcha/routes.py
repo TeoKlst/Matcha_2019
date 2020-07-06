@@ -784,10 +784,14 @@ def last_seen_load(user_id):
     timenow = datetime.now()
     Ts += timedelta(hours=timenow.hour, minutes=timenow.minute, seconds=timenow.second)
     Ts -= timedelta(seconds=5)
-    split1 = last_seen[0].split(' ') 
-    split2 = split1[1].split(':')
-    convert_time = timedelta(hours = int(split2[0]), minutes = int(split2[1]), seconds = int(split2[2][:-7]))
-    if (convert_time > Ts):
-        return jsonify({'last_seen_time'   : '<p class="text-success">' + 'Online' + '</p>'})
+    print ('LAST SEEN:',last_seen)
+    if last_seen[0] is None:
+        return jsonify({'last_seen_time'   : ''})
     else:
-        return jsonify({'last_seen_time'   : last_seen[0][:-10]})
+        split1 = last_seen[0].split(' ') 
+        split2 = split1[1].split(':')
+        convert_time = timedelta(hours = int(split2[0]), minutes = int(split2[1]), seconds = int(split2[2][:-7]))
+        if (convert_time > Ts):
+            return jsonify({'last_seen_time'   : '<p class="text-success">' + 'Online' + '</p>'})
+        else:
+            return jsonify({'last_seen_time'   : last_seen[0][:-10]})
