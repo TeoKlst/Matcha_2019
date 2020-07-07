@@ -162,6 +162,13 @@ class SearchForm(FlaskForm):
                             choices=choices_tags)
     submit          = SubmitField('Search')
 
+class SortForm(FlaskForm):
+    field_select    = SelectField('Select Critera',
+                                choices=choices_gap_age)
+    type_sort       = SelectField('Asc or Desc',
+                                choices=choices_gap_age)
+    submit          = SubmitField('Sort')
+
 class RequestResetForm(FlaskForm):
     email       = StringField('Email',
                             validators=[DataRequired(), Email()])

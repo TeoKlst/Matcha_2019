@@ -2,10 +2,11 @@ import os, re
 import secrets
 import requests
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request, abort, json, jsonify
+from flask import render_template, url_for, flash, redirect, request, abort, json, jsonify, session
 from matcha import app, bcrypt, sql, geoKey, mail
 from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, \
-                        MessagesForm, SearchForm, RequestResetForm, ResetPasswordForm
+                        MessagesForm, SearchForm, RequestResetForm, ResetPasswordForm, \
+                        SortForm
 # from matcha.models import Like, Message, Images, Tags, Post    
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message as flask_message
@@ -454,7 +455,7 @@ def messages(user_id):
 def likes():
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
-    cur.execute("SELECT * FROM likes WHERE likes.user_id=:currentuser", {'currentuser': current_user.user_id})
+    cur.execute("SELECT likes.id, likes.liked_user, likes.user_id, users.username, users.image_file_p FROM likes, users WHERE likes.user_id=:currentuser AND likes.liked_user=users.user_id", {'currentuser': current_user.user_id})
     users_liked = cur.fetchall()
     print('Likes BY Current user:            ', users_liked)
     cur.execute("SELECT likes.liked_user, likes.user_id, users.username, users.image_file_p FROM likes, users WHERE likes.liked_user=:currentuser AND likes.user_id=users.user_id", {'currentuser': current_user.user_id})
@@ -751,10 +752,19 @@ def search():
             print ('USER DATA FETCH AFTER ALL PASS SEARCH CRITERIA: ',filtered_users_data)
 
             flash('Validated!', 'success')
-            return redirect(url_for('search', users=filtered_users_data))
+            session['found_users'] = filtered_users
+            return redirect(url_for('search_results'))
     elif request.method == 'GET':
         pass
     return render_template('search.html', title='Search', form=form)
+# TODO MOVE TO OTHER PAGE WITH DATA WHERE WE CAN SORT IT
+
+
+@app.route('/search_results', methods=['GET', 'POST'])
+def search_results():
+    form = SortForm()
+    found_users = session.get('found_users', None)
+    return render_template('search_results.html', title='Search Result', form=form, users=found_users)
 
 
 @app.route('/block_user/<user_id>', methods=['GET', 'POST'])

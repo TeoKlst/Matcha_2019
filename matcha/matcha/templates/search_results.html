@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <div class="form-row">
+                <div class="form-group col">
+                    {{ form.field_select.label(class="form-control-label") }}
+                    {% if form.field_select.errors %}
+                    {{ form.field_select(class="form-control form-control-lg is-invalid", placeholder="name@example.com") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.field_select.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.field_select(class="form-control form-control-lg", placeholder="name@example.com") }}
+                {% endif %}
+                </div>
+                <div class="form-group col">
+                    {{ form.type_sort.label(class="form-control-label") }}
+                    {% if form.type_sort.errors %}
+                    {{ form.type_sort(class="form-control form-control-lg is-invalid", placeholder="name@example.com") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.type_sort.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.type_sort(class="form-control form-control-lg", placeholder="name@example.com") }}
+                {% endif %}
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-success") }}
+        </div>
+        <div class="border-top mt-4 mb-4">
+        </div>
+        <div class="container">
+            <div class="row">
+        {% for user in users%}
+        <div class="mb-3 mr-3">
+            <div class="card" style="width: 10rem;">
+                <!-- <img src="..." class="card-img-top" alt="..."> -->
+                <div class="text-center">
+                    <a href="{{ url_for('user_profile', username=user[3]) }}" data-toggle="tooltip" data-placement="top" title="Inspect Profile">
+                        <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[4] }}" ></a>
+                </div>
+                    <div class="card-body text-center">
+                    <h5 class="card-title">{{ user }}</h5>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    </div>
+    </form>
+</div>
+{% endblock content %}
