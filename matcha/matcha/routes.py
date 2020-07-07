@@ -733,7 +733,7 @@ def search():
             filtered_users = filtered_tags
             all_users = filtered_users
 
-        print ('FILTERED USER CRITERIA AFTER AGE, FAME, TAGS CHECK: ',found_tags_users)
+        # print ('FILTERED USER CRITERIA AFTER AGE, FAME, TAGS CHECK: ',found_tags_users)
 
         # SEARCH FOR MATCHING USERS
         if found_age_users == False or found_fame_users == False or found_tags_users == False:
@@ -755,6 +755,10 @@ def search_results():
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
 
+    cur.execute("""SELECT lat_data, long_data FROM users WHERE user_id=:user_id""",
+                                                        {'user_id': current_user.user_id})
+    user_latlong = cur.fetchone()
+
     check_is = True
     try:
         test = found_users[0][0]
@@ -764,25 +768,31 @@ def search_results():
     filtered_users_data = []
     if check_is == False:
         for user in found_users:
-            cur.execute("""SELECT user_id, username, image_file_p, age, famerating, location_region 
+            cur.execute("""SELECT user_id, username, image_file_p, age, famerating, location_city, location_region, lat_data, long_data 
                             FROM users WHERE user_id=:user_id""", {'user_id': user})
             user_data = cur.fetchone()
             cur.execute("""SELECT user_id, content FROM tags WHERE user_id=:user_id""",
                                                                 {'user_id': user})
             tag_data = cur.fetchall()
             valid_tags = 0
-            # print (tag_data)
             for tag in tag_data:
                 if tag[1] != '0':
                     valid_tags = valid_tags + 1
 
+            user_distance = geopy.distance.distance(user_latlong, (user_data[7], user_data[8]))
+            if not user_distance:
+                user_distance = 0
             data = list(user_data)
-            data.insert(6, valid_tags)
+            data.insert(5, valid_tags)
+            if user_distance != 0:
+                data.insert(6, str(user_distance)[:-16])
+            else:
+                 data.insert(6, str(user_distance))
             data = tuple(data)
             filtered_users_data.append(data)
     else:
         for user in found_users:
-            cur.execute("""SELECT user_id, username, image_file_p, age, famerating, location_region 
+            cur.execute("""SELECT user_id, username, image_file_p, age, famerating, location_city, location_region, lat_data, long_data 
                             FROM users WHERE user_id=:user_id""", {'user_id': user[0]})
             user_data = cur.fetchone()
             cur.execute("""SELECT user_id, content FROM tags WHERE user_id=:user_id""",
@@ -794,8 +804,15 @@ def search_results():
                 if tag[1] != '0':
                     valid_tags = valid_tags + 1
 
+            user_distance = geopy.distance.distance(user_latlong, (user_data[7], user_data[8]))
+            if not user_distance:
+                user_distance = 0
             data = list(user_data)
-            data.insert(6, valid_tags)
+            data.insert(5, valid_tags)
+            if user_distance != 0:
+                data.insert(6, str(user_distance)[:-16])
+            else:
+                 data.insert(6, str(user_distance))
             data = tuple(data)
             filtered_users_data.append(data)
 
@@ -813,12 +830,11 @@ def search_results():
                 kind_sort = 3
             elif form_select == 'fame':
                 kind_sort = 4
-            # CAREFUL CANNOT SORT BY LOCATION
-            elif form_select == 'location':
-                kind_sort = 5
             elif form_select == 'tags':
+                kind_sort = 5
+            elif form_select == 'location':
                 kind_sort = 6
-
+        
             # Sorting Tuple
             def getKey(item):
                 return item[kind_sort]
