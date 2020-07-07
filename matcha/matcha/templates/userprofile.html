@@ -22,18 +22,26 @@
                 <p id="last_seen_load" class="text-secondary"></p>
             </div>
             <div class="text-center">
-                {% if like %}
+                {% if user_relation == 'matched' %}
                 <div>
-                    <a href="{{ url_for('messages', user_id=user[1]) }}" role="button" class="btn btn-warning">Unlike</a>
+                    <a href="{{ url_for('unlike_func', user_id=user.user_id) }}" role="button" class="btn btn-warning">Unlike</a>
                 </div>
-                {% else %}
-                <div>
-                    <a href="{{ url_for('messages', user_id=user[1]) }}" role="button" class="btn btn-block btn-success">Like</a>
-                </div>
-                {% endif %}
                 <div>
                     <a href="{{ url_for('report_user', username=user.username) }}" role="button" class="btn btn-block btn-outline-danger">Report</a>
                 </div>
+                {% elif user_relation == 'liked' %}
+                <div>
+                    <a href="{{ url_for('unlike_func', user_id=user.user_id) }}" role="button" class="btn btn-block btn-warning">Unlike</a>
+                </div>
+                {% elif user_relation == 'likee' %}
+                <div>
+                    <a href="{{ url_for('likes_func', user_id=user.user_id) }}" role="button" class="btn btn-block btn-success">Like Back</a>
+                </div>
+                {% else %}
+                <div>
+                    <a href="{{ url_for('likes_func', user_id=user.user_id) }}" role="button" class="btn btn-block btn-success">Like</a>
+                </div>
+                {% endif %}
                 <div>
                     <a href="{{ url_for('block_user', user_id=user.user_id) }}" role="button" class="btn btn-block btn-danger">Block</a>
                 </div>

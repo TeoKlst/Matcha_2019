@@ -11,6 +11,22 @@ from matcha import app
 #                     'biography': None, 'famerating': None, 'image_file': None, 'userchecks': None, 'tags': None})
 
 # TODO Possible SQL injection vulnerability
+
+def add_fame_like(conn, cur, user_id, current_user_id):
+    pass
+
+def add_fame_match(conn, cur, user_id, current_user_id):
+    pass
+
+def minus_fame_unlike(conn, cur, user_id, current_user_id):
+    pass
+
+def minus_fame_unmatch(conn, cur, user_id, current_user_id):
+    pass
+
+def minus_fame_reported(conn, cur, user_id, current_user_id):
+    pass
+
 def register_userTest(conn, cur, user):
     with conn:
         cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, age, birthdate, gender) 
@@ -20,6 +36,21 @@ def update_last_seen(conn, cur, date_time, current_user_id):
     with conn:
         cur.execute("""UPDATE users SET last_seen=:last_seen
                 WHERE user_id=:user_id""", {'last_seen': date_time, 'user_id': current_user_id})
+
+def check_like_status(conn, cur, user_id, current_user_id):
+    with conn:
+        cur.execute("""SELECT * FROM likes WHERE liked_user=:liked_user
+                    AND user_id=:user_id""", {'liked_user': current_user_id, 'user_id': user_id})
+        likee = cur.fetchone()
+        cur.execute("""SELECT * FROM likes WHERE liked_user=:liked_user
+                    AND user_id=:user_id""", {'liked_user': user_id, 'user_id': current_user_id})
+        liked = cur.fetchone()
+    if likee:
+        return ('likee')
+    elif liked:
+        return ('liked')
+    else:
+        return(False)
 
 def check_match(conn, cur, user_id, current_user_id):
     with conn:

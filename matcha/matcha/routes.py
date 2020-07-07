@@ -21,7 +21,7 @@ from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_like, remove_like, create_view, save_location, \
                                 get_reset_token, verify_reset_token, create_block, \
                                 create_message_notification, check_match, update_message_notification, \
-                                update_last_seen
+                                update_last_seen, check_like_status
 
 
 @app.route('/')
@@ -84,8 +84,15 @@ def user_profile(username):
 
     # cur.execute("SELECT * FROM likes WHERE liked_user=:user_id AND user_id=:current_user", {'user_id': userClass.user_id, 'current_user': current_user.user_id})
     # likes = cur.fetchone()
+
+    user_relation = []
+    if check_match(conn, cur, userClass.user_id, current_user.user_id):
+        user_relation = 'matched'
+    else:
+        user_relation = check_like_status(conn, cur, userClass.user_id, current_user.user_id)
+    
     conn.close()
-    return render_template('userprofile.html', title='User Profile', form=form, user=userClass, images=images)
+    return render_template('userprofile.html', title='User Profile', form=form, user=userClass, images=images, user_relation=user_relation)
 
 
 @app.route('/views')
