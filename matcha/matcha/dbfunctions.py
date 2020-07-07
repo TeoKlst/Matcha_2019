@@ -82,10 +82,10 @@ def create_message_notification(conn, cur, user_id, current_user_id):
         cur.execute("""INSERT INTO message_notifications (last_seen_user_id, user_id)
                     VALUES (?,?)""", (current_user_id, user_id))
 
-def create_block(conn, cur, blocked_user, user_id):
+def create_block(conn, cur, blocked_user, current_user_id):
     with conn:
         cur.execute("""INSERT INTO blocks (user_blocked, user_id)
-                    VALUES (?,?)""", (blocked_user, user_id))
+                    VALUES (?,?)""", (blocked_user, current_user_id))
 
 def get_reset_token(user_id, expires_sec=1800):
     s = Serializer(app.config['SECRET_KEY'], expires_sec)

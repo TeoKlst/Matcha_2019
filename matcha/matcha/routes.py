@@ -78,12 +78,9 @@ def user_profile(username):
     if not view_check:
         create_view(conn, cur, userClass.user_id, current_user.user_id)
 
-    cur.execute("SELECT * FROM userviews")
-    test = cur.fetchall()
-    print('ALL USERVIEWS: ',test)
-
-    # cur.execute("SELECT * FROM likes WHERE liked_user=:user_id AND user_id=:current_user", {'user_id': userClass.user_id, 'current_user': current_user.user_id})
-    # likes = cur.fetchone()
+    # cur.execute("SELECT * FROM userviews")
+    # test = cur.fetchall()
+    # print('ALL USERVIEWS: ',test)
 
     user_relation = []
     if check_match(conn, cur, userClass.user_id, current_user.user_id):
@@ -877,6 +874,8 @@ def block_user(user_id):
     cur = conn.cursor()
     create_block(conn, cur, user_id, current_user.user_id)
     cur.execute("SELECT * FROM blocks where user_id")
+    blocks = cur.fetchall()
+    print (blocks)
     conn.close()
     flash('User has been blocked', 'danger')
     return redirect(url_for('home'))
