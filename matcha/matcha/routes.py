@@ -238,17 +238,17 @@ def login():
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             # --- Geo Location ---
-            cur.execute("""SELECT location_city FROM users WHERE user_id=:user_id""",
-                                                {'user_id': current_user.user_id})
-            location = cur.fetchall()
-            if not location:
-                http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
-                json_request = requests.get('https://api.ipify.org?format=json').json()
-                ip      = json_request['ip']
-                ipAdress= 'ipAddress=' + ip
-                json_request = requests.get(http + geoKey + ipAdress).json()
-                data  = (json_request)
-                save_location(conn, cur, current_user.user_id, data)
+            # cur.execute("""SELECT location_city FROM users WHERE user_id=:user_id""",
+            #                                     {'user_id': current_user.user_id})
+            # location = cur.fetchall()
+            # if not location:
+            #     http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
+            #     json_request = requests.get('https://api.ipify.org?format=json').json()
+            #     ip      = json_request['ip']
+            #     ipAdress= 'ipAddress=' + ip
+            #     json_request = requests.get(http + geoKey + ipAdress).json()
+            #     data  = (json_request)
+            #     save_location(conn, cur, current_user.user_id, data)
 
             conn.close()
             return redirect(next_page) if next_page else redirect(url_for('home'))
@@ -399,7 +399,6 @@ def inbox():
 
 # TODO Sort by date 1st, then within date sections sort by time
 # TODO Clean data passing (messages1 & 2)???
-# Null message add user_id so it can be split
 @app.route('/messages/<user_id>', methods=['GET', 'POST'])
 @login_required
 def messages(user_id):
@@ -545,6 +544,28 @@ def unlike_func(user_id):
 @login_required
 def search():
     form = SearchForm()
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    
+    cur.execute("""SELECT location_region FROM users WHERE user_id""")
+    location_data = cur.fetchall()
+
+    array_location = []
+    for loc in location_data:
+        array_location.append(loc[0])
+
+    seen = set()
+    unique = []
+    for x in array_location:
+        if x not in seen:
+            unique.append(x)
+            seen.add(x)
+    unique.insert(0, 'Choose Location')
+
+    list_tuple_location = [(location, location) for location in unique]
+    form.location.choices = list_tuple_location
+    conn.close()
+
     if form.validate_on_submit():
         conn = sql.connect('matcha\\users.db')
         cur = conn.cursor()
@@ -624,6 +645,12 @@ def search():
             # Checks if valid user was found, if none fails search criteria
             if not found_fame_users:
                 found_fame_users = False
+
+        # LOCATION
+        found_location_users = []
+        if location != 'Choose Location':
+            print (location)
+            pass
 
         # TAG
         found_tags_users = []

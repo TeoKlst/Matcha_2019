@@ -149,7 +149,7 @@ class SearchForm(FlaskForm):
     fame_rating_max = SelectField('Max Fame',
                                 choices=choices_gap_fame)
     location        = SelectField('Location',
-                                choices=choices_tags)
+                                choices=[])
     tag1            =SelectField('Tag1',
                                 choices=choices_tags)
     tag2            =SelectField('Tag2',
