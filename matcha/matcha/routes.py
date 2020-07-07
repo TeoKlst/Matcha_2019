@@ -784,7 +784,6 @@ def search():
     elif request.method == 'GET':
         pass
     return render_template('search.html', title='Search', form=form)
-# TODO MOVE TO OTHER PAGE WITH DATA WHERE WE CAN SORT IT
 
 # FORM VALIDATES WHEN WE GET SENT THERE
 @app.route('/search_results', methods=['GET', 'POST'])
@@ -794,10 +793,6 @@ def search_results():
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
 
-    # if form.validate_on_submit:
-    #     flash('Sorted!', 'success')
-        # session['found_users'] = found_users
-        # return redirect(url_for('search_results'))
     check_is = True
     try:
         test = found_users[0][0]
@@ -807,20 +802,56 @@ def search_results():
     filtered_users_data = []
     if check_is == False:
         for user in found_users:
-            cur.execute("""SELECT user_id, username, image_file_p FROM users WHERE user_id=:user_id""",
-                                                        {'user_id': user})
+            cur.execute("""SELECT user_id, username, image_file_p, age, famerating, location_region 
+                            FROM users WHERE user_id=:user_id""", {'user_id': user})
             user_data = cur.fetchone()
             filtered_users_data.append(user_data)
     else:
         for user in found_users:
-            cur.execute("""SELECT user_id, username, image_file_p FROM users WHERE user_id=:user_id""",
-                                                        {'user_id': user[0]})
+            cur.execute("""SELECT user_id, username, image_file_p, age, famerating, location_region 
+                            FROM users WHERE user_id=:user_id""", {'user_id': user[0]})
             user_data = cur.fetchone()
             filtered_users_data.append(user_data)
 
-    print ('USER DATA FETCH AFTER ALL PASS SEARCH CRITERIA: ',filtered_users_data)
+    if request.method == 'POST' and form.validate():
+        form_select = form.field_select.data
+        form_sort = form.type_sort.data
+        
+        if form_select != '0' and form_sort != '0':
+            sorted_users = filtered_users_data
+            type_sort = True if form_sort == 'desc' else False
+            kind_sort = []
+            if form_select == 'age':
+                kind_sort = 3
+            elif form_select == 'fame':
+                kind_sort = 4
+            # CAREFUL CANNOT SORT BY LOCATION
+            elif form_select == 'location':
+                kind_sort = 5
+            # CAREFUL CANNOT SORT BY TAGS
+            elif form_select == 'tags':
+                kind_sort = 6
+
+            # Sorting Tuple
+            def getKey(item):
+                return item[kind_sort]
+            sorted_users = sorted(sorted_users, key=getKey, reverse=type_sort)
+ 
+            flash('Sorted!', 'success')
+            session['sorted_users'] = sorted_users
+            return redirect(url_for('sort_results'))
+        else:
+            flash('Please select sort criteria!', 'warning')
+            return redirect(url_for('search_results'))
 
     return render_template('search_results.html', title='Search Result', form=form, users=filtered_users_data)
+
+
+@app.route('/sort_results', methods=['GET', 'POST'])
+def sort_results():
+    sorted_users = session.get('sorted_users', None)
+    print ('-----------------',sorted_users)
+    return render_template('sort_results.html', title='Sort Result', users=sorted_users)
 
 
 @app.route('/block_user/<user_id>', methods=['GET', 'POST'])

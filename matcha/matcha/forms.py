@@ -4,7 +4,9 @@ from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, RadioField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from matcha.models import choices_gender, choices_day, choices_month, choices_year, choices_sexpreference, choices_gap, choices_tags, choices_geo, choices_gap_fame, choices_gap_age
+from matcha.models import choices_gender, choices_day, choices_month, choices_year, choices_sexpreference, \
+                            choices_gap, choices_tags, choices_geo, choices_gap_fame, choices_gap_age, \
+                            choices_asc_desc, choices_sort
 from datetime import date
 
 # Python Classes converted to html forms within templates
@@ -163,10 +165,10 @@ class SearchForm(FlaskForm):
     submit          = SubmitField('Search')
 
 class SortForm(FlaskForm):
-    field_select    = SelectField('Select Critera',
-                                choices=choices_gap_age)
+    field_select    = SelectField('Sort Critera',
+                                choices=choices_sort)
     type_sort       = SelectField('Asc or Desc',
-                                choices=choices_gap_age)
+                                choices=choices_asc_desc)
     submit          = SubmitField('Sort')
 
 class RequestResetForm(FlaskForm):
