@@ -785,7 +785,7 @@ def search():
         pass
     return render_template('search.html', title='Search', form=form)
 
-# FORM VALIDATES WHEN WE GET SENT THERE
+
 @app.route('/search_results', methods=['GET', 'POST'])
 def search_results():
     form = SortForm()
@@ -805,13 +805,39 @@ def search_results():
             cur.execute("""SELECT user_id, username, image_file_p, age, famerating, location_region 
                             FROM users WHERE user_id=:user_id""", {'user_id': user})
             user_data = cur.fetchone()
-            filtered_users_data.append(user_data)
+            cur.execute("""SELECT user_id, content FROM tags WHERE user_id=:user_id""",
+                                                                {'user_id': user})
+            tag_data = cur.fetchall()
+            valid_tags = 0
+            # print (tag_data)
+            for tag in tag_data:
+                if tag[1] != '0':
+                    valid_tags = valid_tags + 1
+
+            data = list(user_data)
+            data.insert(6, valid_tags)
+            data = tuple(data)
+            filtered_users_data.append(data)
     else:
         for user in found_users:
             cur.execute("""SELECT user_id, username, image_file_p, age, famerating, location_region 
                             FROM users WHERE user_id=:user_id""", {'user_id': user[0]})
             user_data = cur.fetchone()
-            filtered_users_data.append(user_data)
+            cur.execute("""SELECT user_id, content FROM tags WHERE user_id=:user_id""",
+                                                                {'user_id': user[0]})
+            tag_data = cur.fetchall()
+            valid_tags = 0
+            # print (tag_data)
+            for tag in tag_data:
+                if tag[1] != '0':
+                    valid_tags = valid_tags + 1
+
+            data = list(user_data)
+            data.insert(6, valid_tags)
+            data = tuple(data)
+            filtered_users_data.append(data)
+
+    print ('FILTERED DATA WITH TAGS APPEND: ',filtered_users_data)
 
     if request.method == 'POST' and form.validate():
         form_select = form.field_select.data
@@ -828,7 +854,6 @@ def search_results():
             # CAREFUL CANNOT SORT BY LOCATION
             elif form_select == 'location':
                 kind_sort = 5
-            # CAREFUL CANNOT SORT BY TAGS
             elif form_select == 'tags':
                 kind_sort = 6
 
