@@ -467,17 +467,24 @@ def likes():
 def likes_func(user_id):
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
-    create_like(conn, cur, user_id, current_user.user_id)
-
-    if check_match(conn, cur, user_id, current_user.user_id):
-        cur.execute("""SELECT * FROM message_notifications WHERE last_seen_user_id=:last_seen_user_id
-                AND user_id=:user_id""", {'last_seen_user_id': current_user.user_id, 'user_id': user_id})
-        all_message_notifs = cur.fetchall()
-        if not all_message_notifs:
-            create_message_notification(conn, cur, user_id, current_user.user_id)
-    conn.close()
-    flash('Like Successful!', 'success')
-    return render_template('home.html', title='Views')
+    cur.execute("""SELECT image_file_p FROM users WHERE user_id=:user_id""",
+                                                        {'user_id': current_user.user_id})
+    profile_img_check = cur.fetchone()
+    print (profile_img_check)
+    if profile_img_check[0] != "default.jpg":
+        create_like(conn, cur, user_id, current_user.user_id)
+        if check_match(conn, cur, user_id, current_user.user_id):
+            cur.execute("""SELECT * FROM message_notifications WHERE last_seen_user_id=:last_seen_user_id
+                    AND user_id=:user_id""", {'last_seen_user_id': current_user.user_id, 'user_id': user_id})
+            all_message_notifs = cur.fetchall()
+            if not all_message_notifs:
+                create_message_notification(conn, cur, user_id, current_user.user_id)
+        conn.close()
+        flash('Like Successful!', 'success')
+        return render_template('home.html', title='Views')
+    else:
+        flash('Your profile picture is still the deafult. Please go to your account info to update.', 'warning')
+        return render_template('home.html', title='Home')
 
 
 @app.route('/unlike_func/<string:user_id>', methods=['GET','POST'])
