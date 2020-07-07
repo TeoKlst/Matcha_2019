@@ -205,7 +205,6 @@ def login():
                 json_request = requests.get('https://api.ipify.org?format=json').json()
                 ip      = json_request['ip']
                 ipAdress= 'ipAddress=' + ip
-                print ('HTTP API WITH KEY: ', (http + geoKey + ipAdress))
                 json_request = requests.get(http + geoKey + ipAdress).json()
                 data  = (json_request)
                 save_location(conn, cur, current_user.user_id, data)
