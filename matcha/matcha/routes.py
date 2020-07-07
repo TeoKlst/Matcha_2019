@@ -1,6 +1,7 @@
 import os, re
 import secrets
 import requests
+import geopy.distance
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort, json, jsonify, session
 from matcha import app, bcrypt, sql, geoKey, mail
