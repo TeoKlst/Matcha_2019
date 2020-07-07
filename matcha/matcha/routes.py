@@ -702,12 +702,14 @@ def search():
                         temp_list1.append(user[0])
 
                     counted = Counter(temp_list1)
-
                     temp_list2 = []
                     for x in counted:
                         if int(counted[x]) == tag_list_len:
                             temp_list2.append(x)
                     found_tags_users = temp_list2
+
+                    if not found_tags_users:
+                        found_tags_users = False
 
         # found_tags_users = tuple([user] for user in found_tags_users)
         # print ('ALL USERS FOUND IN TAGS: ', found_tags_users)
@@ -771,7 +773,7 @@ def search():
             filtered_users = filtered_tags
             all_users = filtered_users
 
-        # print ('FILTERED USER CRITERIA AFTER AGE, FAME, TAGS CHECK: ',filtered_users)
+        print ('FILTERED USER CRITERIA AFTER AGE, FAME, TAGS CHECK: ',found_tags_users)
 
         # SEARCH FOR MATCHING USERS
         if found_age_users == False or found_fame_users == False or found_tags_users == False:
@@ -837,7 +839,7 @@ def search_results():
             data = tuple(data)
             filtered_users_data.append(data)
 
-    print ('FILTERED DATA WITH TAGS APPEND: ',filtered_users_data)
+    # print ('FILTERED DATA WITH TAGS APPEND: ',filtered_users_data)
 
     if request.method == 'POST' and form.validate():
         form_select = form.field_select.data
