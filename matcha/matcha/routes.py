@@ -22,60 +22,17 @@ from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_message_notification, check_match, update_message_notification, \
                                 update_last_seen
 
-postsMass = [
-    {
-        'author': 'Dude1',
-        'title': 'Some1 Title',
-        'content':  'Contents1',
-        'date_posted': 'June 06 2020'
-    },
-    {
-        'author': 'Dude2',
-        'title': 'Some2 Title',
-        'content':  'Contents2',
-        'date_posted': 'June 06 2020'
-    },
-    {
-        'author': 'Dude3',
-        'title': 'TestTitle3',
-        'content': 'Contents3',
-        'date_posted': 'June 06 2020'
-    },
-    {
-        'author': 'Dude4',
-        'title': 'TestTitle4',
-        'content': 'Contents4',
-        'date_posted': 'June 06 2020'
-    },
-    {
-    },
-        {
-    },
-        {
-    },
-        {
-    },
-        {
-    },
-        {
-    },
-        {
-    },
-        {
-    },
-]
 
 @app.route('/')
 @app.route('/home')
 def home():
-    posts = postsMass
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE user_id")
     users = cur.fetchall()
     print (current_user.is_authenticated)
     conn.close()
-    return render_template('home.html', posts=posts, users=users)
+    return render_template('home.html', users=users)
 
 @app.route('/user/<username>', methods=['GET', 'POST'])
 def user_profile(username):
@@ -238,17 +195,20 @@ def login():
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             # --- Geo Location ---
-            # cur.execute("""SELECT location_city FROM users WHERE user_id=:user_id""",
-            #                                     {'user_id': current_user.user_id})
-            # location = cur.fetchall()
-            # if not location:
-            #     http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
-            #     json_request = requests.get('https://api.ipify.org?format=json').json()
-            #     ip      = json_request['ip']
-            #     ipAdress= 'ipAddress=' + ip
-            #     json_request = requests.get(http + geoKey + ipAdress).json()
-            #     data  = (json_request)
-            #     save_location(conn, cur, current_user.user_id, data)
+            cur.execute("""SELECT location_city FROM users WHERE user_id=:user_id""",
+                                                {'user_id': current_user.user_id})
+            location = cur.fetchone()
+            # print ('CURRENT USER LOCATION ', location)
+            if not location[0]:
+                print ('------ LOCATION API RUNNING ------')
+                http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
+                json_request = requests.get('https://api.ipify.org?format=json').json()
+                ip      = json_request['ip']
+                ipAdress= 'ipAddress=' + ip
+                print ('HTTP API WITH KEY: ', (http + geoKey + ipAdress))
+                json_request = requests.get(http + geoKey + ipAdress).json()
+                data  = (json_request)
+                save_location(conn, cur, current_user.user_id, data)
 
             conn.close()
             return redirect(next_page) if next_page else redirect(url_for('home'))

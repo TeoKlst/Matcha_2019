@@ -2,8 +2,8 @@
 {% block content %}
 <div class="container">
     <div class="row">
+    {% if current_user.is_authenticated %}
     {% for user in users %}
-
         <div class="mb-3 mr-3">
             <div class="card" style="width: 10rem;">
                 <!-- <img src="..." class="card-img-top" alt="..."> -->
@@ -19,8 +19,10 @@
                 </div>
             </div>
         </div>
-
     {% endfor %}
+    {% else %}
+    <h6>Please Register or Login</h6>
+    {% endif %}
     </div>
 </div>
 {% endblock content %}
