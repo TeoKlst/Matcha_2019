@@ -649,8 +649,9 @@ def search():
         # LOCATION
         found_location_users = []
         if location != 'Choose Location':
-            print (location)
-            pass
+            cur.execute("""SELECT user_id FROM users WHERE location_region=:location_region""",
+                                                        {'location_region': location})
+            found_location_users = cur.fetchall()
 
         # TAG
         found_tags_users = []
@@ -709,7 +710,7 @@ def search():
                     found_tags_users = temp_list2
 
         # found_tags_users = tuple([user] for user in found_tags_users)
-        print ('ALL USERS FOUND IN TAGS: ', found_tags_users)
+        # print ('ALL USERS FOUND IN TAGS: ', found_tags_users)
 
         cur.execute("SELECT user_id FROM users WHERE user_id")
         all_users = cur.fetchall()
@@ -741,7 +742,20 @@ def search():
             filtered_users = filtered_fame
             all_users = filtered_users
 
-        # TODO ADD EXCEPTION IF INFO IS NOT FOUND
+        filtered_location = []
+        if found_location_users:
+            for index, user in enumerate(found_location_users):
+                i = 0
+                while i != len(all_users):
+                    if user == all_users[i]:
+                        filtered_location.append(user)
+                        break
+                    i = i + 1
+        if filtered_location:
+            filtered_users = filtered_location
+            all_users = filtered_users
+            # print ('FILTERED LOCATION: ',found_location_users)
+
         filtered_tags = []
         if found_tags_users:
             for index, user in enumerate(found_tags_users):
@@ -751,33 +765,19 @@ def search():
                         filtered_tags.append(user)
                         break
                     i = i + 1
+            if not filtered_tags:
+                found_tags_users = False 
         if filtered_tags:
             filtered_users = filtered_tags
             all_users = filtered_users
 
-        print ('FILTERED USER CRITERIA AFTER AGE, FAME, TAGS CHECK: ',filtered_users)
+        # print ('FILTERED USER CRITERIA AFTER AGE, FAME, TAGS CHECK: ',filtered_users)
 
         # SEARCH FOR MATCHING USERS
         if found_age_users == False or found_fame_users == False or found_tags_users == False:
             flash('No users found!', 'warning')
             return redirect(url_for('search'))
         else:
-            filtered_users_data = []
-            if found_tags_users:
-                for user in filtered_users:
-                    cur.execute("""SELECT * FROM users WHERE user_id=:user_id""",
-                                                                {'user_id': user})
-                    user_data = cur.fetchone()
-                    filtered_users_data.append(user_data)
-            else:
-                for user in filtered_users:
-                    cur.execute("""SELECT * FROM users WHERE user_id=:user_id""",
-                                                                {'user_id': user[0]})
-                    user_data = cur.fetchone()
-                    filtered_users_data.append(user_data)
-
-            print ('USER DATA FETCH AFTER ALL PASS SEARCH CRITERIA: ',filtered_users_data)
-
             flash('Validated!', 'success')
             session['found_users'] = filtered_users
             return redirect(url_for('search_results'))
@@ -786,12 +786,41 @@ def search():
     return render_template('search.html', title='Search', form=form)
 # TODO MOVE TO OTHER PAGE WITH DATA WHERE WE CAN SORT IT
 
-
+# FORM VALIDATES WHEN WE GET SENT THERE
 @app.route('/search_results', methods=['GET', 'POST'])
 def search_results():
     form = SortForm()
     found_users = session.get('found_users', None)
-    return render_template('search_results.html', title='Search Result', form=form, users=found_users)
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+
+    # if form.validate_on_submit:
+    #     flash('Sorted!', 'success')
+        # session['found_users'] = found_users
+        # return redirect(url_for('search_results'))
+    check_is = True
+    try:
+        test = found_users[0][0]
+    except TypeError:
+        check_is = False
+
+    filtered_users_data = []
+    if check_is == False:
+        for user in found_users:
+            cur.execute("""SELECT user_id, username, image_file_p FROM users WHERE user_id=:user_id""",
+                                                        {'user_id': user})
+            user_data = cur.fetchone()
+            filtered_users_data.append(user_data)
+    else:
+        for user in found_users:
+            cur.execute("""SELECT user_id, username, image_file_p FROM users WHERE user_id=:user_id""",
+                                                        {'user_id': user[0]})
+            user_data = cur.fetchone()
+            filtered_users_data.append(user_data)
+
+    print ('USER DATA FETCH AFTER ALL PASS SEARCH CRITERIA: ',filtered_users_data)
+
+    return render_template('search_results.html', title='Search Result', form=form, users=filtered_users_data)
 
 
 @app.route('/block_user/<user_id>', methods=['GET', 'POST'])
@@ -975,7 +1004,7 @@ def last_seen_load(user_id):
     timenow = datetime.now()
     Ts += timedelta(hours=timenow.hour, minutes=timenow.minute, seconds=timenow.second)
     Ts -= timedelta(seconds=5)
-    print ('LAST SEEN:',last_seen)
+    # print ('LAST SEEN:',last_seen)
     if last_seen[0] is None:
         return jsonify({'last_seen_time'   : ''})
     else:

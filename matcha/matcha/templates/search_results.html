@@ -45,11 +45,11 @@
             <div class="card" style="width: 10rem;">
                 <!-- <img src="..." class="card-img-top" alt="..."> -->
                 <div class="text-center">
-                    <a href="{{ url_for('user_profile', username=user[3]) }}" data-toggle="tooltip" data-placement="top" title="Inspect Profile">
-                        <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[4] }}" ></a>
+                    <a href="{{ url_for('user_profile', username=user[1]) }}" data-toggle="tooltip" data-placement="top" title="Inspect Profile">
+                        <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[2] }}" ></a>
                 </div>
                     <div class="card-body text-center">
-                    <h5 class="card-title">{{ user }}</h5>
+                    <h5 class="card-title">{{ user[1] }}</h5>
                 </div>
             </div>
         </div>
