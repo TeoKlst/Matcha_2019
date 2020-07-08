@@ -839,7 +839,7 @@ def search():
         # print ('FILTERED USER CRITERIA AFTER AGE, FAME, TAGS CHECK: ',found_tags_users)
 
         # SEARCH FOR MATCHING USERS
-        if found_age_users == False or found_fame_users == False or found_tags_users == False:
+        if found_age_users == False or found_fame_users == False or found_tags_users == False or not filtered_users:
             flash('No users found!', 'warning')
             return redirect(url_for('search'))
         else:
