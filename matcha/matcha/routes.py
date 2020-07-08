@@ -21,7 +21,8 @@ from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_like, remove_like, create_view, save_location, \
                                 get_reset_token, verify_reset_token, create_block, \
                                 create_message_notification, check_match, update_message_notification, \
-                                update_last_seen, check_like_status
+                                update_last_seen, check_like_status, add_fame_like, add_fame_match, \
+                                minus_fame_unlike, minus_fame_unmatch, minus_fame_reported
 
 
 @app.route('/')
@@ -477,7 +478,9 @@ def likes_func(user_id):
     print (profile_img_check)
     if profile_img_check[0] != "default.jpg":
         create_like(conn, cur, user_id, current_user.user_id)
+        add_fame_like(conn, cur, user_id)
         if check_match(conn, cur, user_id, current_user.user_id):
+            add_fame_match(conn, cur, user_id, current_user.user_id)
             cur.execute("""SELECT * FROM message_notifications WHERE last_seen_user_id=:last_seen_user_id
                     AND user_id=:user_id""", {'last_seen_user_id': current_user.user_id, 'user_id': user_id})
             all_message_notifs = cur.fetchall()
@@ -495,6 +498,10 @@ def likes_func(user_id):
 def unlike_func(user_id):
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
+    if check_match(conn, cur, user_id, current_user.user_id):
+        minus_fame_unmatch(conn, cur, user_id, current_user.user_id)
+    else:
+        minus_fame_unlike(conn, cur, user_id)
     remove_like(conn, cur, user_id, current_user.user_id)
     conn.close()
     flash('User Unliked!', 'warning')

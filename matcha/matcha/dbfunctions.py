@@ -12,18 +12,52 @@ from matcha import app
 
 # TODO Possible SQL injection vulnerability
 
-def add_fame_like(conn, cur, user_id, current_user_id):
-    pass
+def add_fame_like(conn, cur, user_id):
+    with conn:
+        cur.execute("""SELECT famerating FROM users WHERE user_id=:user_id""",
+                                                        {'user_id': user_id})
+        famerating = cur.fetchone()
+        cur.execute("""UPDATE users SET famerating=:famerating
+                WHERE user_id=:user_id""", {'famerating': (int(famerating[0]) + 5), 'user_id': user_id})
 
 def add_fame_match(conn, cur, user_id, current_user_id):
-    pass
+    with conn:
+        cur.execute("""SELECT famerating FROM users WHERE user_id=:user_id""",
+                                                            {'user_id': user_id})
+        famerating_user_id = cur.fetchone()
+        cur.execute("""UPDATE users SET famerating=:famerating
+                WHERE user_id=:user_id""", {'famerating': (int(famerating_user_id[0]) + 5), 'user_id': user_id})
 
-def minus_fame_unlike(conn, cur, user_id, current_user_id):
-    pass
+        cur.execute("""SELECT famerating FROM users WHERE user_id=:user_id""",
+                                                            {'user_id': current_user_id})
+        famerating_current_user_id = cur.fetchone()
+        cur.execute("""UPDATE users SET famerating=:famerating
+                WHERE user_id=:user_id""", {'famerating': (int(famerating_current_user_id[0]) + 5), 'user_id': current_user_id})
+        
+
+def minus_fame_unlike(conn, cur, user_id):
+    with conn:
+        cur.execute("""SELECT famerating FROM users WHERE user_id=:user_id""",
+                                                        {'user_id': user_id})
+        famerating = cur.fetchone()
+        cur.execute("""UPDATE users SET famerating=:famerating
+                WHERE user_id=:user_id""", {'famerating': (int(famerating[0]) - 5), 'user_id': user_id})
 
 def minus_fame_unmatch(conn, cur, user_id, current_user_id):
-    pass
+   with conn:
+        cur.execute("""SELECT famerating FROM users WHERE user_id=:user_id""",
+                                                            {'user_id': user_id})
+        famerating_user_id = cur.fetchone()
+        cur.execute("""UPDATE users SET famerating=:famerating
+                WHERE user_id=:user_id""", {'famerating': (int(famerating_user_id[0]) - 10), 'user_id': user_id})
 
+        cur.execute("""SELECT famerating FROM users WHERE user_id=:user_id""",
+                                                            {'user_id': current_user_id})
+        famerating_current_user_id = cur.fetchone()
+        cur.execute("""UPDATE users SET famerating=:famerating
+                WHERE user_id=:user_id""", {'famerating': (int(famerating_current_user_id[0]) - 5), 'user_id': current_user_id})
+
+# TODO If there is time
 def minus_fame_reported(conn, cur, user_id, current_user_id):
     pass
 
