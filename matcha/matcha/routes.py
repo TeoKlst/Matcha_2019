@@ -33,7 +33,7 @@ def home():
         conn = sql.connect('matcha\\users.db')
         cur = conn.cursor()
         cur.execute("""SELECT user_id, username, image_file_p, gender, sexual_pref, famerating, lat_data, long_data FROM users 
-                                WHERE (user_id IS NOT ?)""", (str(current_user.user_id)))
+                                WHERE (user_id IS NOT ?)""", (str(current_user.user_id),))
         users = cur.fetchall()
         print (current_user.is_authenticated)
 
@@ -42,7 +42,10 @@ def home():
         current_user_latlong = [current_user.lat_data, current_user.long_data]
         for user in users:
             data = list(user)
-            distance = geopy.distance.distance(current_user_latlong, (user[6], user[7]))
+            if user[6] is None or user[7] is None:
+                distance = ''
+            else:
+                distance = geopy.distance.distance(current_user_latlong, (user[6], user[7]))
             if not distance:
                 distance = 0
             if distance != 0:
@@ -776,7 +779,7 @@ def search():
 
         # found_tags_users = tuple([user] for user in found_tags_users)
         # print ('ALL USERS FOUND IN TAGS: ', found_tags_users)
-        cur.execute("SELECT user_id FROM users WHERE (user_id IS NOT ?)", (str(current_user.user_id)))
+        cur.execute("SELECT user_id FROM users WHERE (user_id IS NOT ?)", (str(current_user.user_id),))
         # cur.execute("SELECT user_id FROM users WHERE user_id")
         all_users = cur.fetchall()
         filtered_users = []

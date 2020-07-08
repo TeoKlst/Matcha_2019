@@ -52,17 +52,21 @@ class RegistrationForm(FlaskForm):
         if user_data:
             raise ValidationError('That email is taken. Please choose a different one.')
 
-    # TODO Validate age check
     def validate_year(self, year):
+        if year.data == '0':
+            raise ValidationError('Please select a year.')
         today = date.today()
-        current_year = year=year.data
-        if int(current_year) < today.year:
-            dif = today.year - int(current_year)
-        else:
-            dif = int(current_year) - today.year
-        if dif < 18:
+        age = today.year - int(year.data) - ((today.month, today.day) < (int(self.month.data), int(self.day.data)))
+        if age < 18:
             raise ValidationError('Underage account. You need to be 18 years and older to create an account.')
 
+    def validate_month(self, month):
+        if month.data == '0':
+            raise ValidationError('Please select a month.')
+    
+    def validate_day(self, day):
+        if day.data == '0':
+            raise ValidationError('Please select a day.')
     # TODO validate_passwordComplexity(self, password_field):
 
 class LoginForm(FlaskForm):
