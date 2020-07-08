@@ -120,6 +120,7 @@ def home():
     return render_template('home.html', users=users)
 
 @app.route('/user/<username>', methods=['GET', 'POST'])
+@login_required
 def user_profile(username):
     form = UpdateAccountForm()
     conn = sql.connect('matcha\\users.db')
@@ -177,6 +178,7 @@ def user_profile(username):
 
 
 @app.route('/views')
+@login_required
 def views():
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
@@ -850,6 +852,7 @@ def search():
 
 
 @app.route('/search_results', methods=['GET', 'POST'])
+@login_required
 def search_results():
     form = SortForm()
     found_users = session.get('found_users', None)
@@ -952,6 +955,7 @@ def search_results():
 
 
 @app.route('/sort_results', methods=['GET', 'POST'])
+@login_required
 def sort_results():
     sorted_users = session.get('sorted_users', None)
     print ('-----------------',sorted_users)
