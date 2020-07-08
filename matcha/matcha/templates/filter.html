@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <!-- AGE -->
+            <div class="form-row">
+                <div class="form-group col">
+                    {{ form.age_min.label(class="form-control-label") }}
+                    {% if form.age_min.errors %}
+                    {{ form.age_min(class="form-control form-control-lg is-invalid", placeholder="name@example.com") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.age_min.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.age_min(class="form-control form-control-lg", placeholder="name@example.com") }}
+                {% endif %}
+                </div>
+                <div class="form-group col">
+                    {{ form.age_max.label(class="form-control-label") }}
+                    {% if form.age_max.errors %}
+                    {{ form.age_max(class="form-control form-control-lg is-invalid", placeholder="name@example.com") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.age_max.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.age_max(class="form-control form-control-lg", placeholder="name@example.com") }}
+                {% endif %}
+                </div>
+            </div>
+            <!-- FAME -->
+            <div class="form-row">
+                <div class="form-group col">
+                    {{ form.fame_rating_min.label(class="form-control-label") }}
+                    {% if form.fame_rating_min.errors %}
+                    {{ form.fame_rating_min(class="form-control form-control-lg is-invalid", placeholder="name@example.com") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.fame_rating_min.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.fame_rating_min(class="form-control form-control-lg", placeholder="name@example.com") }}
+                {% endif %}
+                </div>
+                <div class="form-group col">
+                    {{ form.fame_rating_max.label(class="form-control-label") }}
+                    {% if form.fame_rating_max.errors %}
+                    {{ form.fame_rating_max(class="form-control form-control-lg is-invalid", placeholder="name@example.com") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.fame_rating_max.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.fame_rating_max(class="form-control form-control-lg", placeholder="name@example.com") }}
+                {% endif %}
+                </div>
+            </div>
+            <!-- LOCATION -->
+            <div class="form-group">
+                {{ form.location.label(class="form-control-label") }}
+                {% if form.location.errors %}
+                {{ form.location(class="form-control form-control-lg is-invalid", placeholder="name@example.com") }}
+                <div class="invalid-feedback">
+                    {% for error in form.location.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.location(class="form-control form-control-lg", placeholder="name@example.com") }}
+            {% endif %}
+            </div>
+            <!-- TAGS -->
+            <div>
+                <p class="form-control-label">User Tags</p>
+                <div class="form-row">
+                    <div class="col">
+                        <!-- {{ form.tag1.label(class="form-control-label") }} -->
+                        {% if form.tag1.errors %}
+                        {{ form.tag1(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.tag1.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.tag1(class="form-control form-control-lg") }}
+                    {% endif %}
+                    </div>
+                    <div class="col">
+                        <!-- {{ form.tag2.label(class="form-control-label") }} -->
+                        {% if form.tag2.errors %}
+                        {{ form.tag2(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.tag2.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.tag2(class="form-control form-control-lg") }}
+                    {% endif %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col">
+                        <!-- {{ form.tag3.label(class="form-control-label") }} -->
+                        {% if form.tag3.errors %}
+                        {{ form.tag3(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.tag3.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.tag3(class="form-control form-control-lg") }}
+                    {% endif %}
+                    </div>
+                    <div class="col">
+                        <!-- {{ form.tag4.label(class="form-control-label") }} -->
+                        {% if form.tag4.errors %}
+                        {{ form.tag4(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.tag4.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.tag4(class="form-control form-control-lg") }}
+                    {% endif %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col">
+                        <!-- {{ form.tag5.label(class="form-control-label") }} -->
+                        {% if form.tag5.errors %}
+                        {{ form.tag5(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.tag5.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.tag5(class="form-control form-control-lg") }}
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-success") }}
+        </div>
+    </form>
+    <div class="container">
+        <div class="row">
+        {% for user in users %}
+            <div class="mb-3 mr-3">
+                <div class="card" style="width: 10rem;">
+                    <div class="text-center">
+                        <a href="{{ url_for('user_profile', username=user[1]) }}" data-toggle="tooltip" data-placement="top" title="Inspect Profile">
+                            <img class="rounded-circle usercard-img" src="/static/profile_pics/{{ user[2] }}" >
+                        </a>
+                    </div>
+                        <div class="card-body text-center">
+                        <h5 class="card-title">{{ user[1] }}</h5>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

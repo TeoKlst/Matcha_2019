@@ -17,19 +17,17 @@
             </div>
         </div>
     {% endfor %}
-    {% else %}
-    <h6>Please Register or Login</h6>
-    {% endif %}
     </div>
 </div>
-{% endblock content %}
-<!-- <article class="media content-section">
-    <div class="media-body">
-        <div class="article-metadata">
-            <a class="mr-2" href="#">{{ post.author }}</a>
-            <small class="text-muted">{{ post.date_posted }}</small>
-        </div>
-        <h2><a class="article-title" href="#">{{ post.title }}</a></h2>
-        <p class="article-content">{{ post.content }}</p>
+<div class="text-center">
+    <div>
+        <a href="{{ url_for('sort') }}" role="button" class="btn btn-block btn-outline-info">Sort</a>
     </div>
-</article> -->
+    <div>
+        <a href="{{ url_for('filter') }}" role="button" class="btn btn-block btn-outline-info">Filter</a>
+    </div>
+</div>
+{% else %}
+<h6>Please Register or Login</h6>
+{% endif %}
+{% endblock content %}
