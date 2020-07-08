@@ -25,9 +25,9 @@ def load_user(id):
 # def load_user(user_id):
 #     return User.query.get(int(user_id))
 
-choices_gender  =[('m', 'Male'), ('f', 'Female'), ('o', 'Other')]
+choices_gender  =[('m', 'Male'), ('f', 'Female')]
 
-choices_sexpreference =[('m', 'Male'), ('f', 'Female'), ('o', 'Other')]
+choices_sexpreference =[(None, 'Choose a preference...'), ('m', 'Male'), ('f', 'Female'), ('o', 'Other')]
 
 choices_day     =[('0', 'Day'), 
                     ('1','1'), ('2','2'), ('3','3'), ('4','4'), ('5','5'), ('6','6'), ('7','7'), ('8','8'), ('9','9'), 

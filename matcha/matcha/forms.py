@@ -86,7 +86,7 @@ class UpdateAccountForm(FlaskForm):
     gender      = SelectField('Gender',
                             choices=choices_gender)
     sexual_pref = SelectField('Sex Pref',
-                            choices=choices_gender)
+                            choices=choices_sexpreference)
     biography   = TextAreaField('Biography')
     user_tag1   =SelectField('User Tag1',
                             choices=choices_tags)

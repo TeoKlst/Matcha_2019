@@ -28,12 +28,95 @@ from matcha.dbfunctions import register_userTest, update_user, update_image,\
 @app.route('/')
 @app.route('/home')
 def home():
-    conn = sql.connect('matcha\\users.db')
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE user_id")
-    users = cur.fetchall()
-    print (current_user.is_authenticated)
-    conn.close()
+    users = []
+    if current_user.is_authenticated:
+        conn = sql.connect('matcha\\users.db')
+        cur = conn.cursor()
+        cur.execute("""SELECT user_id, username, image_file_p, gender, sexual_pref, famerating, lat_data, long_data FROM users 
+                                WHERE (user_id IS NOT ?)""", (str(current_user.user_id)))
+        users = cur.fetchall()
+        print (current_user.is_authenticated)
+
+        # Adding distance from current user to other users
+        users_with_loc = []
+        current_user_latlong = [current_user.lat_data, current_user.long_data]
+        for user in users:
+            data = list(user)
+            distance = geopy.distance.distance(current_user_latlong, (user[6], user[7]))
+            if not distance:
+                distance = 0
+            if distance != 0:
+                data.insert(8, str(distance)[:-16])
+            else:
+                data.insert(8, str(distance))
+            data = tuple(data)
+            users_with_loc.append(data)
+
+        filtered_users_loc = []
+        for user in users_with_loc:
+            if int(user[8]) < 1000:
+                filtered_users_loc.append(user)
+
+        filtered_users_sexual_pref = []
+        for user in filtered_users_loc:
+            if current_user.sexual_pref == 'o':
+                if user[4] == current_user.gender:
+                    filtered_users_sexual_pref.append(user)
+                if user[4] == 'o':
+                    filtered_users_sexual_pref.append(user)
+            elif current_user.sexual_pref == 'm':
+                if user[3] == 'm' and user[4] == current_user.gender:
+                    filtered_users_sexual_pref.append(user)
+                if user[3] == 'm' and user[4] == 'o':
+                    filtered_users_sexual_pref.append(user)
+            elif current_user.sexual_pref == 'f':
+                if user[3] == 'f' and user[4] == current_user.gender:
+                    filtered_users_sexual_pref.append(user)
+                elif user[3] == 'f' and user[4] == 'o':
+                    filtered_users_sexual_pref.append(user)
+
+        filtered_users_tags = []
+        cur.execute("""SELECT * FROM tags WHERE (user_id IS ?) AND (content IS NOT ?)""", (current_user.user_id, '0'))
+        current_user_tags = cur.fetchall()
+        for user in filtered_users_sexual_pref:
+            cur.execute("""SELECT * FROM tags WHERE (user_id IS ?) AND (content IS NOT ?)""", (user[0], '0'))
+            other_user_tags = cur.fetchall()
+            points = 0
+            for tag in other_user_tags:
+                i = 0
+                while i < len(current_user_tags):
+                    if tag[1] == current_user_tags[i][1]:
+                        points = points + 10
+                        break
+                    i = i + 1
+            data = list(user)
+            data.insert(9, points)
+            data = tuple(data)
+            filtered_users_tags.append(data)
+
+        filtered_user_fame = []
+        for user in filtered_users_tags:
+            fame_points = 200 - user[5]
+            data = list(user)
+            data.insert(10, fame_points)
+            data = tuple(data)
+            filtered_user_fame.append(data)
+
+        total_user_points = []
+        for user in filtered_user_fame:
+            fame_points = user[10]
+            tags_points = user[9]
+            total_points= fame_points + tags_points
+            data = list(user)
+            data.insert(11, int(total_points))
+            data = tuple(data)
+            total_user_points.append(data)
+
+        def getKey(item):
+            return item[11]
+        users = sorted(total_user_points, key=getKey, reverse=True)
+        print (users)
+        conn.close()
     return render_template('home.html', users=users)
 
 @app.route('/user/<username>', methods=['GET', 'POST'])
