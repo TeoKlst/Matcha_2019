@@ -776,8 +776,8 @@ def search():
 
         # found_tags_users = tuple([user] for user in found_tags_users)
         # print ('ALL USERS FOUND IN TAGS: ', found_tags_users)
-
-        cur.execute("SELECT user_id FROM users WHERE user_id")
+        cur.execute("SELECT user_id FROM users WHERE (user_id IS NOT ?)", (str(current_user.user_id)))
+        # cur.execute("SELECT user_id FROM users WHERE user_id")
         all_users = cur.fetchall()
         filtered_users = []
 
