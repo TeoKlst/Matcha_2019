@@ -75,20 +75,20 @@ def home():
 
         filtered_users_sexual_pref = []
         for user in filtered_users_loc:
-            if current_user.sexual_pref == 'o':
+            if current_user.sexual_pref == 'o' or not current_user.sexual_pref:
                 if user[4] == current_user.gender:
                     filtered_users_sexual_pref.append(user)
-                if user[4] == 'o':
+                if user[4] == 'o' or not user[4]:
                     filtered_users_sexual_pref.append(user)
             elif current_user.sexual_pref == 'm':
                 if user[3] == 'm' and user[4] == current_user.gender:
                     filtered_users_sexual_pref.append(user)
-                if user[3] == 'm' and user[4] == 'o':
+                if user[3] == 'm' and (user[4] == 'o' or not user[4]):
                     filtered_users_sexual_pref.append(user)
             elif current_user.sexual_pref == 'f':
                 if user[3] == 'f' and user[4] == current_user.gender:
                     filtered_users_sexual_pref.append(user)
-                elif user[3] == 'f' and user[4] == 'o':
+                elif user[3] == 'f' and (user[4] == 'o' or not user[4]):
                     filtered_users_sexual_pref.append(user)
 
         filtered_users_tags = []
@@ -132,7 +132,7 @@ def home():
             return item[11]
         users = sorted(total_user_points, key=getKey, reverse=True)
         session['matched_users'] = users
-        print (users)
+        print ('MATCHED USERS: ',users)
         conn.close()
     return render_template('home.html', users=users)
 
@@ -325,21 +325,21 @@ def login():
                     save_location(conn, cur, current_user.user_id, data)
                 # --- Geo Location ---
 
-                # TO BE COMMENTED IN FOR MARKING, PROOF OF GEO LOCATION WHEN GEO TURNED OFF
+                # --- TO BE COMMENTED IN FOR MARKING, PROOF OF GEO LOCATION WHEN GEO TURNED OFF ---
                 # API call cap is bad :(
-                print ('------ TRUE LOCATION API RUNNING ------')
-                http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
-                json_request = requests.get('https://api.ipify.org?format=json').json()
-                ip      = json_request['ip']
-                ipAdress= 'ipAddress=' + ip
-                json_request = requests.get(http + geoKey + ipAdress).json()
-                data  = (json_request)
-                save_true_location(conn, cur, current_user.user_id, data)
-                cur.execute("""SELECT * FROM locations WHERE user_id=:user_id""",
-                                                    {'user_id': current_user.user_id})
-                location = cur.fetchone()
-                print ('TRUE CURRENT USER LOCATION: ', location)
-                # TO BE COMMENTED IN FOR MARKING, PROOF OF GEO LOCATION WHEN GEO TURNED OFF
+                # print ('------ TRUE LOCATION API RUNNING ------')
+                # http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
+                # json_request = requests.get('https://api.ipify.org?format=json').json()
+                # ip      = json_request['ip']
+                # ipAdress= 'ipAddress=' + ip
+                # json_request = requests.get(http + geoKey + ipAdress).json()
+                # data  = (json_request)
+                # save_true_location(conn, cur, current_user.user_id, data)
+                # cur.execute("""SELECT * FROM locations WHERE user_id=:user_id""",
+                #                                     {'user_id': current_user.user_id})
+                # location = cur.fetchone()
+                # print ('TRUE CURRENT USER LOCATION: ', location)
+                # --- TO BE COMMENTED IN FOR MARKING, PROOF OF GEO LOCATION WHEN GEO TURNED OFF ---
                 
 
                 conn.close()
