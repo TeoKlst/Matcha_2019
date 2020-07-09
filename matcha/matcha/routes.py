@@ -277,7 +277,7 @@ def register():
 
         send_verification_email(registered_user_ID, user)
 
-        flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
+        flash(f'Your account {form.username.data} has been created! Please verify your account through the mail to be able to log in', 'success')
         return redirect(url_for('login'))
 
     return render_template('register.html', title='Register', form=form)
