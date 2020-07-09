@@ -104,6 +104,8 @@ class UpdateAccountForm(FlaskForm):
                             choices=choices_tags)
     geo_tag     =SelectField('Geo Tag',
                             choices=choices_geo)
+    location    = SelectField('Location',
+                                choices=[])
     picture_p   = FileField('Update Profile Picture', 
                             validators=[FileAllowed(['jpg', 'png'])])
     picture_1   = FileField('Update Picture 1', 

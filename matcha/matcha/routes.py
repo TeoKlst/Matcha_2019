@@ -23,7 +23,7 @@ from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_message_notification, check_match, update_message_notification, \
                                 update_last_seen, check_like_status, add_fame_like, add_fame_match, \
                                 minus_fame_unlike, minus_fame_unmatch, minus_fame_reported, \
-                                get_authentication_token
+                                get_authentication_token, check_user
 
 
 @app.route('/')
@@ -130,6 +130,9 @@ def user_profile(username):
     form = UpdateAccountForm()
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
+    if not check_user(conn, cur, username, current_user.username):
+        flash('Unable to access', 'danger')
+        return redirect(url_for('home'))
     cur.execute("SELECT * FROM users WHERE username=:username", {'username': username})
     user = cur.fetchone()
     userClass = User(user[0], user[1], user[2], user[3], user[4], user[5], user[6],
@@ -385,6 +388,24 @@ def account():
         flash('Your account has been updated!', 'success')
         return redirect(url_for('account'))
     elif request.method == 'GET':
+
+        # LOCATION DATA
+        cur.execute("""SELECT location_region FROM users WHERE user_id""")
+        location_data = cur.fetchall()
+        array_location = []
+        for loc in location_data:
+            array_location.append(loc[0])
+        seen = set()
+        unique = []
+        for x in array_location:
+            if x not in seen:
+                unique.append(x)
+                seen.add(x)
+        unique.insert(0, 'Choose Location')
+        list_tuple_location = [(location, location) for location in unique]
+        form.location.choices = list_tuple_location
+        # LOCATION DATA
+
         form.firstname.data     = current_user.firstname
         form.lastname.data      = current_user.lastname
         form.username.data      = current_user.username
@@ -393,6 +414,7 @@ def account():
         form.sexual_pref.data   = current_user.sexual_pref
         form.biography.data     = current_user.biography
         form.geo_tag.data       = current_user.geo_track
+        form.location.data      = current_user.location_region
         cur.execute("SELECT * FROM tags WHERE user_id=:user_id", {'user_id': current_user.user_id})
         tags = cur.fetchall()
         form.user_tag1.data = tags[0][1]
@@ -474,6 +496,9 @@ def messages(user_id):
     form = MessagesForm()
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
+    if not check_match(conn, cur, user_id, current_user.user_id):
+        flash('Unable to access', 'danger')
+        return redirect(url_for('home'))
     # Current_User
     cur.execute("SELECT * FROM messages WHERE user_id=:currentuser AND recipient=:recipient", {'currentuser': current_user.user_id, 'recipient': user_id})
     messages1 = cur.fetchall()

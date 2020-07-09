@@ -29,7 +29,7 @@ class User:
         self.location_region = location_region
         self.lat_data = lat_data
         self.long_data = long_data
-        self. last_seen = last_seen
+        self.last_seen = last_seen
         self.authenticated = authenticated
 
         

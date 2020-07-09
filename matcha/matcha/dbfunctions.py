@@ -103,6 +103,17 @@ def check_match(conn, cur, user_id, current_user_id):
     else:
         return(False)
 
+def check_user(conn, cur, username, current_user_username):
+    with conn:
+        cur.execute("""SELECT username FROM users WHERE username=:username""",
+                                                    {'username': username})
+        user = cur.fetchone()
+
+        if not user or username == current_user_username:
+            return (False)
+        else:
+            return (True)
+
 def update_message_notification(conn, cur, updated_message, user_id, current_user_id):
     with conn:
         cur.execute("""UPDATE message_notifications SET new_messages=:new_messages

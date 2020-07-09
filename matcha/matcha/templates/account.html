@@ -206,7 +206,7 @@
                     </div>
                 </div>
                 <!-- Geo Tag -->
-                <div class="form-group">
+                <div class="form-group mt-3">
                     {{ form.geo_tag.label(class="form-control-label") }}
                     {% if form.geo_tag.errors %}
                         {{ form.geo_tag(class="form-control form-control-lg is-invalid") }}
@@ -219,13 +219,27 @@
                         {{ form.geo_tag(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
+                <!-- Location -->
+                <div class="form-group">
+                    {{ form.location.label(class="form-control-label") }}
+                    {% if form.location.errors %}
+                        {{ form.location(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.location.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.location(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
                 <!-- Fame Rating -->
                 <div>
                     <a class="form-control-label">Fame Rating</a>
                     <div class="progress" style="height: 20px;">
                     <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">{{ current_user.famerating }}</div>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-3">
                     {{ form.picture_p.label() }}
                     {{ form.picture_p(class="form-control-file") }}
                     {% if form.picture_p.errors %}
