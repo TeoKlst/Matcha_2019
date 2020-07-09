@@ -501,8 +501,6 @@ def messages(user_id):
         return redirect(url_for('messages', user_id=user_id))
     return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2, seconduser_data=seconduser_data, messages3=messages3)
 
-# Get image data from current_user like -> another_user. So if the other user hasn't liked back.
-# TODO Investigate like notification if it works properly
 @app.route('/likes', methods=['GET', 'POST'])
 @login_required
 def likes():
