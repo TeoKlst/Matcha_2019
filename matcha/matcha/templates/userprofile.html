@@ -14,38 +14,46 @@
 {% block content %}
     <div class="content-section">
         <!-- Profile Image -->
-        <div class="media">
-            <img class="rounded-circle account-img" src="/static/profile_pics/{{ user.image_file_p }}">
-            <div class="media-body">
-                <h2 class="account-heading">{{ user.username }}</h2>
-                <p class="text-secondary">{{ user.email }}</p>
-                <p id="last_seen_load" class="text-secondary"></p>
-            </div>
-            <div class="text-center">
-                {% if user_relation == 'matched' %}
-                <div>
-                    <a href="{{ url_for('unlike_func', user_id=user.user_id) }}" role="button" class="btn btn-warning">Unlike</a>
+        <div class="container">
+     
+                <div class="row">
+                    <div class="col">
+                        <img class="rounded-circle account-img" src="/static/profile_pics/{{ user.image_file_p }}">
+                    </div>
+                    <div class="text-center col col-lg-2">
+                        {% if user_relation == 'matched' %}
+                        <div>
+                            <a href="{{ url_for('unlike_func', user_id=user.user_id) }}" role="button" class="btn btn-block btn-warning">Unlike</a>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('block_user', user_id=user.user_id) }}" role="button" class="btn btn-block btn-danger">Block</a>
+                        </div>
+                        {% elif user_relation == 'liked' %}
+                        <div>
+                            <a href="{{ url_for('unlike_func', user_id=user.user_id) }}" role="button" class="btn btn-block btn-warning">Unlike</a>
+                        </div>
+                        {% elif user_relation == 'likee' %}
+                        <div>
+                            <a href="{{ url_for('likes_func', user_id=user.user_id) }}" role="button" class="btn btn-block btn-success">Like Back</a>
+                        </div>
+                        {% else %}
+                        <div>
+                            <a href="{{ url_for('likes_func', user_id=user.user_id) }}" role="button" class="btn btn-block btn-success">Like</a>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <a href="{{ url_for('report_user', username=user.username) }}" role="button" class="btn btn-block btn-outline-danger">Report</a>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <a href="{{ url_for('block_user', user_id=user.user_id) }}" role="button" class="btn btn-block btn-danger">Block</a>
+                <div class="row">
+                    <div class="media-body col">
+                        <h2 class="account-heading">{{ user.username }}</h2>
+                        <p class="text-secondary">{{ user.email }}</p>
+                        <p id="last_seen_load" class="text-secondary"></p>
+                    </div>
                 </div>
-                {% elif user_relation == 'liked' %}
-                <div>
-                    <a href="{{ url_for('unlike_func', user_id=user.user_id) }}" role="button" class="btn btn-block btn-warning">Unlike</a>
-                </div>
-                {% elif user_relation == 'likee' %}
-                <div>
-                    <a href="{{ url_for('likes_func', user_id=user.user_id) }}" role="button" class="btn btn-block btn-success">Like Back</a>
-                </div>
-                {% else %}
-                <div>
-                    <a href="{{ url_for('likes_func', user_id=user.user_id) }}" role="button" class="btn btn-block btn-success">Like</a>
-                </div>
-                {% endif %}
-                <div>
-                    <a href="{{ url_for('report_user', username=user.username) }}" role="button" class="btn btn-block btn-outline-danger">Report</a>
-                </div>
-            </div>
+      
         </div>
         <!-- User Images -->
         <div>
