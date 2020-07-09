@@ -51,7 +51,8 @@ cur.execute("""CREATE TABLE users (
             location_region TEXT NULL,
             lat_data INTEGER NULL,
             long_data INTEGER NULL,
-            last_seen TEXT NULL
+            last_seen TEXT NULL,
+            authenticated INTEGER DEFAULT 0
             )""")
 
 cur.execute("""CREATE TABLE messages (
@@ -132,8 +133,8 @@ hashed_password = bcrypt.generate_password_hash('tkelest123').decode('utf-8')
 #             'Userchecks', 'Tags' )""")
 
 # ------ UserID 1 ------
-cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
-                VALUES (?,?,?,?,?,?,?,?)""",('Teo', 'Kelestura', 'Tkelest', 'tkelest@gmail.com', hashed_password, 'm', 25, '07/12/1994') )
+cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate, authenticated) 
+                VALUES (?,?,?,?,?,?,?,?,?)""",('Teo', 'Kelestura', 'Tkelest', 'tkelest@gmail.com', hashed_password, 'm', 25, '07/12/1994', 1) )
 
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
@@ -146,8 +147,8 @@ cur.execute("""INSERT INTO like_notifications (like_notification, user_id)
                 VALUES (?,?)""",(0, 1) )
 
 # ------ UserID 2 ------
-cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
-                VALUES (?,?,?,?,?,?,?,?)""",('Maya', 'Haya', 'MayaHi', 'maya@gmail.com', hashed_password, 'f', 25, '07/12/1994') )
+cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate, authenticated) 
+                VALUES (?,?,?,?,?,?,?,?,?)""",('Maya', 'Haya', 'MayaHi', 'maya@gmail.com', hashed_password, 'f', 25, '07/12/1994', 1) )
 
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
@@ -160,8 +161,8 @@ cur.execute("""INSERT INTO like_notifications (like_notification, user_id)
                 VALUES (?,?)""",(0, 2) )
 
 # ------ UserID 3 ------
-cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate) 
-                VALUES (?,?,?,?,?,?,?,?)""",('Jamie', 'Jameson', 'Jay', 'jayjay@gmail.com', hashed_password, 'f', 30, '07/12/1994') )
+cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate, authenticated) 
+                VALUES (?,?,?,?,?,?,?,?,?)""",('Jamie', 'Jameson', 'Jay', 'jayjay@gmail.com', hashed_password, 'f', 30, '07/12/1994', 1) )
 
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
@@ -174,8 +175,8 @@ cur.execute("""INSERT INTO like_notifications (like_notification, user_id)
                 VALUES (?,?)""",(0, 3) )
 
 # ------ UserID 4 ------
-cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate, location_city, location_region, lat_data, long_data) 
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",('Brad', 'Bradson', 'BradB', 'brad@gmail.com', hashed_password, 'm', 35, '07/12/1994', 'ITL', 'Rome', 41.898555, 12.521133) )
+cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate, location_city, location_region, lat_data, long_data, authenticated) 
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",('Brad', 'Bradson', 'BradB', 'brad@gmail.com', hashed_password, 'm', 35, '07/12/1994', 'ITL', 'Rome', 41.898555, 12.521133, 1) )
 
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)
@@ -188,8 +189,8 @@ cur.execute("""INSERT INTO like_notifications (like_notification, user_id)
                 VALUES (?,?)""",(0, 4) )
 
 # ------ UserID 5 ------
-cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate, location_city, location_region, lat_data, long_data) 
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",('Tommy', 'Thomson', 'TheDankEngine', 'dank@gmail.com', hashed_password, 'm', 40, '07/12/1994', 'ZA', 'Cape Town', -33.9550, 18.5859) )
+cur.execute("""INSERT INTO users (firstname, lastname, username, email, password, gender, age, birthdate, location_city, location_region, lat_data, long_data, authenticated) 
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",('Tommy', 'Thomson', 'TheDankEngine', 'dank@gmail.com', hashed_password, 'm', 40, '07/12/1994', 'ZA', 'Cape Town', -33.9550, 18.5859, 1) )
 
 for i in range(5):
     cur.execute("""INSERT INTO tags (content, user_id)

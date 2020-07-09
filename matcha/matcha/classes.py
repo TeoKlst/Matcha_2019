@@ -5,7 +5,7 @@ class User:
                 biography, famerating, image_file_p, image_file_1, 
                 image_file_2, image_file_3, image_file_4, image_file_5,
                 geo_track, location_city, location_region, lat_data, long_data,
-                last_seen):
+                last_seen, authenticated):
         self.user_id = user_id
         self.firstname = firstname
         self.lastname = lastname
@@ -30,6 +30,7 @@ class User:
         self.lat_data = lat_data
         self.long_data = long_data
         self. last_seen = last_seen
+        self.authenticated = authenticated
 
         
 
@@ -61,13 +62,13 @@ class User:
     #     return '{} {}'.format(self.first, self.last)
 
     def __repr__(self):
-        return "User('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})".format(
+        return "User('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})".format(
         self.user_id, self.firstname, self.lastname, self.age, self.birthdate,
         self.username, self.email, self.password, self.gender, self.sexual_pref,
         self.biography, self.famerating, self.image_file_p, self.image_file_1,
         self.image_file_2, self.image_file_3, self.image_file_4, self.image_file_5,
         self.geo_track, self.location_city, self.location_region, self.lat_data,
-        self.long_data, self.last_seen)
+        self.long_data, self.last_seen, self.authenticated)
 
 class RegisterUser:
     pass

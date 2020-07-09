@@ -19,6 +19,7 @@
     {% endfor %}
     </div>
 </div>
+{% if users %}
 <div class="text-center">
     <div>
         <a href="{{ url_for('sort') }}" role="button" class="btn btn-block btn-outline-info">Sort</a>
@@ -27,6 +28,8 @@
         <a href="{{ url_for('filter') }}" role="button" class="btn btn-block btn-outline-info">Filter</a>
     </div>
 </div>
+{% else %}
+{% endif %}
 {% else %}
 <h6>Please Register or Login</h6>
 {% endif %}
