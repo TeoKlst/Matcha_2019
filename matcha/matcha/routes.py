@@ -22,7 +22,8 @@ from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 get_reset_token, verify_reset_token, create_block, \
                                 create_message_notification, check_match, update_message_notification, \
                                 update_last_seen, check_like_status, add_fame_like, add_fame_match, \
-                                minus_fame_unlike, minus_fame_unmatch, minus_fame_reported
+                                minus_fame_unlike, minus_fame_unmatch, minus_fame_reported, \
+                                get_authentication_token
 
 
 @app.route('/')
@@ -258,8 +259,8 @@ def register():
                     VALUES (?,?)""",(0, registered_user_ID) )
         conn.close()
 
-        # SEND EMAIL HERE
-        
+        send_verification_email(registered_user_ID, user)
+
         flash(f'Your account {form.username.data} has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
 
@@ -991,6 +992,39 @@ def report_user(username):
     flash('User has been reported, an email has been sent to log the report.', 'danger')
     return redirect(url_for('home'))
 
+def send_verification_email(user_id, user):
+    token = get_authentication_token(user_id)
+    # print (token)
+    msg = flask_message('Account Authentication', 
+                    sender='noreply@matcha.com', 
+                    recipients=[user.email])
+    msg.body = f'''To authenticate your account, visit the following link:
+{url_for('authentication_token', token=token, _external=True)}
+
+'''
+    mail.send(msg)
+
+@app.route('/authentication_token/<token>', methods=['GET', 'POST'])
+def authentication_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    user = verify_reset_token(conn, cur, token)
+    conn.close()
+    if not user:
+        flash('That is an invalid or expired token, please re-register', 'warning')
+        return redirect(url_for('register'))
+    conn = sql.connect('matcha\\users.db')
+    cur = conn.cursor()
+    with conn:
+        cur.execute("""UPDATE users SET authenticated=:authenticated
+                    WHERE user_id=:token_id""",
+                    {'token_id': user[0], 'authenticated': 1})
+    conn.close()
+    flash('Account authenticated!', 'success')
+    return redirect(url_for('login'))
+
 
 def send_report_email(reported_user, current_user):
     msg = flask_message('User Report', 
@@ -1007,7 +1041,7 @@ def send_reset_email(user):
     msg = flask_message('Password Reset Request', 
                     sender='noreply@matcha.com', 
                     recipients=[user[0]])
-    msg.body = f'''To reset you password, visit the following link:
+    msg.body = f'''To reset your password, visit the following link:
 {url_for('reset_token', token=token, _external=True)}
 
 If you did not make this request then simply ignore this email and no changes will be made.

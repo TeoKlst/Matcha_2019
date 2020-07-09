@@ -121,6 +121,10 @@ def create_block(conn, cur, blocked_user, current_user_id):
         cur.execute("""INSERT INTO blocks (user_blocked, user_id)
                     VALUES (?,?)""", (blocked_user, current_user_id))
 
+def get_authentication_token(user_id, expires_sec=86400):
+    s = Serializer(app.config['SECRET_KEY'], expires_sec)
+    return s.dumps({'user_id': user_id}).decode('utf-8')
+
 def get_reset_token(user_id, expires_sec=1800):
     s = Serializer(app.config['SECRET_KEY'], expires_sec)
     return s.dumps({'user_id': user_id}).decode('utf-8')
