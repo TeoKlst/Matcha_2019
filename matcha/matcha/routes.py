@@ -7,14 +7,12 @@ from flask import render_template, url_for, flash, redirect, request, abort, jso
 from matcha import app, bcrypt, sql, geoKey, mail
 from matcha.forms import RegistrationForm, LoginForm, UpdateAccountForm, \
                         MessagesForm, SearchForm, RequestResetForm, ResetPasswordForm, \
-                        SortForm
-# from matcha.models import Like, Message, Images, Tags, Post    
+                        SortForm   
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message as flask_message
 from datetime import date, timedelta, datetime
 from collections import Counter
 # Templating engine that flask uses is Jinja2
-db = 1
 from matcha.classes import User, Message
 from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_message, register_userTags, update_tag, \

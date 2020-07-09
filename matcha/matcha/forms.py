@@ -9,7 +9,9 @@ from matcha.models import choices_gender, choices_day, choices_month, choices_ye
                             choices_asc_desc, choices_sort
 from datetime import date
 
+
 # Python Classes converted to html forms within templates
+
 
 class RegistrationForm(FlaskForm):
     firstname           = StringField('First name',
