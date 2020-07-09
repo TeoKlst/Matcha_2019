@@ -125,6 +125,17 @@ cur.execute("""CREATE TABLE view_notifications(
                 REFERENCES users (user_id) 
             )""")
 
+cur.execute("""CREATE TABLE locations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            location_city TEXT NULL,
+            location_region TEXT NULL,
+            lat_data INTEGER NULL,
+            long_data INTEGER NULL,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id)
+                REFERENCES users (user_id) 
+            )""")
+
 # =================================================================== USERS ==========================================================================
 hashed_password = bcrypt.generate_password_hash('tkelest123').decode('utf-8')
 # cur.execute("""INSERT INTO users VALUES (1, 'Teo', 'Kelestura', '25', '07/12/1994', 'Tkelest',

@@ -349,6 +349,23 @@ def account():
     form = UpdateAccountForm()
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
+
+    # LOCATION DATA
+    cur.execute("""SELECT location_region FROM users WHERE user_id""")
+    location_data = cur.fetchall()
+    array_location = []
+    for loc in location_data:
+        array_location.append(loc[0])
+    seen = set()
+    unique = []
+    for x in array_location:
+        if x not in seen:
+            unique.append(x)
+            seen.add(x)
+    list_tuple_location = [(location, location) for location in unique]
+    form.location.choices = list_tuple_location
+    # LOCATION DATA
+
     if form.validate_on_submit():
         # ------ Images ------
         img_type = None
@@ -379,7 +396,7 @@ def account():
                 form.username.data, form.email.data, 'hashed_password', form.gender.data, form.sexual_pref.data,
                 form.biography.data, 'famerating', 'image_file_p', 'image_file_1', 'image_file_2',
                 'image_file_3', 'image_file_4', 'image_file_5', form.geo_tag.data, 'location_city',
-                'location_region', 'lat_data', 'long_data', 'last_seen', 'authenticated')
+                form.location.data, 'lat_data', 'long_data', 'last_seen', 'authenticated')
         update_user(conn, cur, user)
         # ------ Tags ------
         update_tag(conn, cur, current_user.user_id, form.user_tag1.data, form.user_tag2.data, form.user_tag3.data, form.user_tag4.data, form.user_tag5.data)
@@ -387,25 +404,8 @@ def account():
         conn.close()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('account'))
+
     elif request.method == 'GET':
-
-        # LOCATION DATA
-        cur.execute("""SELECT location_region FROM users WHERE user_id""")
-        location_data = cur.fetchall()
-        array_location = []
-        for loc in location_data:
-            array_location.append(loc[0])
-        seen = set()
-        unique = []
-        for x in array_location:
-            if x not in seen:
-                unique.append(x)
-                seen.add(x)
-        unique.insert(0, 'Choose Location')
-        list_tuple_location = [(location, location) for location in unique]
-        form.location.choices = list_tuple_location
-        # LOCATION DATA
-
         form.firstname.data     = current_user.firstname
         form.lastname.data      = current_user.lastname
         form.username.data      = current_user.username

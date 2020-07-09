@@ -170,6 +170,11 @@ def save_location(conn, cur, user_id, location):
         cur.execute("""UPDATE users SET location_city=:city, location_region=:region, lat_data=:lat_data, long_data=:long_data
         WHERE user_id=:user_id""", {'city': location['location']['country'], 'region': location['location']['city'], 'lat_data': location['location']['lat'], 'long_data': location['location']['lng'], 'user_id': user_id})
 
+def save_true_location(conn, cur, user_id, location):
+    with conn:
+        cur.execute("""UPDATE users SET location_city=:city, location_region=:region, lat_data=:lat_data, long_data=:long_data
+        WHERE user_id=:user_id""", {'city': location['location']['country'], 'region': location['location']['city'], 'lat_data': location['location']['lat'], 'long_data': location['location']['lng'], 'user_id': user_id})
+
 def register_userTags(conn, cur, user_id):
     with conn:
         cur.execute("""INSERT INTO tags (content, user_id)
@@ -184,11 +189,17 @@ def register_userTags(conn, cur, user_id):
                     VALUES (?,?)""",('0', user_id) )
 
 def update_user(conn, cur, user):
+    cur.execute("""SELECT location_city, location_region, lat_data, long_data FROM users 
+                    WHERE location_region=:location_region""",
+                    {'location_region': user.location_region})
+    location_data = cur.fetchone()
     with conn:
         cur.execute("""UPDATE users SET firstname=:firstname, lastname=:lastname, username=:username, email=:email,
-                    gender=:gender, biography=:biography, sexual_pref=:sexual_pref, geo_track=:geo_track
+                    gender=:gender, biography=:biography, sexual_pref=:sexual_pref, geo_track=:geo_track, location_city=:location_city,
+                    location_region=:location_region, lat_data=:lat_data, long_data=:long_data
                     WHERE email=:email""",
-                    {'email': user.email, 'firstname': user.firstname, 'lastname': user.lastname, 'username': user.username, 'email': user.email, 'gender': user.gender, 'biography': user.biography, 'sexual_pref': user.sexual_pref, 'geo_track': user.geo_track})
+                    {'email': user.email, 'firstname': user.firstname, 'lastname': user.lastname, 'username': user.username, 'email': user.email,'gender': user.gender, 'biography': user.biography, 'sexual_pref': user.sexual_pref, 'geo_track': user.geo_track, 
+                    'location_city': location_data[0] , 'location_region': location_data[1] , 'lat_data': location_data[2], 'long_data': location_data[3]})
 
 def update_tag(conn, cur, user_id, tag1cont, tag2cont, tag3cont, tag4cont, tag5cont):
     cur.execute("""SELECT * FROM tags WHERE user_id=:user_id""", {'user_id': user_id})
