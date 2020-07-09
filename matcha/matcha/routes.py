@@ -1648,7 +1648,7 @@ def sort():
             return redirect(url_for('sort_results'))
         else:
             flash('Please select sort criteria!', 'warning')
-            return redirect(url_for('search_results'))
+            return redirect(url_for('sort'))
 
     return render_template('sort.html', title='Sort', form=form, users=filtered_users_data)
 
