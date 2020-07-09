@@ -134,6 +134,7 @@ def home():
         conn.close()
     return render_template('home.html', users=users)
 
+
 @app.route('/user/<username>', methods=['GET', 'POST'])
 @login_required
 def user_profile(username):
@@ -238,9 +239,11 @@ def cover():
     # print (current_user)
     return render_template('cover.html')
 
+
 @app.route('/about')
 def about():
     return render_template('about.html', title='About')
+
 
 # TODO move view_notification insert into db functions
 @app.route('/register', methods=['GET', 'POST'])
@@ -279,7 +282,7 @@ def register():
 
     return render_template('register.html', title='Register', form=form)
 
-# Close db conn
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -355,8 +358,7 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-# TODO Make 2nd high res image for viewwing
-# Delete older image of user when a new one is uploaded
+
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
@@ -370,7 +372,7 @@ def save_picture(form_picture):
 
     return picture_fn
 
-# TODO Update user information with a cleaner/lighter method
+
 @app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
@@ -461,6 +463,7 @@ def account():
     images = [image_file_1, image_file_2, image_file_3, image_file_4, image_file_5]
     return render_template('account.html', title='Account', image_file_p=image_file_p, images=images, form=form)
 
+
 def message_notifications(conn, cur, user_id, current_user):
     cur.execute("""SELECT new_messages FROM message_notifications 
                 WHERE last_seen_user_id=:last_seen_user_id""", {'last_seen_user_id': user_id})
@@ -473,6 +476,7 @@ def message_notifications(conn, cur, user_id, current_user):
     message_notif = all_messages - new_messages[0] if all_messages > new_messages[0] else new_messages[0] - all_messages 
     return (message_notif)
 
+
 def append_to_tuple(tuple_data, data_to_append):
     tuple_data = list(tuple_data)
     print ('TUPLE DATA', tuple_data)
@@ -480,6 +484,7 @@ def append_to_tuple(tuple_data, data_to_append):
     print ('TUPLE DATA AFTER APPEND', tuple_data)
     tuple_data = tuple(tuple_data)
     return (tuple_data)
+
 
 @app.route('/inbox')
 @login_required
@@ -508,8 +513,7 @@ def inbox():
     conn.close()
     return render_template('inbox.html', title='Inbox', users=true_likes) #user_images=user_images)
 
-# TODO Sort by date 1st, then within date sections sort by time
-# TODO Clean data passing (messages1 & 2)???
+
 @app.route('/messages/<user_id>', methods=['GET', 'POST'])
 @login_required
 def messages(user_id):
@@ -561,6 +565,7 @@ def messages(user_id):
         return redirect(url_for('messages', user_id=user_id))
     return render_template('messages.html', title='Messages', form=form, messages1=messages1, messages2=messages2, seconduser_data=seconduser_data, messages3=messages3)
 
+
 @app.route('/likes', methods=['GET', 'POST'])
 @login_required
 def likes():
@@ -591,7 +596,6 @@ def likes():
     print('True Likes, visible users!      : ', true_likes)
     print('UserOnlyLikes,haventliked!      : ', currentuser_unmatched_likes)
     
-    # STOPPED HERE
     # Matching other users likes again current_user
     otheruser_unmatched_likes = []
     for index, like in enumerate(users_likedby):
@@ -667,6 +671,7 @@ def unlike_func(user_id):
 # @login_required
 # def unlike(user_id):
 #     pass
+
 
 @app.route('/search', methods=['GET', 'POST'])
 @login_required
@@ -1069,6 +1074,7 @@ def report_user(username):
     flash('User has been reported, an email has been sent to log the report.', 'danger')
     return redirect(url_for('home'))
 
+
 def send_verification_email(user_id, user):
     token = get_authentication_token(user_id)
     # print (token)
@@ -1080,6 +1086,7 @@ def send_verification_email(user_id, user):
 
 '''
     mail.send(msg)
+
 
 @app.route('/authentication_token/<token>', methods=['GET', 'POST'])
 def authentication_token(token):
@@ -1125,6 +1132,7 @@ If you did not make this request then simply ignore this email and no changes wi
 '''
     mail.send(msg)
 
+
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_request():
     if current_user.is_authenticated:
@@ -1141,6 +1149,7 @@ def reset_request():
         flash('An email has been sent with instructions to reset you password', 'info')
         return redirect(url_for('login'))
     return render_template('reset_request.html', title='Reset Password', form=form)
+
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_token(token):
@@ -1169,6 +1178,7 @@ def reset_token(token):
         return redirect(url_for('login'))
     return render_template('reset_token.html', title='Reset Password', form=form)
 
+
 @app.route('/inbox_notifications')
 def inbox_notifications():
     conn = sql.connect('matcha\\users.db')
@@ -1185,6 +1195,7 @@ def inbox_notifications():
         total_notes = 0
     message_notification = all_messages - total_notes if all_messages > total_notes else total_notes - all_messages
     return jsonify({'inbox': message_notification})
+
 
 @app.route('/like_notifications')
 def like_notifications():
@@ -1211,6 +1222,7 @@ def view_notifications():
     view_notification = total_views - last_viewed[0] if total_views > last_viewed[0] else last_viewed[0] - total_views
     return jsonify({'views': view_notification})
 
+
 @app.route('/realtime_chat/<user_id>')
 def realtime_chat(user_id):
     conn = sql.connect('matcha\\users.db')
@@ -1236,6 +1248,7 @@ def realtime_chat(user_id):
     return jsonify({'message'   : '<div class="mb-1 text-right"><small class="text-muted pull-left">' + 'TIME DATA' + '</small>' + \
                                   '<button type="button" class="btn btn-info">' + 'MESSAGE CONTENT' + '</button><br></div>',
                     'update'    : update })
+
 
 @app.route('/last_seen_set')
 def last_seen_set():
@@ -1278,7 +1291,9 @@ def last_seen_load(user_id):
         else:
             return jsonify({'last_seen_time'   : last_seen[0][:-10]})
 
-# END DATA
+
+# =============================================================== END DATA ===============================================================
+
 
 @app.route('/filter', methods=['GET', 'POST'])
 @login_required
@@ -1637,7 +1652,9 @@ def sort():
 
     return render_template('sort.html', title='Sort', form=form, users=filtered_users_data)
 
-# ------ ERROR PAGE HANDLING ------
+
+# ------------------------------------------ ERROR PAGE HANDLING ------------------------------------------
+
 @app.errorhandler(403) 
 def error_403(error): 
     return render_template('errors/403.html')
