@@ -1584,3 +1584,16 @@ def sort():
             return redirect(url_for('search_results'))
 
     return render_template('sort.html', title='Sort', form=form, users=filtered_users_data)
+
+# ------ ERROR PAGE HANDLING ------
+@app.errorhandler(403) 
+def error_403(error): 
+    return render_template('errors/403.html')
+
+@app.errorhandler(404) 
+def error_404(error): 
+    return render_template('errors/404.html')
+
+@app.errorhandler(500) 
+def error_500(error): 
+    return render_template('errors/500.html')
