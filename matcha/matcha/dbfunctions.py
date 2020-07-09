@@ -57,6 +57,20 @@ def minus_fame_unmatch(conn, cur, user_id, current_user_id):
         cur.execute("""UPDATE users SET famerating=:famerating
                 WHERE user_id=:user_id""", {'famerating': (int(famerating_current_user_id[0]) - 5), 'user_id': current_user_id})
 
+def minus_fame_block(conn, cur, user_id, current_user_id):
+       with conn:
+        cur.execute("""SELECT famerating FROM users WHERE user_id=:user_id""",
+                                                            {'user_id': user_id})
+        famerating_user_id = cur.fetchone()
+        cur.execute("""UPDATE users SET famerating=:famerating
+                WHERE user_id=:user_id""", {'famerating': (int(famerating_user_id[0]) - 10), 'user_id': user_id})
+
+        cur.execute("""SELECT famerating FROM users WHERE user_id=:user_id""",
+                                                            {'user_id': current_user_id})
+        famerating_current_user_id = cur.fetchone()
+        cur.execute("""UPDATE users SET famerating=:famerating
+                WHERE user_id=:user_id""", {'famerating': (int(famerating_current_user_id[0]) - 10), 'user_id': current_user_id})
+
 # TODO If there is time
 def minus_fame_reported(conn, cur, user_id, current_user_id):
     pass
@@ -127,10 +141,31 @@ def create_message_notification(conn, cur, user_id, current_user_id):
         cur.execute("""INSERT INTO message_notifications (last_seen_user_id, user_id)
                     VALUES (?,?)""", (current_user_id, user_id))
 
+def delete_message_notification(conn, cur, user_id, current_user_id):
+    with conn:
+        cur.execute("DELETE FROM message_notifications WHERE user_id=:user_id AND last_seen_user_id=:last_seen_user_id", {'user_id': user_id, 'last_seen_user_id':current_user_id})
+        cur.execute("DELETE FROM message_notifications WHERE user_id=:user_id AND last_seen_user_id=:last_seen_user_id", {'user_id': current_user_id, 'last_seen_user_id':user_id})
+
+def delete_messages(conn, cur, user_id, current_user_id):
+    with conn:
+        cur.execute("DELETE FROM messages WHERE recipient=:recipient AND user_id=:user_id", {'recipient':current_user_id, 'user_id': user_id})
+        cur.execute("DELETE FROM messages WHERE recipient=:recipient AND user_id=:user_id", {'recipient':user_id, 'user_id': current_user_id})
+
 def create_block(conn, cur, blocked_user, current_user_id):
     with conn:
         cur.execute("""INSERT INTO blocks (user_blocked, user_id)
                     VALUES (?,?)""", (blocked_user, current_user_id))
+
+def block_check(conn, cur, user_id, current_user_id):
+    with conn:
+        cur.execute("""SELECT user_blocked FROM blocks WHERE user_blocked=:current_user_id AND user_id=:user_id""",
+                                                    {'current_user_id': current_user_id, 'user_id': user_id})
+        block = cur.fetchone()
+        if not block:
+            return False
+        else:
+            return True
+            
 
 def get_authentication_token(user_id, expires_sec=86400):
     s = Serializer(app.config['SECRET_KEY'], expires_sec)
@@ -172,8 +207,14 @@ def save_location(conn, cur, user_id, location):
 
 def save_true_location(conn, cur, user_id, location):
     with conn:
-        cur.execute("""UPDATE users SET location_city=:city, location_region=:region, lat_data=:lat_data, long_data=:long_data
-        WHERE user_id=:user_id""", {'city': location['location']['country'], 'region': location['location']['city'], 'lat_data': location['location']['lat'], 'long_data': location['location']['lng'], 'user_id': user_id})
+        cur.execute("""SELECT user_id FROM locations WHERE user_id=:user_id""", {'user_id': user_id})
+        location_data = cur.fetchone()
+        if not location_data:
+            cur.execute("""INSERT INTO locations (location_city, location_region, lat_data, long_data, user_id)
+                    VALUES (?,?,?,?,?)""",(location['location']['country'], location['location']['city'], location['location']['lat'], location['location']['lng'], user_id) )
+        else:
+            cur.execute("""UPDATE locations SET location_city=:city, location_region=:region, lat_data=:lat_data, long_data=:long_data
+            WHERE user_id=:user_id""", {'city': location['location']['country'], 'region': location['location']['city'], 'lat_data': location['location']['lat'], 'long_data': location['location']['lng'], 'user_id': user_id})
 
 def register_userTags(conn, cur, user_id):
     with conn:

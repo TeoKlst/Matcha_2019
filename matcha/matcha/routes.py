@@ -23,7 +23,9 @@ from matcha.dbfunctions import register_userTest, update_user, update_image,\
                                 create_message_notification, check_match, update_message_notification, \
                                 update_last_seen, check_like_status, add_fame_like, add_fame_match, \
                                 minus_fame_unlike, minus_fame_unmatch, minus_fame_reported, \
-                                get_authentication_token, check_user
+                                get_authentication_token, check_user, block_check, \
+                                minus_fame_block, delete_message_notification, delete_messages, \
+                                save_true_location
 
 
 @app.route('/')
@@ -37,6 +39,16 @@ def home():
                                 WHERE (user_id IS NOT ?)""", (str(current_user.user_id),))
         users = cur.fetchall()
         print (current_user.is_authenticated)
+
+        cur.execute("""SELECT user_blocked FROM blocks WHERE user_id=:user_id""",
+                                                        {'user_id': current_user.user_id})
+        blocked_users = cur.fetchall()
+        for user in blocked_users:
+            i = 0
+            while i < len(users):
+                if user[0] == users[i][0]:
+                    users.pop(i)
+                i = i + 1
 
         # Adding distance from current user to other users
         users_with_loc = []
@@ -297,11 +309,11 @@ def login():
             if user.authenticated == 1:
                 login_user(user, remember=form.remember.data)
                 next_page = request.args.get('next')
+
                 # --- Geo Location ---
                 cur.execute("""SELECT location_city FROM users WHERE user_id=:user_id""",
                                                     {'user_id': current_user.user_id})
                 location = cur.fetchone()
-                # print ('CURRENT USER LOCATION ', location)
                 if not location[0]:
                     print ('------ LOCATION API RUNNING ------')
                     http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
@@ -311,6 +323,24 @@ def login():
                     json_request = requests.get(http + geoKey + ipAdress).json()
                     data  = (json_request)
                     save_location(conn, cur, current_user.user_id, data)
+                # --- Geo Location ---
+
+                # TO BE COMMENTED IN FOR MARKING, PROOF OF GEO LOCATION WHEN GEO TURNED OFF
+                # API call cap is bad :(
+                print ('------ TRUE LOCATION API RUNNING ------')
+                http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
+                json_request = requests.get('https://api.ipify.org?format=json').json()
+                ip      = json_request['ip']
+                ipAdress= 'ipAddress=' + ip
+                json_request = requests.get(http + geoKey + ipAdress).json()
+                data  = (json_request)
+                save_true_location(conn, cur, current_user.user_id, data)
+                cur.execute("""SELECT * FROM locations WHERE user_id=:user_id""",
+                                                    {'user_id': current_user.user_id})
+                location = cur.fetchone()
+                print ('TRUE CURRENT USER LOCATION: ', location)
+                # TO BE COMMENTED IN FOR MARKING, PROOF OF GEO LOCATION WHEN GEO TURNED OFF
+                
 
                 conn.close()
                 return redirect(next_page) if next_page else redirect(url_for('home'))
@@ -594,20 +624,23 @@ def likes_func(user_id):
     cur.execute("""SELECT image_file_p FROM users WHERE user_id=:user_id""",
                                                         {'user_id': current_user.user_id})
     profile_img_check = cur.fetchone()
-    print (profile_img_check)
     if profile_img_check[0] != "default.jpg":
-        create_like(conn, cur, user_id, current_user.user_id)
-        add_fame_like(conn, cur, user_id)
-        if check_match(conn, cur, user_id, current_user.user_id):
-            add_fame_match(conn, cur, user_id, current_user.user_id)
-            cur.execute("""SELECT * FROM message_notifications WHERE last_seen_user_id=:last_seen_user_id
-                    AND user_id=:user_id""", {'last_seen_user_id': current_user.user_id, 'user_id': user_id})
-            all_message_notifs = cur.fetchall()
-            if not all_message_notifs:
-                create_message_notification(conn, cur, user_id, current_user.user_id)
-        conn.close()
-        flash('Like Successful!', 'success')
-        return render_template('home.html', title='Views')
+        if not block_check(conn, cur, user_id, current_user.user_id):
+            create_like(conn, cur, user_id, current_user.user_id)
+            add_fame_like(conn, cur, user_id)
+            if check_match(conn, cur, user_id, current_user.user_id):
+                add_fame_match(conn, cur, user_id, current_user.user_id)
+                cur.execute("""SELECT * FROM message_notifications WHERE last_seen_user_id=:last_seen_user_id
+                        AND user_id=:user_id""", {'last_seen_user_id': current_user.user_id, 'user_id': user_id})
+                all_message_notifs = cur.fetchall()
+                if not all_message_notifs:
+                    create_message_notification(conn, cur, user_id, current_user.user_id)
+            conn.close()
+            flash('Like Successful!', 'success')
+            return render_template('home.html', title='Views')
+        else:
+            flash('You have blocked or been blocked by this user, unable to like.', 'danger')
+            return render_template('home.html', title='Home')
     else:
         flash('Your profile picture is still the deafult. Please go to your account info to update.', 'warning')
         return render_template('home.html', title='Home')
@@ -808,14 +841,25 @@ def search():
                     if not found_tags_users:
                         found_tags_users = False
 
-        # TODO REMOVE BLOCKED USERS
+
         # found_tags_users = tuple([user] for user in found_tags_users)
         # print ('ALL USERS FOUND IN TAGS: ', found_tags_users)
         cur.execute("SELECT user_id FROM users WHERE (user_id IS NOT ?)", (str(current_user.user_id),))
         # cur.execute("SELECT user_id FROM users WHERE user_id")
         all_users = cur.fetchall()
-        filtered_users = []
 
+        # Remove blocked users
+        cur.execute("""SELECT user_blocked FROM blocks WHERE user_id=:user_id""",
+                                                        {'user_id': current_user.user_id})
+        blocked_users = cur.fetchall()
+        for user in blocked_users:
+            i = 0
+            while i < len(all_users):
+                if user[0] == all_users[i][0]:
+                    all_users.pop(i)
+                i = i + 1
+
+        filtered_users = []
         filtered_age = []
         if found_age_users:
             for index, user in enumerate(found_age_users):
@@ -1002,10 +1046,20 @@ def sort_results():
 def block_user(user_id):
     conn = sql.connect('matcha\\users.db')
     cur = conn.cursor()
+    # create block for current_user
     create_block(conn, cur, user_id, current_user.user_id)
-    cur.execute("SELECT * FROM blocks where user_id")
-    blocks = cur.fetchall()
-    print (blocks)
+    # create block for blocked user
+    create_block(conn, cur, current_user.user_id, user_id)
+    # remove user_id like
+    remove_like(conn, cur, user_id, current_user.user_id)
+    # remove current_user like
+    remove_like(conn, cur, current_user.user_id, user_id)
+    # remove fame
+    minus_fame_block(conn, cur, user_id, current_user.user_id)
+    # delete notifications
+    delete_message_notification(conn, cur, user_id, current_user.user_id)
+    # delete all messages
+    delete_messages(conn, cur, user_id, current_user.user_id)
     conn.close()
     flash('User has been blocked', 'danger')
     return redirect(url_for('home'))
