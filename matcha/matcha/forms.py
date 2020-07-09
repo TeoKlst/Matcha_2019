@@ -67,7 +67,7 @@ class RegistrationForm(FlaskForm):
     def validate_day(self, day):
         if day.data == '0':
             raise ValidationError('Please select a day.')
-    # TODO validate_passwordComplexity(self, password_field):
+
 
 class LoginForm(FlaskForm):
     email       = StringField('Email',
@@ -170,12 +170,14 @@ class SearchForm(FlaskForm):
                             choices=choices_tags)
     submit          = SubmitField('Search')
 
+
 class SortForm(FlaskForm):
     field_select    = SelectField('Sort Critera',
                                 choices=choices_sort)
     type_sort       = SelectField('Asc or Desc',
                                 choices=choices_asc_desc)
     submit          = SubmitField('Sort')
+
 
 class RequestResetForm(FlaskForm):
     email       = StringField('Email',
@@ -190,6 +192,7 @@ class RequestResetForm(FlaskForm):
         conn.close()
         if user_data is None:
             raise ValidationError('No account with that email. Please check email again or register.')
+
 
 class ResetPasswordForm(FlaskForm):
     password_field      = PasswordField('Password',
