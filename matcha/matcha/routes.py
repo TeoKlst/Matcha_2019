@@ -144,6 +144,24 @@ def user_profile(username):
     if not check_user(conn, cur, username, current_user.username):
         flash('Unable to access', 'danger')
         return redirect(url_for('home'))
+
+    # LOCATION DATA
+    cur.execute("""SELECT location_region FROM users WHERE user_id""")
+    location_data = cur.fetchall()
+    array_location = []
+    for loc in location_data:
+        array_location.append(loc[0])
+    seen = set()
+    unique = []
+    for x in array_location:
+        if x not in seen:
+            unique.append(x)
+            seen.add(x)
+    unique.insert(0, 'No Location')
+    list_tuple_location = [(location, location) for location in unique]
+    form.location.choices = list_tuple_location
+    # LOCATION DATA
+    
     cur.execute("SELECT * FROM users WHERE username=:username", {'username': username})
     user = cur.fetchone()
     userClass = User(user[0], user[1], user[2], user[3], user[4], user[5], user[6],
@@ -159,6 +177,7 @@ def user_profile(username):
     form.sexual_pref.data   = userClass.sexual_pref
     form.biography.data     = userClass.biography
     form.geo_tag.data       = userClass.geo_track
+    form.location.data      = userClass.location_region
     cur.execute("SELECT * FROM tags WHERE user_id=:user_id", {'user_id': userClass.user_id})
     tags = cur.fetchall()
     form.user_tag1.data = tags[0][1]

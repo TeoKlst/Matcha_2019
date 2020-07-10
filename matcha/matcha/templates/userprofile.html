@@ -76,6 +76,20 @@
                         <div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">{{ user.famerating }}</div>
                     </div>
                 </div>
+                <!-- Location -->
+                <div class="form-group">
+                    {{ form.location.label(class="form-control-label") }}
+                    {% if form.location.errors %}
+                        {{ form.location(class="form-control form-control-lg is-invalid", disabled="disabled") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.location.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.location(class="form-control form-control-lg", disabled="disabled") }}
+                    {% endif %}
+                </div>
                 <!-- Firstname -->
                 <div class="form-group">
                     {{ form.firstname.label(class="form-control-label") }}
