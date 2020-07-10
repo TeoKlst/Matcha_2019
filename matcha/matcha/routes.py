@@ -296,7 +296,7 @@ def login():
 
         i = 0
         for data in user_data:
-            print(str(i), data)
+            # print(str(i), data)
             i = i + 1
         # print(user_data)
 
@@ -327,7 +327,7 @@ def login():
                 # --- Geo Location ---
 
                 # --- TO BE COMMENTED IN FOR MARKING, PROOF OF GEO LOCATION WHEN GEO TURNED OFF ---
-                # API call cap is bad :(
+                # API call cap is bad.
                 # print ('------ TRUE LOCATION API RUNNING ------')
                 # http    = 'https://ip-geolocation.whoisxmlapi.com/api/v1?'
                 # json_request = requests.get('https://api.ipify.org?format=json').json()
